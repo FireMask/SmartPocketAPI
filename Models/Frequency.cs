@@ -1,0 +1,9 @@
+﻿namespace SmartPocketAPI.Models;
+
+public class Frequency
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string NameSpanish { get; set; } = string.Empty;
+    public ICollection<RecurringPayment> RecurringPayments { get; set; }
+}

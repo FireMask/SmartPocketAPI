@@ -1,0 +1,29 @@
+@SmartPocketAPI_HostAddress = https://localhost:7266
+
+GET {{SmartPocketAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+POST {{SmartPocketAPI_HostAddress}}/User
+Content-Type: application/json
+{
+  "alias": "FireMask2",
+  "name": "Andres Lira"
+}
+
+###
+
+DELETE {{SmartPocketAPI_HostAddress}}/User?userGuid=ac137ea8-d785-40dc-a4b2-a2658a2d6eac
+
+###
+
+GET {{SmartPocketAPI_HostAddress}}/Users
+Accept: application/json
+
+###
+
+
+GET {{SmartPocketAPI_HostAddress}}/MovementTypes
+
+###
