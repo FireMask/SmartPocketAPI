@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using SmartPocketAPI.Middlewares;
 using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.ViewModels;
+using SmartPocketAPI.Helpers;
+using SmartPocketAPI.Models;
 
 namespace SmartPocketAPI.Controllers;
 
@@ -27,14 +29,13 @@ public class RecurringPaymentController : Controller
         {
             Guid userId = HttpContext.GetUserId();
             var result = await _recurringPaymentService.GetRecurringPaymentsAsync(userId);
-            return Results.Json(result);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
         }
-
-        return Results.BadRequest();
     }
 
     [HttpGet]
@@ -44,14 +45,13 @@ public class RecurringPaymentController : Controller
         {
             Guid userId = HttpContext.GetUserId();
             var recurringPayment = await _recurringPaymentService.GetRecurringPaymentByIdAsync(userId, id);
-            return Results.Ok(recurringPayment);
+            return recurringPayment.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
         }
-
-        return Results.NoContent();
     }
 
     [HttpPost]
@@ -66,14 +66,13 @@ public class RecurringPaymentController : Controller
 
             var newRecurringPayment = await _recurringPaymentService.CreateRecurringPaymentAsync(recurringPayment);
 
-            return Results.Ok(newRecurringPayment);
+            return newRecurringPayment.ToApiResponse(Constants.INSERT_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.INSERT_ERROR);
         }
-
-        return Results.BadRequest();
     }
 
     [HttpDelete]
@@ -83,15 +82,13 @@ public class RecurringPaymentController : Controller
         {
             Guid userid = HttpContext.GetUserId();
             var result = await _recurringPaymentService.DeleteRecurringPaymentAsync(userid, id);
-
-            return Results.Ok(result);
+            return result.ToApiResponse(Constants.DELETE_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.DELETE_ERROR);
         }
-
-        return Results.BadRequest();
     }
 
     [HttpPut]
@@ -101,14 +98,12 @@ public class RecurringPaymentController : Controller
         {
             recurringPayment.UserId = HttpContext.GetUserId();
             var result = await _recurringPaymentService.UpdateRecurringPaymentAsync(recurringPayment);
-
-            return Results.Ok(result);
+            return result.ToApiResponse(Constants.UPDATE_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.UPDATE_ERROR);
         }
-
-        return Results.BadRequest();
     }
 }

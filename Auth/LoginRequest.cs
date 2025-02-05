@@ -1,3 +1,7 @@
 ﻿namespace SmartPocketAPI.Auth;
 
-public record LoginRequest(string Alias, string Password);
+public class LoginRequest
+{
+    public string Alias { get; set; }
+    public string Password { get; set; }
+}

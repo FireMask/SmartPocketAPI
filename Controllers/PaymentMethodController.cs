@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using SmartPocketAPI.Auth;
 using SmartPocketAPI.Database;
+using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Middlewares;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Services;
@@ -33,14 +34,13 @@ public class PaymentMethodController : Controller
         {
             Guid userId = HttpContext.GetUserId();
             var result = await _paymentMethodService.GetPaymentMethodsAsync(userId);
-            return Results.Json(result);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
         }
-
-        return Results.BadRequest();
     }
 
     [HttpGet("{id}")]
@@ -50,14 +50,13 @@ public class PaymentMethodController : Controller
         {
             Guid userId = HttpContext.GetUserId();
             var result = await _paymentMethodService.GetPaymentMethodByIdAsync(userId, id);
-            return Results.Ok(result);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
         }
-
-        return Results.NoContent();
     }
 
     [HttpPost]
@@ -69,17 +68,15 @@ public class PaymentMethodController : Controller
                 throw new ArgumentNullException(nameof(paymentMethodViewModel));
 
             paymentMethodViewModel.UserId = HttpContext.GetUserId();
-
             PaymentMethod newPaymentMethod = await _paymentMethodService.CreatePaymentMethodAsync(paymentMethodViewModel);
 
-            return Results.Ok(newPaymentMethod);
+            return newPaymentMethod.ToApiResponse(Constants.INSERT_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.INSERT_ERROR);
         }
-
-        return Results.BadRequest();
     }
 
     [HttpDelete]
@@ -89,14 +86,12 @@ public class PaymentMethodController : Controller
         {
             Guid userid = HttpContext.GetUserId();
             var result = await _paymentMethodService.DeletePaymentMethodAsync(userid, id);
-
-            return Results.Ok(result);
+            return result.ToApiResponse(Constants.DELETE_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.DELETE_ERROR);
         }
-
-        return Results.BadRequest();
     }
 }

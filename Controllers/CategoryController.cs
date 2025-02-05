@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using SmartPocketAPI.Auth;
 using SmartPocketAPI.Database;
+using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Middlewares;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Services;
@@ -33,14 +34,13 @@ public class CategoryController : Controller
         {
             Guid userId = HttpContext.GetUserId();
             var result = await _categoryService.GetCategoriesAsync(userId);
-            return Results.Json(result);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
         }
-
-        return Results.BadRequest();
     }
 
     [HttpGet("{id}")]
@@ -49,15 +49,14 @@ public class CategoryController : Controller
         try
         {
             Guid userId = HttpContext.GetUserId();
-            Category? cat = await _categoryService.GetCategoryByIdAsync(userId, id);
-            return Results.Ok(cat);
+            var cat = await _categoryService.GetCategoryByIdAsync(userId, id);
+            return cat.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
         }
-
-        return Results.NoContent();
     }
 
     [HttpPost]
@@ -69,17 +68,14 @@ public class CategoryController : Controller
                 throw new ArgumentNullException(nameof(categoryViewModel));
 
             categoryViewModel.UserId = HttpContext.GetUserId();
-
-            Category newCategory = await _categoryService.CreateCategoryAsync(categoryViewModel);
-
-            return Results.Ok(newCategory);
+            var newCategory = await _categoryService.CreateCategoryAsync(categoryViewModel);
+            return newCategory.ToApiResponse(Constants.INSERT_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.INSERT_ERROR);
         }
-
-        return Results.BadRequest();
     }
 
     [HttpDelete]
@@ -89,14 +85,12 @@ public class CategoryController : Controller
         {
             Guid userid = HttpContext.GetUserId();
             var result = await _categoryService.DeleteCategoryAsync(userid, id);
-
-            return Results.Ok(result);
+            return result.ToApiResponse(Constants.DELETE_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.DELETE_ERROR);
         }
-
-        return Results.BadRequest();
     }
 }

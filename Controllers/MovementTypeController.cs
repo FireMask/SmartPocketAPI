@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using SmartPocketAPI.Database;
+using SmartPocketAPI.Helpers;
+using SmartPocketAPI.Middlewares;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
@@ -14,50 +16,74 @@ namespace SmartPocketAPI.Controllers;
 public class MovementTypeController : Controller
 {
     private readonly IMovementTypeService _movementTypeService;
+    private readonly ILogger<MovementTypeController> _logger;
 
-    public MovementTypeController(IMovementTypeService movementTypeService)
+    public MovementTypeController(IMovementTypeService movementTypeService, ILogger<MovementTypeController> logger)
     {
         _movementTypeService = movementTypeService;
+        _logger = logger;
     }
 
     [HttpGet("/MovementTypes")]
     public async Task<IResult> GetMovementTypes()
     {
-        return Results.Json(await _movementTypeService.GetMovementTypesAsync());
+        try
+        {
+            var result = await _movementTypeService.GetMovementTypesAsync();
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
+        }
     }
 
     [HttpGet("{id}")]
     public async Task<IResult> GetMovementType(int id)
     {
-        MovementType? move = await _movementTypeService.GetMovementTypeByIdAsync(id);
-
-        if (move == null)
-            return Results.NoContent();
-        else
-            return Results.Json(move);
+        try
+        {
+            var result = await _movementTypeService.GetMovementTypeByIdAsync(id);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
+        }
     }
 
     [HttpPost]
     public async Task<IResult> CreateFrequency(MovementTypeViewModel movementTypeVM)
     {
-        if (movementTypeVM == null)
-            return Results.BadRequest();
+        try
+        {
+            if (movementTypeVM == null)
+                throw new ArgumentNullException(nameof(movementTypeVM));
 
-        MovementType? newMove = await _movementTypeService.CreateMovementTypeAsync(movementTypeVM);
-
-        if (newMove == null)
-            return Results.BadRequest();
-        else
-            return Results.Ok(newMove);
+            var result = await _movementTypeService.CreateMovementTypeAsync(movementTypeVM);
+            return result.ToApiResponse(Constants.INSERT_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.INSERT_ERROR);
+        }
     }
 
     [HttpDelete]
     public async Task<IResult> DeleteFrequency(int id)
     {
-
-        if (await _movementTypeService.DeleteMovementTypeAsync(id))
-            return Results.Ok();
-        else
-            return Results.BadRequest();
+        try
+        {
+            var result = await _movementTypeService.DeleteMovementTypeAsync(id);
+            return result.ToApiResponse(Constants.DELETE_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.DELETE_ERROR);
+        }
     }
 }
