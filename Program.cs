@@ -1,7 +1,6 @@
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using SmartPocketAPI;
+using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Middlewares;
 using SmartPocketAPI.Options;
 using System.Text;

@@ -9,7 +9,7 @@ using SmartPocketAPI.Services;
 using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.Services.Interfaces;
 
-namespace SmartPocketAPI;
+namespace SmartPocketAPI.Helpers;
 
 public static class ServiceCollectionExtensions
 {
