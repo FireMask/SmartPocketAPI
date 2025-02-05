@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SmartPocketAPI.Auth;
 using SmartPocketAPI.Models;
 
-namespace SmartPocketAPI.Database;
+namespace SmartPocketAPI.Helpers.Extensions;
 
 public static class ModelBuilderExtensions
 {
@@ -12,11 +11,12 @@ public static class ModelBuilderExtensions
         Guid adminid = new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c");
 
         modelBuilder.Entity<User>().HasData(
-            new User {
+            new User
+            {
                 Id = adminid,
                 Alias = "Admin",
                 Name = "Admin",
-                Email="",
+                Email = "",
                 Password = "5IrYpxI+Y3DE8f6ZP6y1qw==:dR01XFPGqVy+ZUb/7gsPLGX7NkpY0dcgzPjgyUT22r8=" //Admin
             }
         );

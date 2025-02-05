@@ -5,6 +5,7 @@ using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.ViewModels;
 using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Models;
+using SmartPocketAPI.Helpers.Extensions;
 
 namespace SmartPocketAPI.Controllers;
 

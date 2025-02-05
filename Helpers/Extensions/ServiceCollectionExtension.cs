@@ -1,15 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SmartPocketAPI.Auth;
 using SmartPocketAPI.Database;
-using SmartPocketAPI.Models;
 using SmartPocketAPI.Options;
 using SmartPocketAPI.Services;
 using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.Services.Interfaces;
 
-namespace SmartPocketAPI.Helpers;
+namespace SmartPocketAPI.Helpers.Extensions;
 
 public static class ServiceCollectionExtensions
 {

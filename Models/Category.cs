@@ -11,4 +11,6 @@ public class Category
     public Guid UserId { get; set; }
     public User User { get; set; }
 
+    public ICollection<Movement> Movements { get; set; }
+
 }

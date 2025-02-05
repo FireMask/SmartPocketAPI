@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using NuGet.Protocol;
 using SmartPocketAPI.Database;
-using SmartPocketAPI.Helpers;
+using SmartPocketAPI.Helpers.Extensions;
 using SmartPocketAPI.Middlewares;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Options;

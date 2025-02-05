@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using SmartPocketAPI.Helpers.Extensions;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Options;
 
@@ -14,6 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
     public DbSet<RecurringPayment> RecurringPayments { get; set; }
+    public DbSet<Movement> Movements { get; set; }
 
     public ConfigurationOptions _options { get; }
 
@@ -76,6 +78,34 @@ public class ApplicationDbContext : DbContext
                 .HasOne(c => c.Frequency)
                 .WithMany(p => p.RecurringPayments)
                 .HasForeignKey(c => c.FrecuencyId);
+
+        modelBuilder.Entity<Movement>()
+            .ToTable("Movement");
+
+            modelBuilder.Entity<Movement>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.Movements)
+                .HasForeignKey(c => c.UserId);
+
+            modelBuilder.Entity<Movement>()
+                .HasOne(c => c.Category)
+                .WithMany(u => u.Movements)
+                .HasForeignKey(m => m.CategoriId);
+
+            modelBuilder.Entity<Movement>()
+                .HasOne(c => c.PaymentMethod)
+                .WithMany(u => u.Movements)
+                .HasForeignKey(m => m.PaymentMethodId);
+
+            modelBuilder.Entity<Movement>()
+                .HasOne(c => c.RecurringPayment)
+                .WithMany(u => u.Movements)
+                .HasForeignKey(m => m.RecurringPaymentId);
+
+            modelBuilder.Entity<Movement>()
+                .HasOne(c => c.CreditCardPayment)
+                .WithMany(u => u.Payments)
+                .HasForeignKey(m => m.CreditCardPaymentId);
 
         modelBuilder.Seed();
     }

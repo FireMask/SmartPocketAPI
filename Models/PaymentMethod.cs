@@ -16,4 +16,8 @@ public class PaymentMethod
     public DateTime DueDate { get; set; }
     public DateTime TransactionDate { get; set; }
     public decimal DefaultInterestRate { get; set; }
+
+    public ICollection<Movement> Movements { get; set; }
+
+    public ICollection<Movement> Payments { get; set; }
 }

@@ -1,0 +1,28 @@
+﻿namespace SmartPocketAPI.Models;
+
+public class Movement
+{
+    public int Id { get; set; }
+    public DateTime MovementDate { get; set; }
+    public string Description { get; set; }
+    public decimal Amount { get; set; }
+
+    public Guid UserId { get; set; }
+    public User User { get; set; }
+
+    public int CategoriId { get; set; }
+    public Category Category { get; set; }
+
+    public int PaymentMethodId { get; set; }
+    public PaymentMethod PaymentMethod { get; set; }
+
+    public int RecurringPaymentId { get; set; }
+    public RecurringPayment RecurringPayment { get; set; }
+
+    public int MovementTypeId { get; set; }
+    public MovementType MovementType { get; set; }
+
+    public int CreditCardPaymentId { get; set; }
+    public PaymentMethod CreditCardPayment { get; set; }
+
+}

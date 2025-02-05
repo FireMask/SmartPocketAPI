@@ -10,4 +10,5 @@ public class User
     public ICollection<Category> Categories { get; set; }
     public ICollection<PaymentMethod> PaymentMethods { get; set; }
     public ICollection<RecurringPayment> RecurringPayments { get; set; }
+    public ICollection<Movement> Movements { get; set; }
 }
