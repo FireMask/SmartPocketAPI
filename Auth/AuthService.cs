@@ -27,7 +27,7 @@ public class AuthService : IAuthService
     {
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, user.Alias),
+            new Claim(ClaimTypes.Name, user.Email),
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
 
@@ -50,7 +50,7 @@ public class AuthService : IAuthService
             return null;
 
         User? user = await _context.Users
-            .Where(user => user.Alias == loginRequest.Alias)
+            .Where(user => user.Email == loginRequest.Email)
             .FirstOrDefaultAsync();
 
 
@@ -63,7 +63,6 @@ public class AuthService : IAuthService
         return new UserDto()
         {
             Id = user.Id,
-            Alias = user.Alias,
             Email = user.Email,
             Name = user.Name,
         };

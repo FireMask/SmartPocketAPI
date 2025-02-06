@@ -25,8 +25,8 @@ public class AuthController
         var errorDetails = new Dictionary<string, string>();
         try
         {
-            if (request.Alias.IsNullOrEmpty())
-                errorDetails.Add("alias", "The alias field is required");
+            if (request.Email.IsNullOrEmpty())
+                errorDetails.Add("email", "The email field is required");
             if (request.Password.IsNullOrEmpty())
                 errorDetails.Add("password", "The password field is required");
 

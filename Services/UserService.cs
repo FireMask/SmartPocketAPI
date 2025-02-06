@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using SmartPocketAPI.Auth;
 using SmartPocketAPI.Database;
+using SmartPocketAPI.Helpers.Extensions;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
+using System.Net.Mail;
 
 namespace SmartPocketAPI.Services;
 
@@ -25,7 +27,6 @@ public class UserService : IUserService
             .Select(x => new UserDto
                 {
                     Id = x.Id,
-                    Alias = x.Alias,
                     Email = x.Email,
                     Name = x.Name,
                 }
@@ -35,16 +36,25 @@ public class UserService : IUserService
 
     public async Task<User?> CreateUserAsync(UserViewModel uservm)
     {
-        if (_context.Users.Any(user => user.Alias == uservm.Alias))
-            return null;
+        if (_context.Users.Any(user => user.Email == uservm.Email))
+            throw new Exception("The email already exists");
+
+        var address = string.Empty;
+        try
+        {
+            address = new MailAddress(uservm.Email).Address;
+        }
+        catch (Exception ex) { }
+
+        if(address.IsNullOrEmpty())
+            throw new ArgumentException("The email field is incorrect");
 
         User user = new User
         {
             Id = Guid.NewGuid(),
-            Alias = uservm.Alias,
             Name = uservm.Name,
             Password = PasswordHasher.HashPassword(uservm.Password),
-            Email = uservm.Email
+            Email = address
         };
 
         _context.Users.Add(user);

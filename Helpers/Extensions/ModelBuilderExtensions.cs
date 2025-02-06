@@ -14,9 +14,8 @@ public static class ModelBuilderExtensions
             new User
             {
                 Id = adminid,
-                Alias = "Admin",
                 Name = "Admin",
-                Email = "",
+                Email = "admin@admin.com",
                 Password = "5IrYpxI+Y3DE8f6ZP6y1qw==:dR01XFPGqVy+ZUb/7gsPLGX7NkpY0dcgzPjgyUT22r8=" //Admin
             }
         );

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using NuGet.Protocol;
 using SmartPocketAPI.Database;
+using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Helpers.Extensions;
 using SmartPocketAPI.Middlewares;
 using SmartPocketAPI.Models;
@@ -27,8 +28,17 @@ public class UserController : Controller
     [HttpGet("/Users")]
     public async Task<IResult> GetUsers()
     {
-        var users = await _usersContext.GetUsersAsync();
-        return Results.Json(users);
+        try
+        {
+            Guid userId = HttpContext.GetUserId();
+            var result = await _usersContext.GetUsersAsync();
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
+        }
     }
 
     [HttpGet]
@@ -38,44 +48,56 @@ public class UserController : Controller
         try
         {
             Guid userId = HttpContext.GetUserId();
-            User user = await _usersContext.GetUserByIdAsync(userId);
-            return Results.Ok(new UserDto
+            var result = await _usersContext.GetUserByIdAsync(userId);
+
+            return (new UserDto
             {
-                Id = user.Id,
-                Alias = user.Alias,
-                Name = user.Name,
-                Email = user.Email,
-            });
+                Id = result.Id,
+                Name = result.Name,
+                Email = result.Email,
+            }).ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
         }
-
-        return Results.NoContent();
     }
 
     [HttpPost]
     public async Task<IResult> CreateUser(UserViewModel userViewModel)
     {
-        if (userViewModel == null)
-            return Results.BadRequest();
+        try
+        {
+            if (userViewModel == null)
+                return Results.BadRequest();
 
-        User? newUser = await _usersContext.CreateUserAsync(userViewModel);
+            var newUser = await _usersContext.CreateUserAsync(userViewModel);
 
-        if (newUser == null)
-            return Results.BadRequest();
-        else
-            return Results.Ok(newUser);
+            if (newUser == null)
+                throw new Exception("Error creating user");
+
+            return newUser.ToApiResponse(Constants.INSERT_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.INSERT_ERROR);
+        }
     }
 
     [HttpDelete]
     public async Task<IResult> DeleteUser(Guid userGuid)
     {
-
-        if (await _usersContext.DeleteUserAsync(userGuid))
-            return Results.Ok();
-        else
-            return Results.BadRequest();
+        try
+        {
+            var result = await _usersContext.DeleteUserAsync(userGuid);
+            return result.ToApiResponse(Constants.DELETE_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.DELETE_ERROR);
+        }
     }
 }
