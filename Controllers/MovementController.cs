@@ -14,23 +14,24 @@ namespace SmartPocketAPI.Controllers;
 [ApiController]
 [Authorize]
 [Route("[controller]")]
-public class MovementTypeController : Controller
+public class MovementController : Controller
 {
-    private readonly IMovementTypeService _movementTypeService;
-    private readonly ILogger<MovementTypeController> _logger;
+    private readonly IMovementService _movementService;
+    private readonly ILogger<MovementController> _logger;
 
-    public MovementTypeController(IMovementTypeService movementTypeService, ILogger<MovementTypeController> logger)
+    public MovementController(IMovementService movementService, ILogger<MovementController> logger)
     {
-        _movementTypeService = movementTypeService;
+        _movementService = movementService;
         _logger = logger;
     }
 
-    [HttpGet("/MovementTypes")]
+    [HttpGet("/Movements")]
     public async Task<IResult> GetMovementTypes()
     {
         try
         {
-            var result = await _movementTypeService.GetMovementTypesAsync();
+            Guid userId = HttpContext.GetUserId();
+            var result = await _movementService.GetMovementsAsync(userId);
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
@@ -41,11 +42,12 @@ public class MovementTypeController : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<IResult> GetMovementType(int id)
+    public async Task<IResult> GetMovement(int id)
     {
         try
         {
-            var result = await _movementTypeService.GetMovementTypeByIdAsync(id);
+            Guid userId = HttpContext.GetUserId();
+            var result = await _movementService.GetMovementByIdAsync(userId, id);
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
@@ -56,29 +58,34 @@ public class MovementTypeController : Controller
     }
 
     [HttpPost]
-    public async Task<IResult> CreateMovement(MovementTypeViewModel movementTypeVM)
+    public async Task<IResult> CreateMovement(MovementViewModel movementViewModel)
     {
         try
         {
-            if (movementTypeVM == null)
-                throw new ArgumentNullException(nameof(movementTypeVM));
+            if (movementViewModel == null)
+                throw new ArgumentNullException(nameof(movementViewModel));
 
-            var result = await _movementTypeService.CreateMovementTypeAsync(movementTypeVM);
+            movementViewModel.UserId = HttpContext.GetUserId();
+            var result = await _movementService.CreateMovementAsync(movementViewModel);
             return result.ToApiResponse(Constants.INSERT_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
-            return ex.Message.ToApiError(Constants.INSERT_ERROR);
+            if(ex.InnerException != null)
+                return ex.InnerException.Message.ToApiError(Constants.INSERT_ERROR);
+            else
+                return ex.Message.ToApiError(Constants.INSERT_ERROR);
         }
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<IResult> DeleteMovement(int id)
     {
         try
         {
-            var result = await _movementTypeService.DeleteMovementTypeAsync(id);
+            Guid userId = HttpContext.GetUserId();
+            var result = await _movementService.DeleteMovementAsync(userId, id);
             return result.ToApiResponse(Constants.DELETE_SUCCESS);
         }
         catch (Exception ex)

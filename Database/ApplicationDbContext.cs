@@ -103,6 +103,11 @@ public class ApplicationDbContext : DbContext
                 .HasForeignKey(m => m.RecurringPaymentId);
 
             modelBuilder.Entity<Movement>()
+                .HasOne(c => c.MovementType)
+                .WithMany(u => u.Movements)
+                .HasForeignKey(m => m.MovementTypeId);
+
+            modelBuilder.Entity<Movement>()
                 .HasOne(c => c.CreditCardPayment)
                 .WithMany(u => u.Payments)
                 .HasForeignKey(m => m.CreditCardPaymentId);

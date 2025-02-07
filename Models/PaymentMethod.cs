@@ -1,4 +1,6 @@
-﻿namespace SmartPocketAPI.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace SmartPocketAPI.Models;
 
 public class PaymentMethod
 {
@@ -17,7 +19,9 @@ public class PaymentMethod
     public DateTime TransactionDate { get; set; }
     public decimal DefaultInterestRate { get; set; }
 
+    [JsonIgnore]
     public ICollection<Movement> Movements { get; set; }
 
+    [JsonIgnore]
     public ICollection<Movement> Payments { get; set; }
 }

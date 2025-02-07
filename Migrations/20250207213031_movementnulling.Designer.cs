@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartPocketAPI.Database;
 
@@ -10,9 +11,11 @@ using SmartPocketAPI.Database;
 namespace SmartPocketAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250207213031_movementnulling")]
+    partial class movementnulling
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
@@ -444,7 +447,7 @@ namespace SmartPocketAPI.Migrations
                         .HasForeignKey("CreditCardPaymentId");
 
                     b.HasOne("SmartPocketAPI.Models.MovementType", "MovementType")
-                        .WithMany("Movements")
+                        .WithMany()
                         .HasForeignKey("MovementTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -524,11 +527,6 @@ namespace SmartPocketAPI.Migrations
             modelBuilder.Entity("SmartPocketAPI.Models.Frequency", b =>
                 {
                     b.Navigation("RecurringPayments");
-                });
-
-            modelBuilder.Entity("SmartPocketAPI.Models.MovementType", b =>
-                {
-                    b.Navigation("Movements");
                 });
 
             modelBuilder.Entity("SmartPocketAPI.Models.PaymentMethod", b =>

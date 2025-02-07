@@ -1,4 +1,6 @@
-﻿namespace SmartPocketAPI.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace SmartPocketAPI.Models;
 
 public class RecurringPayment
 {
@@ -15,6 +17,7 @@ public class RecurringPayment
     public int FrecuencyId { get; set; }
     public Frequency Frequency { get; set; }
 
+    [JsonIgnore]
     public ICollection<Movement> Movements { get; set; }
 
 }

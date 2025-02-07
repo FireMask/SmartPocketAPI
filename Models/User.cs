@@ -1,5 +1,6 @@
 ﻿using SmartPocketAPI.ViewModels;
 using System;
+using System.Text.Json.Serialization;
 
 namespace SmartPocketAPI.Models;
 
@@ -11,9 +12,13 @@ public class User
     public string Name { get; set; } = string.Empty;
     public string VerifyCode {  get; set; } = string.Empty;
     public bool IsPremium { get; set; } = false;
+    [JsonIgnore]
     public ICollection<Category> Categories { get; set; }
+    [JsonIgnore]
     public ICollection<PaymentMethod> PaymentMethods { get; set; }
+    [JsonIgnore]
     public ICollection<RecurringPayment> RecurringPayments { get; set; }
+    [JsonIgnore]
     public ICollection<Movement> Movements { get; set; }
 
     public SimpleUserDto DtoModel()

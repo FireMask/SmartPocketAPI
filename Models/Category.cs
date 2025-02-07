@@ -1,4 +1,6 @@
-﻿namespace SmartPocketAPI.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace SmartPocketAPI.Models;
 
 public class Category
 {
@@ -11,6 +13,7 @@ public class Category
     public Guid UserId { get; set; }
     public User User { get; set; }
 
+    [JsonIgnore]
     public ICollection<Movement> Movements { get; set; }
 
 }

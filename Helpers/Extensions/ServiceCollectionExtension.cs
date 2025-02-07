@@ -46,12 +46,14 @@ public static class ServiceCollectionExtensions
         services.AddAuthorization();
         services.AddLogging();
 
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IMovementService, MovementService>();
         services.AddScoped<IFrequencyService, FrequencyService>();
         services.AddScoped<IMovementTypeService, MovementTypeService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IPaymentMethodService, PaymentMethodService>();
         services.AddScoped<IRecurringPaymentService, RecurringPaymentService>();
-        services.AddScoped<IAuthService, AuthService>();
 
         services.AddHttpClient();
 
