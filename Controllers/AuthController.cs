@@ -4,6 +4,7 @@ using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Helpers.Extensions;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interface;
+using SmartPocketAPI.ViewModels;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SmartPocketAPI.Controllers;
@@ -13,10 +14,12 @@ namespace SmartPocketAPI.Controllers;
 public class AuthController
 {
     private readonly IAuthService _authService;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, ILogger<AuthController> logger)
     {
         _authService = authService;
+        _logger = logger;
     }
 
     [HttpPost("login")]
@@ -49,6 +52,43 @@ public class AuthController
         catch (Exception ex)
         {
             return ex.Message.ToApiError(Constants.AUTH_ERROR);
+        }
+    }
+
+    [HttpPost("recover")]
+    public async Task<IResult> RecoverUserPassword(UserUpdateViewModel userUpdateViewModel)
+    {
+        try
+        {
+            var result = await _authService.RecoverPasswordAsync(userUpdateViewModel);
+            return result.ToApiResponse(Constants.UPDATE_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.UPDATE_SUCCESS);
+        }
+    }
+
+    [HttpPost("create")]
+    public async Task<IResult> CreateUser(UserViewModel userViewModel)
+    {
+        try
+        {
+            if (userViewModel == null)
+                throw new ArgumentNullException(nameof(userViewModel));
+
+            var newUser = await _authService.RegisterAsync(userViewModel);
+
+            if (newUser == null)
+                throw new Exception("Error creating user");
+
+            return newUser.ToApiResponse(Constants.INSERT_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.INSERT_ERROR);
         }
     }
 

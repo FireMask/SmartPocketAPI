@@ -6,7 +6,7 @@ namespace SmartPocketAPI.Services.Interfaces;
 public interface IUserService
 {
     Task<List<UserDto>> GetUsersAsync();
-    Task<User?> CreateUserAsync(UserViewModel newUser);
-    Task<bool> DeleteUserAsync(Guid userId);
+    Task<bool> DeleteUserAsync(UserDto user);
     Task<User> GetUserByIdAsync(Guid userGuid);
+    Task<SimpleUserDto> UpdateUserAsync(UserUpdateDto userViewModel);
 }

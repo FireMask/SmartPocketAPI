@@ -24,6 +24,25 @@ public static class ServiceCollectionExtensions
             });
         });
 
+        // Configura las políticas de CORS
+        services.AddCors(options =>
+        {
+            //options.AddPolicy("AllowSpecificOrigins", policy =>
+            //{
+            //    policy.WithOrigins("https://example.com", "https://anotherdomain.com") // Dominios permitidos
+            //          .AllowAnyHeader() // Permitir cualquier encabezado
+            //          .AllowAnyMethod() // Permitir cualquier método HTTP (GET, POST, etc.)
+            //          .AllowCredentials(); // Permitir cookies o autenticación
+            //});
+
+            options.AddPolicy("AllowAll", policy =>
+            {
+                policy.AllowAnyOrigin() // Permite todas las solicitudes de cualquier origen
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            });
+        });
+
         services.AddAuthorization();
         services.AddLogging();
 

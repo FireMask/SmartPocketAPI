@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using NuGet.Protocol;
 using SmartPocketAPI.Database;
@@ -12,6 +13,7 @@ using SmartPocketAPI.ViewModels;
 
 namespace SmartPocketAPI.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class UserController : Controller
@@ -64,40 +66,49 @@ public class UserController : Controller
         }
     }
 
-    [HttpPost]
-    public async Task<IResult> CreateUser(UserViewModel userViewModel)
-    {
-        try
-        {
-            if (userViewModel == null)
-                return Results.BadRequest();
-
-            var newUser = await _usersContext.CreateUserAsync(userViewModel);
-
-            if (newUser == null)
-                throw new Exception("Error creating user");
-
-            return newUser.ToApiResponse(Constants.INSERT_SUCCESS);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            return ex.Message.ToApiError(Constants.INSERT_ERROR);
-        }
-    }
-
     [HttpDelete]
-    public async Task<IResult> DeleteUser(Guid userGuid)
+    public async Task<IResult> DeleteUser(UserDto user)
     {
         try
         {
-            var result = await _usersContext.DeleteUserAsync(userGuid);
+            var result = await _usersContext.DeleteUserAsync(user);
             return result.ToApiResponse(Constants.DELETE_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
             return ex.Message.ToApiError(Constants.DELETE_ERROR);
+        }
+    }
+
+    [HttpPut]
+    public async Task<IResult> UpdateUserAsync(UserUpdateDto userUpdateViewModel)
+    {
+        try
+        {
+            userUpdateViewModel.Id = HttpContext.GetUserId();
+            var result = await _usersContext.UpdateUserAsync(userUpdateViewModel);
+            return result.ToApiResponse(Constants.UPDATE_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.UPDATE_SUCCESS);
+        }
+    }
+
+    [HttpGet("/verifyToken")]
+    public IResult VerifyToken()
+    {
+        try
+        {
+            Guid userId = HttpContext.GetUserId();
+            return Results.Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.UPDATE_SUCCESS);
         }
     }
 }
