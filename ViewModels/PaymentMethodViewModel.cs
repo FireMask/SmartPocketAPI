@@ -10,7 +10,7 @@ public class PaymentMethodViewModel
     public string Name { get; set; } = string.Empty;
     public string Bank { get; set; } = string.Empty;
     public bool IsCreditCard { get; set; } = false;
-    public DateTime DueDate { get; set; }
-    public DateTime TransactionDate { get; set; }
+    public int DueDate { get; set; }
+    public int TransactionDate { get; set; }
     public decimal DefaultInterestRate { get; set; }
 }
