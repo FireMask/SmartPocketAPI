@@ -18,9 +18,9 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
         {
             var dbOptions = serviceProvider.GetRequiredService<IOptions<ConfigurationOptions>>().Value;
-            options.UseSqlite(dbOptions.ConnectionString, sqloptions =>
+            options.UseSqlServer(dbOptions.ConnectionString, sqlOptions =>
             {
-                sqloptions.CommandTimeout(dbOptions.CommandTimeOut);
+                sqlOptions.CommandTimeout(dbOptions.CommandTimeOut);
             });
         });
 

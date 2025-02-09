@@ -26,7 +26,7 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite(_options.ConnectionString);
+        optionsBuilder.UseSqlServer(_options.ConnectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -85,32 +85,38 @@ public class ApplicationDbContext : DbContext
             modelBuilder.Entity<Movement>()
                 .HasOne(c => c.User)
                 .WithMany(u => u.Movements)
-                .HasForeignKey(c => c.UserId);
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Movement>()
                 .HasOne(c => c.Category)
                 .WithMany(u => u.Movements)
-                .HasForeignKey(m => m.CategoriId);
+                .HasForeignKey(m => m.CategoriId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Movement>()
                 .HasOne(c => c.PaymentMethod)
                 .WithMany(u => u.Movements)
-                .HasForeignKey(m => m.PaymentMethodId);
+                .HasForeignKey(m => m.PaymentMethodId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Movement>()
                 .HasOne(c => c.RecurringPayment)
                 .WithMany(u => u.Movements)
-                .HasForeignKey(m => m.RecurringPaymentId);
+                .HasForeignKey(m => m.RecurringPaymentId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Movement>()
                 .HasOne(c => c.MovementType)
                 .WithMany(u => u.Movements)
-                .HasForeignKey(m => m.MovementTypeId);
+                .HasForeignKey(m => m.MovementTypeId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Movement>()
                 .HasOne(c => c.CreditCardPayment)
                 .WithMany(u => u.Payments)
-                .HasForeignKey(m => m.CreditCardPaymentId);
+                .HasForeignKey(m => m.CreditCardPaymentId)
+                .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Seed();
     }
