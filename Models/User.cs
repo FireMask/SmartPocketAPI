@@ -12,6 +12,8 @@ public class User
     public string Name { get; set; } = string.Empty;
     public string VerifyCode {  get; set; } = string.Empty;
     public bool IsPremium { get; set; } = false;
+    public bool IsAdmin { get; set; } = false;
+
     [JsonIgnore]
     public ICollection<Category> Categories { get; set; }
     [JsonIgnore]

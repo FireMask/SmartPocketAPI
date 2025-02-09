@@ -16,7 +16,9 @@ public static class ModelBuilderExtensions
                 Id = adminid,
                 Name = "Admin",
                 Email = "admin@admin.com",
-                Password = "5IrYpxI+Y3DE8f6ZP6y1qw==:dR01XFPGqVy+ZUb/7gsPLGX7NkpY0dcgzPjgyUT22r8=" //Admin
+                Password = "5IrYpxI+Y3DE8f6ZP6y1qw==:dR01XFPGqVy+ZUb/7gsPLGX7NkpY0dcgzPjgyUT22r8=", //Admin
+                IsAdmin = true,
+                IsPremium = true
             }
         );
 
@@ -43,15 +45,15 @@ public static class ModelBuilderExtensions
         );
 
         modelBuilder.Entity<Category>().HasData(
-            new Category { Id = 1, Name = "Food", NameSpanish = "Comida", UserId = adminid },
-            new Category { Id = 2, Name = "Gas", NameSpanish = "Gasolina", UserId = adminid },
-            new Category { Id = 3, Name = "Hobbies", NameSpanish = "Hobbies", UserId = adminid },
-            new Category { Id = 4, Name = "Shopping", NameSpanish = "Compras", UserId = adminid },
-            new Category { Id = 5, Name = "Bank", NameSpanish = "Bancarios", UserId = adminid }
+            new Category { Id = 1, Name = "Food", NameSpanish = "Comida", UserId = adminid, IsDefault = true },
+            new Category { Id = 2, Name = "Gas", NameSpanish = "Gasolina", UserId = adminid, IsDefault = true },
+            new Category { Id = 3, Name = "Hobbies", NameSpanish = "Hobbies", UserId = adminid, IsDefault = true },
+            new Category { Id = 4, Name = "Shopping", NameSpanish = "Compras", UserId = adminid, IsDefault = true },
+            new Category { Id = 5, Name = "Bank", NameSpanish = "Bancarios", UserId = adminid, IsDefault = true }
         );
 
         modelBuilder.Entity<PaymentMethod>().HasData(
-            new PaymentMethod { Id = 1, Name = "Cash", UserId = adminid, PaymentMethodTypeId = 1 }
+            new PaymentMethod { Id = 1, Name = "Cash", UserId = adminid, PaymentMethodTypeId = 1, IsDefault = true }
         );
     }
 }

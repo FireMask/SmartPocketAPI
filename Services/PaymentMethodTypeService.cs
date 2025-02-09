@@ -21,10 +21,10 @@ public class PaymentMethodTypeService : IPaymentMethodTypeService
         return await _context.PaymentMethodType.ToListAsync();
     }
 
-    public async Task<PaymentMethodType?> CreatePaymentMethodTypeAsync(PaymentMethodTypeViewModel paymentMethodTypeViewModel)
+    public async Task<PaymentMethodType> CreatePaymentMethodTypeAsync(PaymentMethodTypeViewModel paymentMethodTypeViewModel)
     {
         if (_context.PaymentMethodType.Any(move => move.Name == paymentMethodTypeViewModel.Name))
-            return null;
+            throw new Exception("Payment method type name already exists");
 
         PaymentMethodType paymentMethod = new PaymentMethodType
         {

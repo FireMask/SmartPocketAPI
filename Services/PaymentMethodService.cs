@@ -17,6 +17,18 @@ public class PaymentMethodService : IPaymentMethodService
         _context = context;
     }
 
+    public async Task<List<PaymentMethod>> GetPaymentMethodsAsync(Guid userid)
+    {
+        var result = await _context.PaymentMethods.Where(x => x.UserId == userid || x.IsDefault).ToListAsync();
+        return result;
+    }
+
+    public async Task<PaymentMethod?> GetPaymentMethodByIdAsync(Guid userid, int id)
+    {
+        PaymentMethod? paymentMethod = await _context.PaymentMethods.FirstOrDefaultAsync(x => x.Id == id && (x.UserId == userid || x.IsDefault));
+        return paymentMethod;
+    }
+
     public async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodViewModel paymentMethodVM)
     {
         if (_context.Categories.Any(pm => pm.UserId == paymentMethodVM.UserId && pm.Name == paymentMethodVM.Name))
@@ -33,6 +45,10 @@ public class PaymentMethodService : IPaymentMethodService
             TransactionDate = paymentMethodVM.TransactionDate,
             DefaultInterestRate = paymentMethodVM.DefaultInterestRate
         };
+
+        User? user = await _context.Users.FirstOrDefaultAsync(x => x.Id == paymentMethodVM.UserId);
+        if(user is not null && user.IsAdmin)
+            newPaymentMethod.IsDefault = true;
 
         _context.PaymentMethods.Add(newPaymentMethod);
 
@@ -53,17 +69,5 @@ public class PaymentMethodService : IPaymentMethodService
         await _context.SaveChangesAsync();
 
         return true;
-    }
-
-    public async Task<PaymentMethod?> GetPaymentMethodByIdAsync(Guid userid, int id)
-    {
-        PaymentMethod? paymentMethod = await _context.PaymentMethods.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userid);
-        return paymentMethod;
-    }
-
-    public async Task<List<PaymentMethod>> GetPaymentMethodsAsync(Guid userid)
-    {
-        var result = await _context.PaymentMethods.Where(x => x.UserId == userid).ToListAsync();
-        return result;
     }
 }

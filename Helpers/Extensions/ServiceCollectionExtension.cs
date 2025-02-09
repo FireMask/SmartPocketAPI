@@ -54,6 +54,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPaymentMethodService, PaymentMethodService>();
         services.AddScoped<IRecurringPaymentService, RecurringPaymentService>();
+        services.AddScoped<IPaymentMethodTypeService, PaymentMethodTypeService>();
 
         services.AddHttpClient();
 

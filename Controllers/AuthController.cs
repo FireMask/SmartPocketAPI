@@ -37,8 +37,6 @@ public class AuthController
                 throw new ArgumentNullException("Required values missing");
 
             var user = await _authService.Login(request);
-            if (user == null)
-                throw new Exception("Credentials are incorrect");
 
             var token = _authService.GenerateJwtToken(user);
 

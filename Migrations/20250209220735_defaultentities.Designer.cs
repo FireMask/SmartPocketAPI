@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartPocketAPI.Database;
 
@@ -10,9 +11,11 @@ using SmartPocketAPI.Database;
 namespace SmartPocketAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250209220735_defaultentities")]
+    partial class defaultentities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
@@ -57,7 +60,7 @@ namespace SmartPocketAPI.Migrations
                             Id = 1,
                             Description = "",
                             DescriptionSpanish = "",
-                            IsDefault = true,
+                            IsDefault = false,
                             Name = "Food",
                             NameSpanish = "Comida",
                             UserId = new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c")
@@ -67,7 +70,7 @@ namespace SmartPocketAPI.Migrations
                             Id = 2,
                             Description = "",
                             DescriptionSpanish = "",
-                            IsDefault = true,
+                            IsDefault = false,
                             Name = "Gas",
                             NameSpanish = "Gasolina",
                             UserId = new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c")
@@ -77,7 +80,7 @@ namespace SmartPocketAPI.Migrations
                             Id = 3,
                             Description = "",
                             DescriptionSpanish = "",
-                            IsDefault = true,
+                            IsDefault = false,
                             Name = "Hobbies",
                             NameSpanish = "Hobbies",
                             UserId = new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c")
@@ -87,7 +90,7 @@ namespace SmartPocketAPI.Migrations
                             Id = 4,
                             Description = "",
                             DescriptionSpanish = "",
-                            IsDefault = true,
+                            IsDefault = false,
                             Name = "Shopping",
                             NameSpanish = "Compras",
                             UserId = new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c")
@@ -97,7 +100,7 @@ namespace SmartPocketAPI.Migrations
                             Id = 5,
                             Description = "",
                             DescriptionSpanish = "",
-                            IsDefault = true,
+                            IsDefault = false,
                             Name = "Bank",
                             NameSpanish = "Bancarios",
                             UserId = new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c")
@@ -308,7 +311,7 @@ namespace SmartPocketAPI.Migrations
                             DefaultInterestRate = 0m,
                             DueDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsCreditCard = false,
-                            IsDefault = true,
+                            IsDefault = false,
                             Name = "Cash",
                             PaymentMethodTypeId = 1,
                             TransactionDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -428,8 +431,8 @@ namespace SmartPocketAPI.Migrations
                         {
                             Id = new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c"),
                             Email = "admin@admin.com",
-                            IsAdmin = true,
-                            IsPremium = true,
+                            IsAdmin = false,
+                            IsPremium = false,
                             Name = "Admin",
                             Password = "5IrYpxI+Y3DE8f6ZP6y1qw==:dR01XFPGqVy+ZUb/7gsPLGX7NkpY0dcgzPjgyUT22r8=",
                             VerifyCode = ""

@@ -17,24 +17,23 @@ namespace SmartPocketAPI.Controllers;
 [ApiController]
 [Authorize]
 [Route("[controller]")]
-public class PaymentMethodController : Controller
+public class PaymentMethodTypeController : Controller
 {
-    private readonly IPaymentMethodService _paymentMethodService;
-    private readonly ILogger<PaymentMethodController> _logger;
+    private readonly IPaymentMethodTypeService _paymentMethodTypeService;
+    private readonly ILogger<PaymentMethodTypeController> _logger;
 
-    public PaymentMethodController(IPaymentMethodService paymentMethodService, ILogger<PaymentMethodController> logger)
+    public PaymentMethodTypeController(IPaymentMethodTypeService paymentMethodTypeService, ILogger<PaymentMethodTypeController> logger)
     {
-        _paymentMethodService = paymentMethodService;
+        _paymentMethodTypeService = paymentMethodTypeService;
         _logger = logger;
     }
 
-    [HttpGet("/PaymentMethods")]
-    public async Task<IResult> GetPaymentMethods()
+    [HttpGet("/PaymentMethodTypes")]
+    public async Task<IResult> GetPaymentMethodTypes()
     {
         try
         {
-            Guid userId = HttpContext.GetUserId();
-            var result = await _paymentMethodService.GetPaymentMethodsAsync(userId);
+            var result = await _paymentMethodTypeService.GetPaymentMethodTypesAsync();
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
@@ -45,12 +44,11 @@ public class PaymentMethodController : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<IResult> GetPaymentMethod(int id)
+    public async Task<IResult> GetPaymentMethodType(int id)
     {
         try
         {
-            Guid userId = HttpContext.GetUserId();
-            var result = await _paymentMethodService.GetPaymentMethodByIdAsync(userId, id);
+            var result = await _paymentMethodTypeService.GetPaymentMethodTypeByIdAsync(id);
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
@@ -61,15 +59,14 @@ public class PaymentMethodController : Controller
     }
 
     [HttpPost]
-    public async Task<IResult> CreatePaymentMethod(PaymentMethodViewModel paymentMethodViewModel)
+    public async Task<IResult> CreatePaymentMethod(PaymentMethodTypeViewModel paymentMethodTypeViewModel)
     {
         try
         {
-            if (paymentMethodViewModel == null)
-                throw new ArgumentNullException(nameof(paymentMethodViewModel));
+            if (paymentMethodTypeViewModel == null)
+                throw new ArgumentNullException(nameof(paymentMethodTypeViewModel));
 
-            paymentMethodViewModel.UserId = HttpContext.GetUserId();
-            PaymentMethod newPaymentMethod = await _paymentMethodService.CreatePaymentMethodAsync(paymentMethodViewModel);
+            PaymentMethodType newPaymentMethod = await _paymentMethodTypeService.CreatePaymentMethodTypeAsync(paymentMethodTypeViewModel);
 
             return newPaymentMethod.ToApiResponse(Constants.INSERT_SUCCESS);
         }
@@ -85,8 +82,7 @@ public class PaymentMethodController : Controller
     {
         try
         {
-            Guid userid = HttpContext.GetUserId();
-            var result = await _paymentMethodService.DeletePaymentMethodAsync(userid, id);
+            var result = await _paymentMethodTypeService.DeletePaymentMethodTypeAsync(id);
             return result.ToApiResponse(Constants.DELETE_SUCCESS);
         }
         catch (Exception ex)

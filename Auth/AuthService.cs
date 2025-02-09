@@ -45,19 +45,19 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public async Task<UserDto?> Login(LoginRequest loginRequest)
+    public async Task<UserDto> Login(LoginRequest loginRequest)
     {
         if (loginRequest == null)
-            return null;
+            throw new ArgumentNullException(nameof(loginRequest));
 
         User? user = await _context.Users
             .FirstOrDefaultAsync(user => user.Email == loginRequest.Email);
 
         if (user == null)
-            return null;
+            throw new Exception("Email is not registered");
 
         if (!PasswordHasher.VerifyPassword(loginRequest.Password, user.Password))
-            return null;
+            throw new Exception("Password is incorrect");
 
         return new UserDto()
         {

@@ -39,6 +39,10 @@ public class CategoryService : ICategoryService
             UserId = categoryvm.UserId
         };
 
+        User? user = await _context.Users.FirstOrDefaultAsync(x => x.Id == categoryvm.UserId);
+        if (user is not null && user.IsAdmin)
+            newCategory.IsDefault = true;
+
         _context.Categories.Add(newCategory);
 
         await _context.SaveChangesAsync();

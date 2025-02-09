@@ -18,6 +18,7 @@ public class PaymentMethod
     public DateTime DueDate { get; set; }
     public DateTime TransactionDate { get; set; }
     public decimal DefaultInterestRate { get; set; }
+    public bool IsDefault {  get; set; } = false;
 
     [JsonIgnore]
     public ICollection<Movement> Movements { get; set; }
