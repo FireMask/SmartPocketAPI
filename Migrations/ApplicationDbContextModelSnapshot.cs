@@ -321,12 +321,12 @@ namespace SmartPocketAPI.Migrations
                             Id = 1,
                             Bank = "",
                             DefaultInterestRate = 0m,
-                            DueDate = 0,
+                            DueDate = 4,
                             IsCreditCard = false,
                             IsDefault = true,
                             Name = "Cash",
                             PaymentMethodTypeId = 1,
-                            TransactionDate = 0,
+                            TransactionDate = 15,
                             UserId = new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c")
                         });
                 });

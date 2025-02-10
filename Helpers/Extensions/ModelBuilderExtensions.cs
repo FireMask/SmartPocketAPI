@@ -53,7 +53,7 @@ public static class ModelBuilderExtensions
         );
 
         modelBuilder.Entity<PaymentMethod>().HasData(
-            new PaymentMethod { Id = 1, Name = "Cash", UserId = adminid, PaymentMethodTypeId = 1, IsDefault = true }
+            new PaymentMethod { Id = 1, Name = "Cash", UserId = adminid, PaymentMethodTypeId = 1, DueDate = 4, TransactionDate = 15, IsDefault = true }
         );
     }
 }

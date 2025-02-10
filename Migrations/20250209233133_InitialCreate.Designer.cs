@@ -12,7 +12,7 @@ using SmartPocketAPI.Database;
 namespace SmartPocketAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250209224815_InitialCreate")]
+    [Migration("20250209233133_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -288,8 +288,8 @@ namespace SmartPocketAPI.Migrations
                     b.Property<decimal>("DefaultInterestRate")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("DueDate")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsCreditCard")
                         .HasColumnType("bit");
@@ -304,8 +304,8 @@ namespace SmartPocketAPI.Migrations
                     b.Property<int>("PaymentMethodTypeId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("TransactionDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("TransactionDate")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -324,12 +324,12 @@ namespace SmartPocketAPI.Migrations
                             Id = 1,
                             Bank = "",
                             DefaultInterestRate = 0m,
-                            DueDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DueDate = 4,
                             IsCreditCard = false,
                             IsDefault = true,
                             Name = "Cash",
                             PaymentMethodTypeId = 1,
-                            TransactionDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TransactionDate = 15,
                             UserId = new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c")
                         });
                 });

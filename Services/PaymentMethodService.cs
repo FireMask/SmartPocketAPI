@@ -19,13 +19,19 @@ public class PaymentMethodService : IPaymentMethodService
 
     public async Task<List<PaymentMethod>> GetPaymentMethodsAsync(Guid userid)
     {
-        var result = await _context.PaymentMethods.Where(x => x.UserId == userid || x.IsDefault).ToListAsync();
+        var result = await _context.PaymentMethods
+            .Where(x => x.UserId == userid || x.IsDefault)
+            .Include(x => x.PaymentMethodType)
+            .ToListAsync();
         return result;
     }
 
     public async Task<PaymentMethod?> GetPaymentMethodByIdAsync(Guid userid, int id)
     {
-        PaymentMethod? paymentMethod = await _context.PaymentMethods.FirstOrDefaultAsync(x => x.Id == id && (x.UserId == userid || x.IsDefault));
+        PaymentMethod? paymentMethod = await _context.PaymentMethods
+            .Where(x => x.Id == id && (x.UserId == userid || x.IsDefault))
+            .Include(x => x.PaymentMethodType)
+            .FirstOrDefaultAsync();
         return paymentMethod;
     }
 

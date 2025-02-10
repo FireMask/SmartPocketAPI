@@ -107,8 +107,8 @@ namespace SmartPocketAPI.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Bank = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsCreditCard = table.Column<bool>(type: "bit", nullable: false),
-                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DueDate = table.Column<int>(type: "int", nullable: false),
+                    TransactionDate = table.Column<int>(type: "int", nullable: false),
                     DefaultInterestRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsDefault = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -265,7 +265,7 @@ namespace SmartPocketAPI.Migrations
             migrationBuilder.InsertData(
                 table: "PaymentMethod",
                 columns: new[] { "Id", "Bank", "DefaultInterestRate", "DueDate", "IsCreditCard", "IsDefault", "Name", "PaymentMethodTypeId", "TransactionDate", "UserId" },
-                values: new object[] { 1, "", 0m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, true, "Cash", 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c") });
+                values: new object[] { 1, "", 0m, 4, false, true, "Cash", 1, 15, new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Category_UserId",
