@@ -37,7 +37,7 @@ public class MovementService : IMovementService
             Description = movementViewModel.Description,
             Amount = movementViewModel.Amount,
             UserId = movementViewModel.UserId,
-            CategoriId = movementViewModel.CategoriId,
+            CategoriId = movementViewModel.CategoryId,
             PaymentMethodId = movementViewModel.PaymentMethodId,
             RecurringPaymentId = movementViewModel.RecurringPaymentId,
             MovementTypeId = movementViewModel.MovementTypeId,

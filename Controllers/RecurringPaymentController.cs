@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SmartPocketAPI.Middlewares;
 using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.ViewModels;
 using SmartPocketAPI.Helpers;
-using SmartPocketAPI.Models;
 using SmartPocketAPI.Helpers.Extensions;
 
 namespace SmartPocketAPI.Controllers;

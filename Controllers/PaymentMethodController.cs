@@ -81,7 +81,7 @@ public class PaymentMethodController : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<IResult> DeleteCategory(int id)
+    public async Task<IResult> DeletePaymentMethod(int id)
     {
         try
         {
