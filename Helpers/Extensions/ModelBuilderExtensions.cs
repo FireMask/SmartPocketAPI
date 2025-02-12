@@ -35,7 +35,7 @@ public static class ModelBuilderExtensions
             new MovementType { Id = 1, Name = "Paymenty", NameSpanish = "Pago" },
             new MovementType { Id = 2, Name = "Income", NameSpanish = "Ingreso" },
             new MovementType { Id = 3, Name = "Purchase", NameSpanish = "Compra" },
-            new MovementType { Id = 4, Name = "CreditCard Payment", NameSpanish = "Pago a Tarjeta de Credito" }
+            new MovementType { Id = 4, Name = "Credit Card Payment", NameSpanish = "Pago a Tarjeta de Credito" }
         );
 
         modelBuilder.Entity<PaymentMethodType>().HasData(
