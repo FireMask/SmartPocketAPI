@@ -49,7 +49,8 @@ public static class ModelBuilderExtensions
             new Category { Id = 2, Name = "Gas", NameSpanish = "Gasolina", UserId = adminid, IsDefault = true },
             new Category { Id = 3, Name = "Hobbies", NameSpanish = "Hobbies", UserId = adminid, IsDefault = true },
             new Category { Id = 4, Name = "Shopping", NameSpanish = "Compras", UserId = adminid, IsDefault = true },
-            new Category { Id = 5, Name = "Bank", NameSpanish = "Bancarios", UserId = adminid, IsDefault = true }
+            new Category { Id = 5, Name = "Bank", NameSpanish = "Bancarios", UserId = adminid, IsDefault = true },
+            new Category { Id = 6, Name = "Others", NameSpanish = "Otros", UserId = adminid, IsDefault = true }
         );
 
         modelBuilder.Entity<PaymentMethod>().HasData(

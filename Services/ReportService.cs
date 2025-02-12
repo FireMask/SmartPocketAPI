@@ -39,7 +39,7 @@ public class ReportService : IReportService
                     Amount = x.Amount,
                     IsIncome = x.MovementTypeId == 2,
                     IsRecurringPayment = x.RecurringPaymentId != null,
-                    InstallmentCount = ""
+                    InstallmentCount = $"{x.InstallmentNumber}/{x.RecurringPayment.InstallmentCount}"
                 };
             })
             .ToList();

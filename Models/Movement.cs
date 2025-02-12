@@ -6,11 +6,12 @@ public class Movement
     public DateTime MovementDate { get; set; }
     public string Description { get; set; }
     public decimal Amount { get; set; }
+    public int? InstallmentNumber { get; set; }
 
     public Guid UserId { get; set; }
     public User User { get; set; }
 
-    public int CategoriId { get; set; }
+    public int CategoryId { get; set; }
     public Category Category { get; set; }
 
     public int PaymentMethodId { get; set; }

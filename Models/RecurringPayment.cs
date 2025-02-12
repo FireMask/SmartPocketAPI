@@ -4,7 +4,7 @@ namespace SmartPocketAPI.Models;
 
 public class RecurringPayment
 {
-    public int Id { get; set; }
+    public int Id { get; set; } = 0;
     public bool IsInterestFreePayment { get; set; }
     public int InstallmentCount { get; set; }
     public decimal InstallmentAmount { get; set; }

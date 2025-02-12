@@ -2,22 +2,27 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Helpers.Extensions;
+using SmartPocketAPI.Models;
+using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
+using System.Transactions;
 
 namespace SmartPocketAPI.Controllers;
 
 [ApiController]
-[Authorize]
+//[Authorize]
 [Route("[controller]")]
 public class MovementController : Controller
 {
     private readonly IMovementService _movementService;
+    private readonly IRecurringPaymentService _recurringPaymentService;
     private readonly ILogger<MovementController> _logger;
 
-    public MovementController(IMovementService movementService, ILogger<MovementController> logger)
+    public MovementController(IMovementService movementService, IRecurringPaymentService recurringPaymentService, ILogger<MovementController> logger)
     {
         _movementService = movementService;
+        _recurringPaymentService = recurringPaymentService;
         _logger = logger;
     }
 
@@ -54,16 +59,51 @@ public class MovementController : Controller
     }
 
     [HttpPost]
-    public async Task<IResult> CreateMovement(MovementViewModel movementViewModel)
+    public async Task<IResult> CreateMovement(MovementMSIViewModel movementViewModel)
     {
         try
         {
             if (movementViewModel == null)
                 throw new ArgumentNullException(nameof(movementViewModel));
 
-            movementViewModel.UserId = HttpContext.GetUserId();
-            var result = await _movementService.CreateMovementAsync(movementViewModel);
-            return result.ToApiResponse(Constants.INSERT_SUCCESS);
+            Guid userId = HttpContext.GetUserId();
+
+            MovementViewModel movement = new MovementViewModel()
+            {
+                MovementDate = movementViewModel.MovementDate,
+                Description = movementViewModel.Description,
+                //Amount = movementViewModel.Amount,
+                InstallmentNumber = 1,
+                CategoryId = movementViewModel.CategoryId,
+                PaymentMethodId = movementViewModel.PaymentMethodId,
+                UserId = userId,
+                MovementTypeId = movementViewModel.MovementTypeId
+            };
+
+            RecurringPaymentViewModel recurringPayment = new RecurringPaymentViewModel()
+            {
+                IsInterestFreePayment = movementViewModel.IsInterestFreePayment,
+                InstallmentCount = movementViewModel.InstallmentCount,
+                InstallmentAmount = movementViewModel.Amount,
+                StartDate = movementViewModel.MovementDate,
+                UserId = userId,
+                FrecuencyId = movementViewModel.FrecuencyId
+            };
+
+            using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+            if (movementViewModel.IsInstallment)
+            {
+                var rpResult = await _recurringPaymentService.CreateRecurringPaymentAsync(recurringPayment);
+                movement.RecurringPaymentId = rpResult.Id;
+                movement.Amount = movementViewModel.Amount / rpResult.InstallmentCount;
+            }
+
+            var mResult = await _movementService.CreateMovementAsync(movement);
+
+            scope.Complete();
+
+            return mResult.ToApiResponse(Constants.INSERT_SUCCESS);
         }
         catch (Exception ex)
         {

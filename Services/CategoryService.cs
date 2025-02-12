@@ -20,14 +20,14 @@ public class CategoryService : ICategoryService
 
     public async Task<List<Category>> GetCategoriesAsync(Guid userid)
     {
-        var result = await _context.Categories.Where(x => x.UserId == userid).ToListAsync();
+        var result = await _context.Categories.Where(x => x.UserId == userid || x.IsDefault).ToListAsync();
         return result;
     }
 
     
     public async Task<Category> CreateCategoryAsync(CategoryViewModel categoryvm)
     {
-        if (_context.Categories.Any(cat => cat.Name == cat.Name && cat.UserId == categoryvm.UserId))
+        if (_context.Categories.Any(cat => cat.Name == categoryvm.Name && cat.UserId == categoryvm.UserId))
             throw new Exception("Category name already exists");
 
         Category newCategory = new Category

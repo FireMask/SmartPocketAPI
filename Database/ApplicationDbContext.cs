@@ -91,7 +91,7 @@ public class ApplicationDbContext : DbContext
             modelBuilder.Entity<Movement>()
                 .HasOne(c => c.Category)
                 .WithMany(u => u.Movements)
-                .HasForeignKey(m => m.CategoriId)
+                .HasForeignKey(m => m.CategoryId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Movement>()
