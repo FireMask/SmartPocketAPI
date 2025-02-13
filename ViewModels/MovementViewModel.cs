@@ -31,6 +31,7 @@ public class MovementMSIViewModel
     public int InstallmentCount { get; set; }
     public bool IsInterestFreePayment { get; set; }
     public required int FrecuencyId { get; set; }
+    public int? CreditCardPaymentId { get; set; }
 }
 
 public class MovementReportEntity

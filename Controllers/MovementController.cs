@@ -11,7 +11,7 @@ using System.Transactions;
 namespace SmartPocketAPI.Controllers;
 
 [ApiController]
-//[Authorize]
+[Authorize]
 [Route("[controller]")]
 public class MovementController : Controller
 {
@@ -70,20 +70,21 @@ public class MovementController : Controller
 
             MovementViewModel movement = new MovementViewModel()
             {
+                UserId = userId,
+                InstallmentNumber = 1,
                 MovementDate = movementViewModel.MovementDate,
                 Description = movementViewModel.Description,
-                //Amount = movementViewModel.Amount,
-                InstallmentNumber = 1,
+                Amount = movementViewModel.Amount,
                 CategoryId = movementViewModel.CategoryId,
                 PaymentMethodId = movementViewModel.PaymentMethodId,
-                UserId = userId,
-                MovementTypeId = movementViewModel.MovementTypeId
+                MovementTypeId = movementViewModel.MovementTypeId,
+                CreditCardPaymentId = movementViewModel.CreditCardPaymentId
             };
 
             RecurringPaymentViewModel recurringPayment = new RecurringPaymentViewModel()
             {
                 IsInterestFreePayment = movementViewModel.IsInterestFreePayment,
-                InstallmentCount = movementViewModel.InstallmentCount,
+                InstallmentCount = movementViewModel.InstallmentCount <= 0 ? 1 : movementViewModel.InstallmentCount,
                 InstallmentAmount = movementViewModel.Amount,
                 StartDate = movementViewModel.MovementDate,
                 UserId = userId,
