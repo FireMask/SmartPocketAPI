@@ -152,4 +152,12 @@ public class MovementController : Controller
             return ex.Message.ToApiError(Constants.UPDATE_ERROR);
         }
     }
+
+    [HttpGet("/test")]
+    public async Task<IResult> Test()
+    {
+        Guid userId = HttpContext.GetUserId();
+        await _movementService.CreateMovementsFromRecurringPayment(userId);
+        return Results.Ok();
+    }
 }

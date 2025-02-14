@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using SmartPocketAPI.Database;
+using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
@@ -29,7 +30,38 @@ public class MovementService : IMovementService
             .ToListAsync();
     }
 
-    public async Task<Movement?> CreateMovementAsync(MovementViewModel movementViewModel)
+    public async Task<bool> CreateMovementBulkAsync(List<MovementViewModel> movementsViewModel)
+    {
+        if(movementsViewModel == null)
+            throw new ArgumentNullException(nameof(movementsViewModel));
+
+        List<Movement> movements = new List<Movement>();
+
+        foreach(var movementViewModel in movementsViewModel)
+        {
+            movements.Add(new Movement
+            {
+                MovementDate = movementViewModel.MovementDate,
+                Description = movementViewModel.Description,
+                Amount = movementViewModel.Amount,
+                UserId = movementViewModel.UserId,
+                CategoryId = movementViewModel.CategoryId,
+                PaymentMethodId = movementViewModel.PaymentMethodId,
+                MovementTypeId = movementViewModel.MovementTypeId,
+                CreditCardPaymentId = movementViewModel.CreditCardPaymentId,
+                RecurringPaymentId = movementViewModel.RecurringPaymentId,
+                InstallmentNumber = movementViewModel.InstallmentNumber
+            });
+        }
+
+        _context.Movements.AddRange(movements);
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<Movement> CreateMovementAsync(MovementViewModel movementViewModel)
     {
         Movement newMovement = new Movement
         {
@@ -109,5 +141,54 @@ public class MovementService : IMovementService
         await _context.SaveChangesAsync();
 
         return movement;
+    }
+
+    public async Task CreateMovementsFromRecurringPayment(Guid userId)
+    {
+        List<RecurringPayment> recurringPayment = await _context.RecurringPayments
+            .Where(x => x.UserId ==  userId)
+            .Include(x => x.Movements)
+            .ToListAsync();
+
+        if (recurringPayment == null)
+            throw new Exception("El pago recurrente no existe");
+
+        List<MovementViewModel> addMovementList = new List<MovementViewModel>();
+
+        foreach (var payment in recurringPayment)
+        {
+            var lastMovement = payment.Movements
+                .OrderByDescending(x => x.MovementDate)
+                .FirstOrDefault();
+
+            if (lastMovement == null)
+                continue;
+
+            var nextDate = RecurringPaymentHelper.GetNextDate(lastMovement.MovementDate, payment.FrecuencyId);
+
+            //if(lastMovement.InstallmentNumber >= payment.InstallmentCount)
+            if (payment.Movements.Count >= payment.InstallmentCount)
+                continue;
+
+            while (nextDate <= DateTime.UtcNow.Date)
+            {
+                addMovementList.Add(new MovementViewModel()
+                {
+                    MovementDate = nextDate,
+                    Description = payment.Description,
+                    Amount = payment.InstallmentAmount / payment.InstallmentCount,
+                    UserId = userId,
+                    CategoryId = lastMovement.CategoryId,
+                    PaymentMethodId = lastMovement.PaymentMethodId,
+                    RecurringPaymentId = payment.Id,
+                    MovementTypeId = lastMovement.MovementTypeId,
+                    InstallmentNumber = lastMovement.InstallmentNumber + 1,
+                    CreditCardPaymentId = lastMovement.CreditCardPaymentId,
+                });
+
+                nextDate = RecurringPaymentHelper.GetNextDate(nextDate, payment.FrecuencyId);
+            }
+        }
+        var result = await CreateMovementBulkAsync(addMovementList);
     }
 }
