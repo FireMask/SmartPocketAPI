@@ -83,6 +83,7 @@ public class MovementController : Controller
 
             RecurringPaymentViewModel recurringPayment = new RecurringPaymentViewModel()
             {
+                Description = movementViewModel.Description,
                 IsInterestFreePayment = movementViewModel.IsInterestFreePayment,
                 InstallmentCount = movementViewModel.InstallmentCount <= 0 ? 1 : movementViewModel.InstallmentCount,
                 InstallmentAmount = movementViewModel.Amount,

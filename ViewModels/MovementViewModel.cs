@@ -7,7 +7,7 @@ public class MovementViewModel
 {
     public int Id { get; set; }
     public DateTime MovementDate { get; set; }
-    public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
     public Guid UserId { get; set; }
     public int CategoryId { get; set; }
@@ -18,12 +18,24 @@ public class MovementViewModel
     public int? CreditCardPaymentId { get; set; }
 }
 
+public class UpdateMovementViewModel
+{
+    public int Id { get; set; }
+    public DateTime MovementDate { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public int CategoryId { get; set; }
+    public int PaymentMethodId { get; set; }
+    public int MovementTypeId { get; set; }
+    public int? CreditCardPaymentId { get; set; }
+}
+
 public class MovementMSIViewModel
 {
     public Guid? UserId { get; set; }
     public required bool IsInstallment { get; set; } = false;
     public DateTime MovementDate { get; set; }
-    public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
     public int CategoryId { get; set; }
     public int PaymentMethodId { get; set; }

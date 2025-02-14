@@ -29,6 +29,8 @@ public class MovementService : IMovementService
             .ToListAsync();
     }
 
+    
+
     public async Task<Movement?> CreateMovementAsync(MovementViewModel movementViewModel)
     {
         Movement newMovement = new Movement
@@ -41,6 +43,8 @@ public class MovementService : IMovementService
             PaymentMethodId = movementViewModel.PaymentMethodId,
             MovementTypeId = movementViewModel.MovementTypeId,
             CreditCardPaymentId = movementViewModel.CreditCardPaymentId,
+            RecurringPaymentId = movementViewModel.RecurringPaymentId,
+            InstallmentNumber = movementViewModel.InstallmentNumber
         };
 
         _context.Movements.Add(newMovement);

@@ -3,6 +3,7 @@
 public class RecurringPaymentViewModel
 {
     public int Id { get; set; }
+    public string Description { get; set; }
     public bool IsInterestFreePayment { get; set; }
     public required int InstallmentCount { get; set; }
     public required decimal InstallmentAmount { get; set; }

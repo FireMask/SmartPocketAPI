@@ -28,6 +28,7 @@ public class RecurringPaymentService : IRecurringPaymentService
     {
         RecurringPayment newRecurringPayment = new RecurringPayment
         {
+            Description = recurringvm.Description,
             IsInterestFreePayment = recurringvm.IsInterestFreePayment,
             InstallmentCount = recurringvm.InstallmentCount,
             InstallmentAmount = recurringvm.InstallmentAmount,
