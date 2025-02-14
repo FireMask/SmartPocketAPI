@@ -132,4 +132,24 @@ public class MovementController : Controller
             return ex.Message.ToApiError(Constants.DELETE_ERROR);
         }
     }
+
+    [HttpPut]
+    public async Task<IResult> UpdateMovement(UpdateMovementViewModel updateMovementViewModel)
+    {
+        try
+        {
+            if (updateMovementViewModel == null)
+                throw new ArgumentNullException(nameof(updateMovementViewModel));
+
+            updateMovementViewModel.userId = HttpContext.GetUserId();
+            var result = await _movementService.UpdateMovementAsync(updateMovementViewModel);
+
+            return result.ToApiResponse(Constants.UPDATE_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.UPDATE_ERROR);
+        }
+    }
 }

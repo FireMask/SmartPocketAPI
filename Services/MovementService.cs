@@ -29,8 +29,6 @@ public class MovementService : IMovementService
             .ToListAsync();
     }
 
-    
-
     public async Task<Movement?> CreateMovementAsync(MovementViewModel movementViewModel)
     {
         Movement newMovement = new Movement
@@ -66,16 +64,50 @@ public class MovementService : IMovementService
         return true;
     }
 
-    public async Task<Movement?> GetMovementByIdAsync(Guid userId, int movementId)
+    public async Task<Movement> GetMovementByIdAsync(Guid userId, int movementId)
     {
-        Movement? movement = await _context.Movements
+        Movement movement = await _context.Movements
             .AsNoTracking()
             .Include(x => x.Category)
             .Include(x => x.PaymentMethod)
             .Include(x => x.RecurringPayment)
             .Include(x => x.MovementType)
             .Include(x => x.CreditCardPayment)
-            .FirstOrDefaultAsync(x => x.Id == movementId && x.UserId == userId);
+            .FirstAsync(x => x.Id == movementId && x.UserId == userId);
+
+        if (movement == null)
+            throw new Exception("Movement does not exists");
+
+        return movement;
+    }
+
+    public async Task<Movement> UpdateMovementAsync(UpdateMovementViewModel updateMovement)
+    {
+        if (updateMovement == null)
+            throw new ArgumentNullException(nameof(updateMovement));
+
+        Movement movement = await _context.Movements.FirstAsync(x => x.Id == updateMovement.Id && x.UserId == updateMovement.userId);
+
+        if (movement == null)
+            throw new Exception("Movement does not exists");
+
+        if(updateMovement.MovementDate != null)
+            movement.MovementDate = (DateTime)updateMovement.MovementDate;
+        if(updateMovement.Description != null)
+            movement.Description = updateMovement.Description;
+        if(updateMovement.Amount != null)
+            movement.Amount = (decimal)updateMovement.Amount;
+        if(updateMovement.CategoryId != null)
+            movement.CategoryId = (int)updateMovement.CategoryId;
+        if(updateMovement.PaymentMethodId != null)
+            movement.PaymentMethodId = (int)updateMovement.PaymentMethodId;
+        if(updateMovement.MovementTypeId != null)
+            movement.MovementTypeId = (int)updateMovement.MovementTypeId;
+
+        _context.Movements.Update(movement);
+
+        await _context.SaveChangesAsync();
+
         return movement;
     }
 }

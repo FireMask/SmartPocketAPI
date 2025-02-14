@@ -20,14 +20,14 @@ public class MovementViewModel
 
 public class UpdateMovementViewModel
 {
-    public int Id { get; set; }
-    public DateTime MovementDate { get; set; }
-    public string Description { get; set; } = string.Empty;
-    public decimal Amount { get; set; }
-    public int CategoryId { get; set; }
-    public int PaymentMethodId { get; set; }
-    public int MovementTypeId { get; set; }
-    public int? CreditCardPaymentId { get; set; }
+    public required int Id { get; set; }
+    public Guid? userId { get; set; }
+    public DateTime? MovementDate { get; set; }
+    public string? Description { get; set; } = string.Empty;
+    public decimal? Amount { get; set; }
+    public int? CategoryId { get; set; }
+    public int? PaymentMethodId { get; set; }
+    public int? MovementTypeId { get; set; }
 }
 
 public class MovementMSIViewModel
