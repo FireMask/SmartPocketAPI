@@ -12,4 +12,5 @@ public interface IMovementService
     Task<Movement> UpdateMovementAsync(UpdateMovementViewModel updateMovement);
     Task CreateMovementsFromRecurringPayment(Guid userId);
     Task<bool> CreateMovementBulkAsync(List<MovementViewModel> movementsViewModel);
+    Task<object> GetDashboardInfoAsync(Guid userId);
 }

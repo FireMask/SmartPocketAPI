@@ -153,6 +153,22 @@ public class MovementController : Controller
         }
     }
 
+    [HttpGet("/Dashboard")]
+    public async Task<IResult> GetDashboardInfo()
+    {
+        try
+        {
+            Guid userId = HttpContext.GetUserId();
+            var result = await _movementService.GetDashboardInfoAsync(userId);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
+        }
+    }
+
     [HttpGet("/test")]
     public async Task<IResult> Test()
     {

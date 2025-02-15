@@ -191,4 +191,34 @@ public class MovementService : IMovementService
         }
         var result = await CreateMovementBulkAsync(addMovementList);
     }
+
+    public async Task<object> GetDashboardInfoAsync(Guid userId)
+    {
+        var query = _context.Movements
+            .Where(x => x.UserId == userId)
+            .Include(x => x.Category)
+            .Include(x => x.PaymentMethod)
+            .Include(x => x.RecurringPayment)
+            .Include(x => x.MovementType)
+            .Include(x => x.CreditCardPayment)
+            .OrderByDescending(x => x.MovementDate)
+            .AsQueryable();
+
+        var movementThisMonth = await query.Where(x => x.MovementDate.Year == DateTime.Now.Year
+                && x.MovementDate.Month == DateTime.Now.Month)
+            .ToListAsync();
+
+        var top20Movements = await query.Take(20).ToListAsync();
+        var movementsCount = movementThisMonth.Count();
+        var amountSpend = movementThisMonth.Sum(x => x.Amount);
+
+        Dictionary<string, object> result = new Dictionary<string, object>()
+        {
+            { "top20Movements", movementThisMonth },
+            { "thisMonthMovementsCount", movementsCount },
+            { "thisMonthAmountSpend", amountSpend },
+        };
+
+        return result;
+    }
 }
