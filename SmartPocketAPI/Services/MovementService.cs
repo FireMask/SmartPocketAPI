@@ -143,54 +143,54 @@ public class MovementService : IMovementService
         return movement;
     }
 
-    public async Task CreateMovementsFromRecurringPayment(Guid userId)
-    {
-        List<RecurringPayment> recurringPayment = await _context.RecurringPayments
-            .Where(x => x.UserId ==  userId)
-            .Include(x => x.Movements)
-            .ToListAsync();
+    //public async Task CreateMovementsFromRecurringPayment(Guid userId)
+    //{
+    //    List<RecurringPayment> recurringPayment = await _context.RecurringPayments
+    //        .Where(x => x.UserId ==  userId)
+    //        .Include(x => x.Movements)
+    //        .ToListAsync();
 
-        if (recurringPayment == null)
-            throw new Exception("El pago recurrente no existe");
+    //    if (recurringPayment == null)
+    //        throw new Exception("El pago recurrente no existe");
 
-        List<MovementViewModel> addMovementList = new List<MovementViewModel>();
+    //    List<MovementViewModel> addMovementList = new List<MovementViewModel>();
 
-        foreach (var payment in recurringPayment)
-        {
-            var lastMovement = payment.Movements
-                .OrderByDescending(x => x.MovementDate)
-                .FirstOrDefault();
+    //    foreach (var payment in recurringPayment)
+    //    {
+    //        var lastMovement = payment.Movements
+    //            .OrderByDescending(x => x.MovementDate)
+    //            .FirstOrDefault();
 
-            if (lastMovement == null)
-                continue;
+    //        if (lastMovement == null)
+    //            continue;
 
-            var nextDate = RecurringPaymentHelper.GetNextDate(lastMovement.MovementDate, payment.FrecuencyId);
+    //        var nextDate = RecurringPaymentHelper.GetNextDate(lastMovement.MovementDate, payment.FrecuencyId);
 
-            //if(lastMovement.InstallmentNumber >= payment.InstallmentCount)
-            if (payment.Movements.Count >= payment.InstallmentCount)
-                continue;
+    //        //if(lastMovement.InstallmentNumber >= payment.InstallmentCount)
+    //        if (payment.Movements.Count >= payment.InstallmentCount)
+    //            continue;
 
-            while (nextDate <= DateTime.UtcNow.Date)
-            {
-                addMovementList.Add(new MovementViewModel()
-                {
-                    MovementDate = nextDate,
-                    Description = payment.Description,
-                    Amount = payment.InstallmentAmount / payment.InstallmentCount,
-                    UserId = userId,
-                    CategoryId = lastMovement.CategoryId,
-                    PaymentMethodId = lastMovement.PaymentMethodId,
-                    RecurringPaymentId = payment.Id,
-                    MovementTypeId = lastMovement.MovementTypeId,
-                    InstallmentNumber = lastMovement.InstallmentNumber + 1,
-                    CreditCardPaymentId = lastMovement.CreditCardPaymentId,
-                });
+    //        while (nextDate <= DateTime.UtcNow.Date)
+    //        {
+    //            addMovementList.Add(new MovementViewModel()
+    //            {
+    //                MovementDate = nextDate,
+    //                Description = payment.Description,
+    //                Amount = payment.InstallmentAmount / payment.InstallmentCount,
+    //                UserId = userId,
+    //                CategoryId = lastMovement.CategoryId,
+    //                PaymentMethodId = lastMovement.PaymentMethodId,
+    //                RecurringPaymentId = payment.Id,
+    //                MovementTypeId = lastMovement.MovementTypeId,
+    //                InstallmentNumber = lastMovement.InstallmentNumber + 1,
+    //                CreditCardPaymentId = lastMovement.CreditCardPaymentId,
+    //            });
 
-                nextDate = RecurringPaymentHelper.GetNextDate(nextDate, payment.FrecuencyId);
-            }
-        }
-        var result = await CreateMovementBulkAsync(addMovementList);
-    }
+    //            nextDate = RecurringPaymentHelper.GetNextDate(nextDate, payment.FrecuencyId);
+    //        }
+    //    }
+    //    var result = await CreateMovementBulkAsync(addMovementList);
+    //}
 
     public async Task<object> GetDashboardInfoAsync(Guid userId)
     {
@@ -210,15 +210,73 @@ public class MovementService : IMovementService
 
         var top20Movements = await query.Take(20).ToListAsync();
         var movementsCount = movementThisMonth.Count();
-        var amountSpend = movementThisMonth.Sum(x => x.Amount);
+
+        //Sum of amount of not income (spent)
+        var thisMonthSpent = movementThisMonth
+            .Where(x => x.MovementTypeId != 2)
+            .Sum(x => x.Amount);
+
+        //Sum of amount of income this month
+        var thisMonthIncome = movementThisMonth
+            .Where(x => x.MovementTypeId == 2)
+            .Sum(x => x.Amount);
+
+        var pendingMovementsRecurring = await GetPendingMovementsFromRecurringPayment(userId);
 
         Dictionary<string, object> result = new Dictionary<string, object>()
         {
             { "top20Movements", movementThisMonth },
             { "thisMonthMovementsCount", movementsCount },
-            { "thisMonthAmountSpend", amountSpend },
+            { "thisMonthSpent", thisMonthSpent },
+            { "thisMonthIncome", thisMonthIncome },
+            { "pendingMovementsRecurring", pendingMovementsRecurring.Count },
         };
 
         return result;
+    }
+
+    private async Task<List<MovementViewModel>> GetPendingMovementsFromRecurringPayment(Guid userId)
+    {
+        List<RecurringPayment> recurringPayments = await _context.RecurringPayments
+            .Where(x => x.UserId == userId)
+            .Include(x => x.Movements)
+            .ToListAsync();
+
+        List<MovementViewModel> addMovementList = new List<MovementViewModel>();
+
+        if (recurringPayments == null)
+            return addMovementList;
+
+        foreach (var rPayment in recurringPayments)
+        {
+            var lastMovement = rPayment.Movements
+                .OrderByDescending(x => x.MovementDate)
+                .FirstOrDefault();
+
+            DateOnly nextDate = rPayment.NextInstallmentDate;
+
+            if (!rPayment.IsActive)
+                continue;
+
+            while (nextDate <= DateOnly.FromDateTime(DateTime.UtcNow.Date))
+            {
+                addMovementList.Add(new MovementViewModel()
+                {
+                    MovementDate = nextDate.ToDateTime(TimeOnly.MinValue),
+                    Description = rPayment.Description,
+                    Amount = rPayment.InstallmentAmountPerPeriod,
+                    UserId = rPayment.UserId,
+                    CategoryId = rPayment.CategoryId,
+                    PaymentMethodId = rPayment.PaymentMethodId,
+                    RecurringPaymentId = rPayment.Id,
+                    MovementTypeId = rPayment.MovementTypeId,
+                    InstallmentNumber = rPayment.CurrentInstallmentCount,
+                    CreditCardPaymentId = rPayment.CreditCardPaymentId,
+                });
+                nextDate = RecurringPaymentHelper.GetNextDate(nextDate, rPayment.FrecuencyId);            
+            }
+        }
+
+        return addMovementList;
     }
 }

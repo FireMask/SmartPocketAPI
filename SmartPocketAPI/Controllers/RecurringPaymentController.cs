@@ -54,7 +54,7 @@ public class RecurringPaymentController : Controller
     }
 
     [HttpPost]
-    public async Task<IResult> CreateRecurrinPayment(RecurringPaymentViewModel recurringPayment)
+    public async Task<IResult> CreateRecurringPayment(RecurringPaymentViewModel recurringPayment)
     {
         try
         {

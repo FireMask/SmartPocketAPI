@@ -31,11 +31,20 @@ public class RecurringPaymentService : IRecurringPaymentService
             Description = recurringvm.Description,
             IsInterestFreePayment = recurringvm.IsInterestFreePayment,
             InstallmentCount = recurringvm.InstallmentCount,
+            CurrentInstallmentCount = 1,
             InstallmentAmount = recurringvm.InstallmentAmount,
+            InstallmentAmountPerPeriod = recurringvm.InstallmentAmount / recurringvm.InstallmentCount,
             StartDate = recurringvm.StartDate,
             EndDate = recurringvm.EndDate,
+            NextInstallmentDate = recurringvm.StartDate,
+            LastInstallmentDate = null,
+            IsActive = recurringvm.IsActive,
+            CategoryId = recurringvm.CategoryId,
+            PaymentMethodId = recurringvm.PaymentMethodId,
+            MovementTypeId = recurringvm.MovementTypeId,
+            CreditCardPaymentId = recurringvm.CreditCardPaymentId,
             UserId = recurringvm.UserId,
-            FrecuencyId = recurringvm.FrecuencyId
+            FrecuencyId = recurringvm.FrecuencyId,
         };
 
         _context.RecurringPayments.Add(newRecurringPayment);

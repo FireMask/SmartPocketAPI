@@ -12,7 +12,7 @@ public enum Periodicity
 
 public class RecurringPaymentHelper
 {
-    public static DateTime GetNextDate(DateTime lastDate, int frequencyId)
+    public static DateOnly GetNextDate(DateOnly lastDate, int frequencyId)
     {
         return frequencyId switch
         {

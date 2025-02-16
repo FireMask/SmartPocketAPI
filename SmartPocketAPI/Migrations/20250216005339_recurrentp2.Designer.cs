@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartPocketAPI.Database;
 
@@ -11,9 +12,11 @@ using SmartPocketAPI.Database;
 namespace SmartPocketAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250216005339_recurrentp2")]
+    partial class recurrentp2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -393,15 +396,6 @@ namespace SmartPocketAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CreditCardPaymentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurrentInstallmentCount")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -413,9 +407,6 @@ namespace SmartPocketAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("InstallmentAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("InstallmentAmountPerPeriod")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("InstallmentCount")
@@ -430,14 +421,8 @@ namespace SmartPocketAPI.Migrations
                     b.Property<DateOnly?>("LastInstallmentDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("MovementTypeId")
-                        .HasColumnType("int");
-
                     b.Property<DateOnly>("NextInstallmentDate")
                         .HasColumnType("date");
-
-                    b.Property<int>("PaymentMethodId")
-                        .HasColumnType("int");
 
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");

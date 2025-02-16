@@ -8,9 +8,18 @@ public class RecurringPayment
     public string Description { get; set; } = string.Empty;
     public bool IsInterestFreePayment { get; set; }
     public int InstallmentCount { get; set; }
+    public int CurrentInstallmentCount { get; set; }
     public decimal InstallmentAmount { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
+    public decimal InstallmentAmountPerPeriod { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly? EndDate { get; set; }
+    public DateOnly NextInstallmentDate { get; set; }  
+    public DateOnly? LastInstallmentDate { get; set; }
+    public bool IsActive { get; set; } = true;
+    public int CategoryId { get; set; }
+    public int PaymentMethodId { get; set; }
+    public int MovementTypeId { get; set; }
+    public int? CreditCardPaymentId { get; set; }
 
     public Guid UserId { get; set; }
     public User User { get; set; }
