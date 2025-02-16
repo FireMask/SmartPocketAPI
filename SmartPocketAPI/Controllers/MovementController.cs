@@ -87,7 +87,7 @@ public class MovementController : Controller
                 InstallmentCount = movementViewModel.InstallmentCount <= 0 ? 1 : movementViewModel.InstallmentCount,
                 NextInstallmentCount = 2, //The first movement will be created, so the next will be the 2nd
                 InstallmentAmount = movementViewModel.Amount,
-                StartDate = DateOnly.FromDateTime(movementViewModel.MovementDate),
+                StartDate = movementViewModel.MovementDate,
                 IsActive = true,
                 CategoryId = movementViewModel.CategoryId,
                 PaymentMethodId = movementViewModel.PaymentMethodId,
@@ -190,8 +190,16 @@ public class MovementController : Controller
     [HttpGet("/test")]
     public async Task<IResult> Test()
     {
-        Guid userId = HttpContext.GetUserId();
-        //await _movementService.CreateMovementsFromRecurringPayment(userId);
-        return Results.Ok();
+        try
+        {
+            Guid userId = HttpContext.GetUserId();
+            var result = await _movementService.GetSummaryPaymentMethods(userId);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
+        }
     }
 }

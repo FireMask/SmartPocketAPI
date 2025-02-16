@@ -6,7 +6,7 @@ namespace SmartPocketAPI.ViewModels;
 public class MovementViewModel
 {
     public int Id { get; set; }
-    public DateTime MovementDate { get; set; }
+    public DateOnly MovementDate { get; set; }
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
     public Guid UserId { get; set; }
@@ -22,7 +22,7 @@ public class UpdateMovementViewModel
 {
     public required int Id { get; set; }
     public Guid? userId { get; set; }
-    public DateTime? MovementDate { get; set; }
+    public DateOnly? MovementDate { get; set; }
     public string? Description { get; set; } = string.Empty;
     public decimal? Amount { get; set; }
     public int? CategoryId { get; set; }
@@ -34,7 +34,7 @@ public class MovementMSIViewModel
 {
     public Guid? UserId { get; set; }
     public required bool IsInstallment { get; set; } = false;
-    public DateTime MovementDate { get; set; }
+    public DateOnly MovementDate { get; set; }
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
     public int CategoryId { get; set; }
@@ -48,7 +48,7 @@ public class MovementMSIViewModel
 
 public class MovementReportEntity
 {
-    public DateTime MovementDate { get; set; }
+    public DateOnly MovementDate { get; set; }
     public string CategoryName { get; set; } = string.Empty;
     public string PaymentMethodName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;

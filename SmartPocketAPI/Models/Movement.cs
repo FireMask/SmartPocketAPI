@@ -3,7 +3,7 @@
 public class Movement
 {
     public int Id { get; set; }
-    public DateTime MovementDate { get; set; }
+    public DateOnly MovementDate { get; set; }
     public string Description { get; set; }
     public decimal Amount { get; set; }
     public int? InstallmentNumber { get; set; }

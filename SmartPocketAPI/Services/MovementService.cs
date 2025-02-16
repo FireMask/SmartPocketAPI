@@ -93,7 +93,7 @@ public class MovementService : IMovementService
             throw new Exception("Movement does not exists");
 
         if(updateMovement.MovementDate != null)
-            movement.MovementDate = (DateTime)updateMovement.MovementDate;
+            movement.MovementDate = (DateOnly)updateMovement.MovementDate;
         if(updateMovement.Description != null)
             movement.Description = updateMovement.Description;
         if(updateMovement.Amount != null)
@@ -143,6 +143,8 @@ public class MovementService : IMovementService
 
         var pendingMovementsRecurring = await GetPendingMovementsFromRecurringPayments(userId);
 
+        var summaryPaymentMethods = await GetSummaryPaymentMethods(userId);
+
         Dictionary<string, object> result = new Dictionary<string, object>()
         {
             { "top20Movements", movementThisMonth },
@@ -150,15 +152,17 @@ public class MovementService : IMovementService
             { "thisMonthSpent", thisMonthSpent },
             { "thisMonthIncome", thisMonthIncome },
             { "pendingMovementsRecurring", pendingMovementsRecurring.Count },
+            { "summaryPaymentMethods", summaryPaymentMethods },
         };
 
         return result;
     }
 
-    public async Task<List<object>> GetPendingMovementsFromRecurringPayments(Guid userId)
+    public async Task<List<MovementFromRecurringPaymentsViewModel>> GetPendingMovementsFromRecurringPayments(Guid userId, int? paymentMethodId = null, DateOnly? untilDate = null)
     {
         List<RecurringPayment> recurringPayments = await _context.RecurringPayments
             .Where(x => x.UserId == userId)
+            .Where(x => paymentMethodId != null ? x.PaymentMethodId == paymentMethodId : true)
             .Include(x => x.Movements)
             .Include(x => x.Category)
             .Include(x => x.PaymentMethod)
@@ -166,7 +170,10 @@ public class MovementService : IMovementService
             .Include(x => x.CreditCardPayment)
             .ToListAsync();
 
-        var addMovementList = new List<object>();
+        if (untilDate == null)
+            untilDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
+
+        var addMovementList = new List<MovementFromRecurringPaymentsViewModel>();
 
         if (recurringPayments == null)
             return addMovementList;
@@ -179,9 +186,9 @@ public class MovementService : IMovementService
             if (!rPayment.IsActive)
                 continue;
 
-            while (nextDate <= DateOnly.FromDateTime(DateTime.UtcNow.Date))
+            while (nextDate <= untilDate)
             {
-                addMovementList.Add(new
+                addMovementList.Add(new MovementFromRecurringPaymentsViewModel()
                 {
                     MovementDate = nextDate,
                     Description = rPayment.Description,
@@ -203,5 +210,60 @@ public class MovementService : IMovementService
         }
 
         return addMovementList;
+    }
+
+    public async Task<object> GetSummaryPaymentMethods(Guid userId)
+    {
+        var cards = await _context.PaymentMethods
+            .AsNoTracking()
+            .Where(x => x.UserId == userId && x.IsCreditCard)
+            .Include(x => x.Movements)
+            .Include(x => x.RecurringPayments)
+            .ToListAsync();
+
+        var cardsMonthSummary = new List<object>();
+
+        foreach (var card in cards)
+        {
+            var now = DateTime.UtcNow;
+            DateOnly startTransactionDate = new DateOnly(now.Year, now.Month, card.TransactionDate);
+            DateOnly endTransactionDate;
+
+            if (card.TransactionDate > now.Day) //La fecha de corte ya paso
+                startTransactionDate = startTransactionDate.AddMonths(-1); //Tomar la fecha de corte anterior
+
+            endTransactionDate = startTransactionDate.AddMonths(1);
+
+            DateOnly dueDate = new DateOnly(endTransactionDate.Year, endTransactionDate.Month, card.DueDate);
+
+            if (card.DueDate < card.TransactionDate)
+                dueDate = dueDate.AddMonths(1);
+
+            var cardMovements = card.Movements
+                .Where(x => x.MovementDate > startTransactionDate && x.MovementDate <= endTransactionDate)
+                .ToList();
+
+            var pendingMovements = await GetPendingMovementsFromRecurringPayments(userId, card.Id, endTransactionDate);
+
+            //PendingMovements
+            var pendingMovementsRange = pendingMovements
+                .Where(x => x.MovementDate > startTransactionDate && x.MovementDate <= endTransactionDate)
+                .Sum(x => x.Amount);
+
+            //Movements already captured
+            var thisPeriodSpent = cardMovements
+                .Where(x => x.MovementTypeId != 2)
+                .Sum(x => x.Amount);
+
+            cardsMonthSummary.Add(new CardMonthSummaryViewModel
+            {
+                CardName = card.Name,
+                TotalSum = thisPeriodSpent + pendingMovementsRange,
+                TransactionDate = endTransactionDate,
+                DueDate = dueDate
+            });
+        }
+
+        return cardsMonthSummary;
     }
 }
