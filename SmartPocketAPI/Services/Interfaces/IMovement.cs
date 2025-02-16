@@ -10,7 +10,6 @@ public interface IMovementService
     Task<bool> DeleteMovementAsync(Guid userId, int id);
     Task<Movement> GetMovementByIdAsync(Guid userId, int movementId);
     Task<Movement> UpdateMovementAsync(UpdateMovementViewModel updateMovement);
-    //Task CreateMovementsFromRecurringPayment(Guid userId);
-    Task<bool> CreateMovementBulkAsync(List<MovementViewModel> movementsViewModel);
+    Task<List<object>> GetPendingMovementsFromRecurringPayments(Guid userId);
     Task<object> GetDashboardInfoAsync(Guid userId);
 }

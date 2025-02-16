@@ -8,7 +8,7 @@ public class RecurringPayment
     public string Description { get; set; } = string.Empty;
     public bool IsInterestFreePayment { get; set; }
     public int InstallmentCount { get; set; }
-    public int CurrentInstallmentCount { get; set; }
+    public int NextInstallmentCount { get; set; } = 1;
     public decimal InstallmentAmount { get; set; }
     public decimal InstallmentAmountPerPeriod { get; set; }
     public DateOnly StartDate { get; set; }

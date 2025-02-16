@@ -59,7 +59,7 @@ public class MovementController : Controller
     }
 
     [HttpPost]
-    public async Task<IResult> CreateMovement(MovementViewModel movementViewModel)
+    public async Task<IResult> CreateMovement(MovementMSIViewModel movementViewModel)
     {
         try
         {
@@ -71,7 +71,6 @@ public class MovementController : Controller
             MovementViewModel movement = new MovementViewModel()
             {
                 UserId = userId,
-                InstallmentNumber = 1,
                 MovementDate = movementViewModel.MovementDate,
                 Description = movementViewModel.Description,
                 Amount = movementViewModel.Amount,
@@ -81,14 +80,39 @@ public class MovementController : Controller
                 CreditCardPaymentId = movementViewModel.CreditCardPaymentId
             };
 
+            RecurringPaymentViewModel recurringPayment = new RecurringPaymentViewModel()
+            {
+                Description = movementViewModel.Description,
+                IsInterestFreePayment = movementViewModel.IsInterestFreePayment,
+                InstallmentCount = movementViewModel.InstallmentCount <= 0 ? 1 : movementViewModel.InstallmentCount,
+                NextInstallmentCount = 2, //The first movement will be created, so the next will be the 2nd
+                InstallmentAmount = movementViewModel.Amount,
+                StartDate = DateOnly.FromDateTime(movementViewModel.MovementDate),
+                IsActive = true,
+                CategoryId = movementViewModel.CategoryId,
+                PaymentMethodId = movementViewModel.PaymentMethodId,
+                MovementTypeId = movementViewModel.MovementTypeId,
+                FrecuencyId = movementViewModel.FrecuencyId,
+                UserId = userId
+            };
+
+            using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            if (movementViewModel.IsInstallment)
+            {
+                var rpResult = await _recurringPaymentService.CreateRecurringPaymentAsync(recurringPayment);
+                movement.RecurringPaymentId = rpResult.Id;
+                movement.InstallmentNumber = 1; //Its the first movement of the recurringPayment
+                movement.Amount = movementViewModel.Amount / rpResult.InstallmentCount;
+            }
             var mResult = await _movementService.CreateMovementAsync(movement);
 
+            scope.Complete();
             return mResult.ToApiResponse(Constants.INSERT_SUCCESS);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
-            if(ex.InnerException != null)
+            if (ex.InnerException != null)
                 return ex.InnerException.Message.ToApiError(Constants.INSERT_ERROR);
             else
                 return ex.Message.ToApiError(Constants.INSERT_ERROR);
@@ -138,6 +162,22 @@ public class MovementController : Controller
         {
             Guid userId = HttpContext.GetUserId();
             var result = await _movementService.GetDashboardInfoAsync(userId);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
+        }
+    }
+
+    [HttpGet("/PendingMovements")]
+    public async Task<IResult> PendingMovements()
+    {
+        try
+        {
+            Guid userId = HttpContext.GetUserId();
+            var result = await _movementService.GetPendingMovementsFromRecurringPayments(userId);
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)

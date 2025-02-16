@@ -31,7 +31,7 @@ public class RecurringPaymentService : IRecurringPaymentService
             Description = recurringvm.Description,
             IsInterestFreePayment = recurringvm.IsInterestFreePayment,
             InstallmentCount = recurringvm.InstallmentCount,
-            CurrentInstallmentCount = 1,
+            NextInstallmentCount = recurringvm.NextInstallmentCount,
             InstallmentAmount = recurringvm.InstallmentAmount,
             InstallmentAmountPerPeriod = recurringvm.InstallmentAmount / recurringvm.InstallmentCount,
             StartDate = recurringvm.StartDate,
