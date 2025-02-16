@@ -15,5 +15,7 @@ public class Category
 
     [JsonIgnore]
     public ICollection<Movement> Movements { get; set; }
+    [JsonIgnore]
+    public ICollection<RecurringPayment> RecurringPayments { get; set; }
 
 }

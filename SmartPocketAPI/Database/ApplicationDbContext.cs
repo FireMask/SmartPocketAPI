@@ -33,17 +33,35 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        #region User
+
         modelBuilder.Entity<User>()
             .ToTable("User");
+
+        #endregion
+
+        #region Frequency
 
         modelBuilder.Entity<Frequency>()
             .ToTable("Frequency");
 
+        #endregion
+
+        #region MovementType
+
         modelBuilder.Entity<MovementType>()
             .ToTable("MovementType");
 
+        #endregion
+
+        #region PaymentMethodType
+
         modelBuilder.Entity<PaymentMethodType>()
             .ToTable("PaymentMethodType");
+
+        #endregion
+
+        #region Category
 
         modelBuilder.Entity<Category>()
             .ToTable("Category");
@@ -52,6 +70,10 @@ public class ApplicationDbContext : DbContext
                 .HasOne(c => c.User)
                 .WithMany(u => u.Categories)
                 .HasForeignKey(c => c.UserId);
+
+        #endregion
+
+        #region PaymentMethod
 
         modelBuilder.Entity<PaymentMethod>()
             .ToTable("PaymentMethod");
@@ -66,8 +88,12 @@ public class ApplicationDbContext : DbContext
                 .WithMany(p => p.PaymentMethods)
                 .HasForeignKey(c => c.PaymentMethodTypeId);
 
-        modelBuilder.Entity<PaymentMethod>()
-            .ToTable("PaymentMethod");
+        #endregion
+
+        #region RecurringPayment
+
+        modelBuilder.Entity<RecurringPayment>()
+            .ToTable("RecurringPayment");
 
             modelBuilder.Entity<RecurringPayment>()
                 .HasOne(c => c.User)
@@ -75,9 +101,37 @@ public class ApplicationDbContext : DbContext
                 .HasForeignKey(c => c.UserId);
 
             modelBuilder.Entity<RecurringPayment>()
-                .HasOne(c => c.Frequency)
-                .WithMany(p => p.RecurringPayments)
-                .HasForeignKey(c => c.FrecuencyId);
+                .HasOne(c => c.Category)
+                .WithMany(u => u.RecurringPayments)
+                .HasForeignKey(m => m.CategoryId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<RecurringPayment>()
+                .HasOne(c => c.PaymentMethod)
+                .WithMany(u => u.RecurringPayments)
+                .HasForeignKey(m => m.PaymentMethodId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<RecurringPayment>()
+                .HasOne(c => c.MovementType)
+                .WithMany(u => u.RecurringPayments)
+                .HasForeignKey(m => m.MovementTypeId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<RecurringPayment>()
+                .HasOne(c => c.CreditCardPayment)
+                .WithMany(u => u.RecurringPaymentCredits)
+                .HasForeignKey(m => m.CreditCardPaymentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<RecurringPayment>()
+                    .HasOne(c => c.Frequency)
+                    .WithMany(p => p.RecurringPayments)
+                    .HasForeignKey(c => c.FrecuencyId);
+
+        #endregion
+
+        #region Movement
 
         modelBuilder.Entity<Movement>()
             .ToTable("Movement");
@@ -117,6 +171,8 @@ public class ApplicationDbContext : DbContext
                 .WithMany(u => u.Payments)
                 .HasForeignKey(m => m.CreditCardPaymentId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+        #endregion
 
         modelBuilder.Seed();
     }

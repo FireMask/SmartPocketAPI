@@ -25,4 +25,10 @@ public class PaymentMethod
 
     [JsonIgnore]
     public ICollection<Movement> Payments { get; set; }
+
+    [JsonIgnore]
+    public ICollection<RecurringPayment> RecurringPayments { get; set; }
+
+    [JsonIgnore]
+    public ICollection<RecurringPayment> RecurringPaymentCredits { get; set; }
 }

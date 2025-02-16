@@ -160,6 +160,10 @@ public class MovementService : IMovementService
         List<RecurringPayment> recurringPayments = await _context.RecurringPayments
             .Where(x => x.UserId == userId)
             .Include(x => x.Movements)
+            .Include(x => x.Category)
+            .Include(x => x.PaymentMethod)
+            .Include(x => x.MovementType)
+            .Include(x => x.CreditCardPayment)
             .ToListAsync();
 
         var addMovementList = new List<object>();
@@ -169,10 +173,6 @@ public class MovementService : IMovementService
 
         foreach (var rPayment in recurringPayments)
         {
-            var lastMovement = rPayment.Movements
-                .OrderByDescending(x => x.MovementDate)
-                .FirstOrDefault();
-
             DateOnly nextDate = rPayment.NextInstallmentDate;
             int installmentNo = rPayment.NextInstallmentCount;
 
@@ -187,12 +187,16 @@ public class MovementService : IMovementService
                     Description = rPayment.Description,
                     Amount = rPayment.InstallmentAmountPerPeriod,
                     CategoryId = rPayment.CategoryId,
+                    CategoryName = rPayment.Category.Name,
                     PaymentMethodId = rPayment.PaymentMethodId,
+                    PaymentMethodName = rPayment.PaymentMethod.Name,
                     RecurringPaymentId = rPayment.Id,
                     MovementTypeId = rPayment.MovementTypeId,
+                    MovementTypeName = rPayment.MovementType.Name,
                     InstallmentCount = rPayment.InstallmentCount,
                     InstallmentNumber = installmentNo++,
                     CreditCardPaymentId = rPayment.CreditCardPaymentId,
+                    CreditCardPaymentName = rPayment.CreditCardPayment?.Name ?? "",
                 });
                 nextDate = RecurringPaymentHelper.GetNextDate(nextDate, rPayment.FrecuencyId);            
             }
