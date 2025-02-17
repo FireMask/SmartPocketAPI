@@ -20,7 +20,14 @@ public class RecurringPaymentService : IRecurringPaymentService
 
     public async Task<List<RecurringPayment>> GetRecurringPaymentsAsync(Guid userid)
     {
-        var result = await _context.RecurringPayments.Where(x => x.UserId == userid).ToListAsync();
+        var result = await _context.RecurringPayments
+            .Where(x => x.UserId == userid)
+            .Include(x => x.Category)
+            .Include(x => x.PaymentMethod)
+            .Include(x => x.MovementType)
+            .Include(x => x.CreditCardPayment)
+            .Include(x => x.Frequency)
+            .ToListAsync();
         return result;
     }
 
