@@ -30,10 +30,10 @@ public class RecurringPaymentService : IRecurringPaymentService
         {
             Description = recurringvm.Description,
             IsInterestFreePayment = recurringvm.IsInterestFreePayment,
-            InstallmentCount = recurringvm.InstallmentCount,
+            InstallmentCount = recurringvm.InstallmentCount ?? -1,
             NextInstallmentCount = recurringvm.NextInstallmentCount,
             InstallmentAmount = recurringvm.InstallmentAmount,
-            InstallmentAmountPerPeriod = recurringvm.InstallmentAmount / recurringvm.InstallmentCount,
+            InstallmentAmountPerPeriod = recurringvm.InstallmentAmount / (recurringvm.InstallmentCount ?? 1),
             StartDate = recurringvm.StartDate,
             EndDate = recurringvm.EndDate,
             NextInstallmentDate = recurringvm.StartDate,
@@ -82,7 +82,7 @@ public class RecurringPaymentService : IRecurringPaymentService
             throw new ArgumentNullException("Recurrent payment does not exists");
 
         recurringPayment.IsInterestFreePayment = recurringPaymentViewModel.IsInterestFreePayment;
-        recurringPayment.InstallmentCount = recurringPaymentViewModel.InstallmentCount;
+        recurringPayment.InstallmentCount = recurringPaymentViewModel.InstallmentCount ?? -1;
         recurringPayment.InstallmentAmount = recurringPaymentViewModel.InstallmentAmount;
         recurringPayment.StartDate = recurringPaymentViewModel.StartDate;
         recurringPayment.EndDate = recurringPaymentViewModel.EndDate;

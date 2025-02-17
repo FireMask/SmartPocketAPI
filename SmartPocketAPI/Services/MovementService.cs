@@ -259,7 +259,8 @@ public class MovementService : IMovementService
             {
                 CardName = card.Name,
                 TotalSum = thisPeriodSpent + pendingMovementsRange,
-                TransactionDate = endTransactionDate,
+                TransactionStartDate = startTransactionDate,
+                TransactionEndDate = endTransactionDate,
                 DueDate = dueDate
             });
         }
