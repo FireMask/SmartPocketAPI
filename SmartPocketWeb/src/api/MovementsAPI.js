@@ -1,0 +1,77 @@
+import api from "../lib/axios";
+
+export default {
+    all() {
+        const token = localStorage.getItem('AUTH_TOKEN')
+        return api.get('/movements', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    },
+    dashboard() {
+        const token = localStorage.getItem('AUTH_TOKEN')
+        return api.get('/dashboard', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    },
+    create(movementData){
+        console.log('api', movementData);
+        const token = localStorage.getItem('AUTH_TOKEN')
+        return api.post('/movement', movementData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    },
+    delete(id){
+        const token = localStorage.getItem('AUTH_TOKEN')
+        return api.delete(`/movement/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    },
+    update(movementData){
+        const token = localStorage.getItem('AUTH_TOKEN')
+        return api.put('/movement', movementData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    },
+    categories(){
+        const token = localStorage.getItem('AUTH_TOKEN')
+        return api.get('/categories', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    },
+    createCategory(categoryData){
+        const token = localStorage.getItem('AUTH_TOKEN')
+        return api.post('/category', categoryData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    },
+    types(){
+        const token = localStorage.getItem('AUTH_TOKEN')
+        return api.get('/movementTypes', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    },
+    frecuencies(){
+        const token = localStorage.getItem('AUTH_TOKEN')
+        return api.get('/frequencies', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+}
