@@ -18,7 +18,7 @@ public class RecurringPaymentService : IRecurringPaymentService
         _context = context;
     }
 
-    public async Task<List<RecurringPayment>> GetRecurringPaymentsAsync(Guid userid)
+    public async Task<object> GetRecurringPaymentsAsync(Guid userid)
     {
         var result = await _context.RecurringPayments
             .Where(x => x.UserId == userid)
@@ -27,6 +27,21 @@ public class RecurringPaymentService : IRecurringPaymentService
             .Include(x => x.MovementType)
             .Include(x => x.CreditCardPayment)
             .Include(x => x.Frequency)
+            .Select(r => new
+            {
+                r.Id,
+                CategoryName = r.Category.Name,
+                r.Description,
+                PaymentMethodName = r.PaymentMethod.Name,
+                r.StartDate,
+                r.LastInstallmentDate,
+                r.NextInstallmentDate,
+                FrequencyName = r.Frequency.Name,
+                r.InstallmentAmountPerPeriod,
+                MovementTypename = r.MovementType.Name,
+                r.IsActive,
+                PaidCount = r.InstallmentCount == -1 ? $"{r.NextInstallmentCount - 1}" : $"{r.NextInstallmentCount - 1}/{r.InstallmentCount}"
+            })
             .ToListAsync();
         return result;
     }

@@ -5,7 +5,7 @@ namespace SmartPocketAPI.Services.Interface;
 
 public interface IRecurringPaymentService
 {
-    Task<List<RecurringPayment>> GetRecurringPaymentsAsync(Guid userid);
+    Task<object> GetRecurringPaymentsAsync(Guid userid);
     Task<RecurringPayment> CreateRecurringPaymentAsync(RecurringPaymentViewModel recurringPaymentViewModel);
     Task<bool> DeleteRecurringPaymentAsync(Guid userid, int id);
     Task<RecurringPayment> UpdateRecurringPaymentAsync(RecurringPaymentViewModel recurringPaymentViewModel);
