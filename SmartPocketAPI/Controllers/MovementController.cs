@@ -85,6 +85,8 @@ public class MovementController : Controller
                 Description = movementViewModel.Description,
                 IsInterestFreePayment = movementViewModel.IsInterestFreePayment,
                 InstallmentCount = movementViewModel.InstallmentCount <= 0 ? 1 : movementViewModel.InstallmentCount,
+                LastInstallmentDate = movementViewModel.MovementDate,
+                NextInstallmentDate = RecurringPaymentHelper.GetNextDate(movementViewModel.MovementDate, movementViewModel.FrecuencyId),
                 NextInstallmentCount = 2, //The first movement will be created, so the next will be the 2nd
                 InstallmentAmount = movementViewModel.Amount,
                 StartDate = movementViewModel.MovementDate,
@@ -93,7 +95,7 @@ public class MovementController : Controller
                 PaymentMethodId = movementViewModel.PaymentMethodId,
                 MovementTypeId = movementViewModel.MovementTypeId,
                 FrecuencyId = movementViewModel.FrecuencyId,
-                UserId = userId
+                UserId = userId,
             };
 
             using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);

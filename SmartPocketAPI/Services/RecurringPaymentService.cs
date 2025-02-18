@@ -27,6 +27,10 @@ public class RecurringPaymentService : IRecurringPaymentService
             .Include(x => x.MovementType)
             .Include(x => x.CreditCardPayment)
             .Include(x => x.Frequency)
+            .OrderByDescending(x => x.IsActive)
+            .ThenByDescending(x => x.StartDate)
+            .ThenByDescending(x => x.PaymentMethod.Id)
+            .ThenBy(x => x.Id)
             .Select(r => new
             {
                 r.Id,
@@ -58,8 +62,8 @@ public class RecurringPaymentService : IRecurringPaymentService
             InstallmentAmountPerPeriod = recurringvm.InstallmentAmount / (recurringvm.InstallmentCount ?? 1),
             StartDate = recurringvm.StartDate,
             EndDate = recurringvm.EndDate,
-            NextInstallmentDate = recurringvm.StartDate,
-            LastInstallmentDate = null,
+            NextInstallmentDate = recurringvm.NextInstallmentDate,
+            LastInstallmentDate = recurringvm.LastInstallmentDate,
             IsActive = recurringvm.IsActive,
             CategoryId = recurringvm.CategoryId,
             PaymentMethodId = recurringvm.PaymentMethodId,

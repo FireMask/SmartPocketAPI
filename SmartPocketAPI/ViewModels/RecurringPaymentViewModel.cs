@@ -17,4 +17,6 @@ public class RecurringPaymentViewModel
     public int? CreditCardPaymentId { get; set; }
     public required int FrecuencyId { get; set; }
     public Guid UserId { get; set; }
+    public DateOnly? LastInstallmentDate { get; set; }
+    public DateOnly NextInstallmentDate { get; set; }
 }
