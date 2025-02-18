@@ -209,7 +209,9 @@ public class MovementService : IMovementService
             }
         }
 
-        return addMovementList;
+        return addMovementList
+            .OrderByDescending(x => x.MovementDate)
+            .ToList();
     }
 
     public async Task<object> GetSummaryPaymentMethods(Guid userId)
