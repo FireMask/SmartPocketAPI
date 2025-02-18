@@ -66,12 +66,12 @@ export default {
             }
         });
     },
-    frecuencies(){
+    pendingMovements(){
         const token = localStorage.getItem('AUTH_TOKEN')
-        return api.get('/frequencies', {
+        return api.get('/pendingMovements',{
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        });
-    }
+        })
+    },
 }

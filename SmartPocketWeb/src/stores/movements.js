@@ -7,16 +7,16 @@ export const useMovementsStore = defineStore( 'movements', () => {
     
     const categories = ref([]);
     const types = ref([]);
-    const frequencies = ref([]);
+    const userPendingMovements = ref([]);
     const paymentTypeId = 1;
     const incomeTypeId = 2;
     const purchaseTypeId = 3;
     const creditCardPaymentTypeId = 4;
-
+    
     //DashboardData
     const userMovements = ref([]);
-    const pendingRecurringMovements = ref([]);
-    const summaryByPaymentMethods = ref([]);
+    const pendingRecurringMovementsCount = ref(0);
+    const summaryByPaymentMethods = ref(0);
     const monthIncome = ref(0);
     const monthMovementsCount = ref(0);
     const monthSpent = ref(0);
@@ -27,7 +27,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
             getDashboard();
             getCategories();
             getTypes();
-            getFrequencies();
+            getPendingMovements();
         } catch (error) {
             console.log(error);
         }
@@ -45,7 +45,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
             }}} = await MovementsAPI.dashboard()
             
             userMovements.value = top20Movements;
-            pendingRecurringMovements.value = pendingMovementsRecurring
+            pendingRecurringMovementsCount.value = pendingMovementsRecurring
             summaryByPaymentMethods.value = summaryPaymentMethods
             monthIncome.value =thisMonthIncome
             monthMovementsCount.value = thisMonthMovementsCount
@@ -73,17 +73,41 @@ export const useMovementsStore = defineStore( 'movements', () => {
         types.value = data.data.map(type => { return {label: type.name, value: type.id, id: type.id}})
     }
 
-    const getFrequencies = async () => {
-        const {data} = await MovementsAPI.frecuencies();
-        frequencies.value = data.data.map(type => { return {label: type.name, value: type.id, id: type.id}})
+    const getPendingMovements = async () => {
+        const {data} = await MovementsAPI.pendingMovements();
+        userPendingMovements.value = data.data;
+    }
+
+    const AddPendingMovement = async(pendingData) => {
+        pendingData.isInstallment = true;
+        pendingData.frecuencyId = 1;
+        const {success} = await addMovement(pendingData)
+        if(success) {
+            toast.open({ message: 'Movement added', type: 'success' });
+            await getPendingMovements();
+        }
+    }
+
+    const AddCategory = async(categoryData) => {
+        try {
+            const { data } = await MovementsAPI.createCategory(categoryData)
+            
+            if(data.success){
+                toast.open({ message: 'Category added', type: 'success' });
+                await getCategories();
+            }else 
+                toast.open({ message: message, type: 'error' });
+            return data;
+        } catch (error)
+        {
+            console.log(error);
+            toast.open({ message: error.response.data.message, type: 'error' })
+        }
     }
 
     async function addMovement(movementData) {
         try {
-            console.log('store', movementData);
-            
             const { data } = await MovementsAPI.create(movementData)
-            console.log("data", data);
             
             if(data.success)
                 await getDashboard();
@@ -134,14 +158,14 @@ export const useMovementsStore = defineStore( 'movements', () => {
 
     return {
         userMovements,
-        pendingRecurringMovements,
+        userPendingMovements,
+        pendingRecurringMovementsCount,
         summaryByPaymentMethods,
         monthIncome,
         monthMovementsCount,
         monthSpent,
         categories,
         types,
-        frequencies,
         paymentTypeId,
         incomeTypeId,
         purchaseTypeId,
@@ -150,5 +174,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
         deleteMovement,
         updateMovement,
         getMovements,
+        AddCategory,
+        AddPendingMovement,
     }
 })

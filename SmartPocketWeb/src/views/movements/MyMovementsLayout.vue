@@ -4,6 +4,7 @@ import { reset } from '@formkit/vue';
 import { useRouter } from 'vue-router';
 import { useMovementsStore } from '../../stores/movements';
 import { useCardsStore } from '../../stores/cards';
+import { useRecurringPaymentsStore } from '@/stores/recurringPayments';
 import { formatAPIDate, formatMoney, formatterDate } from '../../helpers';
 import { CgAddR } from 'vue-icons-plus/cg';
 import VueTailwindDatepicker from 'vue-tailwind-datepicker'
@@ -13,6 +14,7 @@ const toast = inject('toast')
 const router = useRouter()
 const store = useMovementsStore();
 const cardsStore = useCardsStore();
+const recurringStore = useRecurringPaymentsStore();
 const selectedMovementType = ref(null);
 const amountLabel = ref('Amount $');
 const openNewCategory = ref(false)
@@ -196,7 +198,7 @@ watch(selectedMovementType, (newValue) => {
                             name="frecuencyId"
                             placeholder="Select one."
                             v-model="newMovement.frecuencyId"
-                            :options="store.frequencies"
+                            :options="recurringStore.frequencies"
                         />
                         <FormKit
                             type="text"

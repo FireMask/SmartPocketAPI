@@ -1,26 +1,17 @@
 <script setup>
     import { inject } from 'vue'
     import { reset } from '@formkit/vue';
-    import MovementsAPI from '../api/MovementsAPI';
+    import { useMovementsStore } from '@/stores/movements';
 
-    
-
+    const store = useMovementsStore();
     const open = defineModel('open');
     const toast = inject('toast')
 
     const handleSubmit = async (formData) => {
         try {
-            const {data: {success, message}} = await MovementsAPI.createCategory(formData);
-            
+            const {success} = await store.AddCategory(formData);            
             if(success)
-            {
                 closeModal();
-                toast.open({ message: message, type: 'success' });
-            }
-            else 
-            {
-                toast.open({ message: message, type: 'error' });
-            }
         } 
         catch (error)
         {

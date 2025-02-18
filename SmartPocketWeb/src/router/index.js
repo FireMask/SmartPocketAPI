@@ -8,6 +8,9 @@ import NewMovementLayout from '../views/movements/NewMovementLayout.vue'
 import NewRecurringPayment from '../views/movements/NewRecurringPayment.vue'
 import NewCardLayout from '../views/cards/NewCardLayout.vue'
 import MyMovementsLayout from '../views/movements/MyMovementsLayout.vue'
+import PaymentsLayout from '@/views/payments/PaymentsLayout.vue'
+import RecurringPaymentsLayout from '@/views/payments/RecurringPaymentsLayout.vue'
+import PendingLayout from '@/views/payments/PendingLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,7 +45,24 @@ const router = createRouter({
           component: NewMovementLayout
         },
         {
-          path: '/recurring/new',
+          path: '/payments',
+          name: 'payments',
+          component: PaymentsLayout,
+          children: [
+            {
+              path: 'recurring',
+              name: 'recurring-payments',
+              component: RecurringPaymentsLayout
+            },
+            {
+              path: 'pending',
+              name: 'pending',
+              component: PendingLayout
+            },
+          ]
+        },
+        {
+          path: '/payment/new',
           name: 'new-recurring-payment',
           component: NewRecurringPayment
         },
