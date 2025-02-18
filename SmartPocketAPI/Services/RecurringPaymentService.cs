@@ -62,7 +62,7 @@ public class RecurringPaymentService : IRecurringPaymentService
             InstallmentAmountPerPeriod = recurringvm.InstallmentAmount / (recurringvm.InstallmentCount ?? 1),
             StartDate = recurringvm.StartDate,
             EndDate = recurringvm.EndDate,
-            NextInstallmentDate = recurringvm.NextInstallmentDate,
+            NextInstallmentDate = recurringvm.NextInstallmentDate == default ? recurringvm.StartDate : recurringvm.NextInstallmentDate,
             LastInstallmentDate = recurringvm.LastInstallmentDate,
             IsActive = recurringvm.IsActive,
             CategoryId = recurringvm.CategoryId,
