@@ -1,5 +1,6 @@
 <script setup>
     import { useCardsStore } from '../stores/cards';
+    import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
     const store = useCardsStore();
 
     defineProps({
@@ -10,50 +11,43 @@
 </script>
 
 <template>
-    <div class="p-5 space-y-1 rounded-lg bg-blue-gray-300">
-        <div class="flex justify-between">
-            <p class="text-2xl font-light">{{ paymentMethod.name }}</p>
-            <p v-if="!(paymentMethod?.paymentMethodType?.name === 'Cash')" class="text-xl font-light">{{ paymentMethod.paymentMethodType.name }}</p>
-            <div v-if="!(paymentMethod?.paymentMethodType?.name === 'Cash')" class="flex space-x-2">
-                <RouterLink :to="{ name: 'new-card' }">
-                    <div class="p-3 text-gray-200 uppercase text-xs font-black rounded-lg bg-teal-300 cursor-pointer" >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" class="w-5 h-5 fill-current dark:text-teal-800">
-                            <path d="M20.094.25a2.245 2.245 0 0 0-1.625.656l-1 1.031l6.593 6.625l1-1.03a2.319 2.319 0 0 0 0-3.282L21.75.937A2.36 2.36 0 0 0 20.094.25zm-3.75 2.594l-1.563 1.5l6.875 6.875L23.25 9.75l-6.906-6.906zM13.78 5.438L2.97 16.155a.975.975 0 0 0-.5.625L.156 24.625a.975.975 0 0 0 1.219 1.219l7.844-2.313a.975.975 0 0 0 .781-.656l10.656-10.563l-1.468-1.468L8.25 21.813l-4.406 1.28l-.938-.937l1.344-4.593L15.094 6.75L13.78 5.437zm2.375 2.406l-10.968 11l1.593.343l.219 1.47l11-10.97l-1.844-1.843z"/>
-                        </svg>
+    <div class="max-w-80 min-w-80 w-80 sm:w-64 sm:min-w-64mt-6 overflow-hidden bg-white rounded-lg shadow-lg min-h-52">
+        <div class="px-6 py-4">
+            <div class="flex justify-between border-b border-gray-300">
+                <div class="mb-2 text-xl font-bold text-gray-900"> 
+                    {{ paymentMethod.name }} 
+                </div>
+                <span class="inline-block px-3 py-1 mb-2 mr-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full">
+                    {{ paymentMethod.paymentMethodType.name }}
+                </span>
+            </div>
+            <div class="flex justify-between flex-col sm:flex-row">
+                <div>    
+                    <p v-if="paymentMethod?.bank" class="text-base text-gray-700 my-2">
+                        {{ paymentMethod.bank }}
+                    </p>
+                    <div v-if="paymentMethod?.isCreditCard" class="flex space-x-3" >
+                        <span class="font-normal">Due date:</span>
+                        <span class="font-light">{{ paymentMethod.dueDate }}</span>
                     </div>
-                </RouterLink>
-                <div 
-                    class="p-3 text-gray-200 uppercase text-xs font-black rounded-lg bg-red-300 cursor-pointer" 
-                    @click="store.deleteCard(paymentMethod.id)"
-                    >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="w-5 h-5 fill-current dark:text-red-800">
-                        <g data-name="Layer 17" id="Layer_17">
-                            <path class="cls-1" d="M24,31H8a3,3,0,0,1-3-3V9A1,1,0,0,1,7,9V28a1,1,0,0,0,1,1H24a1,1,0,0,0,1-1V9a1,1,0,0,1,2,0V28A3,3,0,0,1,24,31Z"/>
-                            <path class="cls-1" d="M28,7H4A1,1,0,0,1,4,5H28a1,1,0,0,1,0,2Z"/>
-                            <path class="cls-1" d="M20,7a1,1,0,0,1-1-1V3H13V6a1,1,0,0,1-2,0V2a1,1,0,0,1,1-1h8a1,1,0,0,1,1,1V6A1,1,0,0,1,20,7Z"/>
-                            <path class="cls-1" d="M16,26a1,1,0,0,1-1-1V11a1,1,0,0,1,2,0V25A1,1,0,0,1,16,26Z"/>
-                            <path class="cls-1" d="M21,24a1,1,0,0,1-1-1V13a1,1,0,0,1,2,0V23A1,1,0,0,1,21,24Z"/>
-                            <path class="cls-1" d="M11,24a1,1,0,0,1-1-1V13a1,1,0,0,1,2,0V23A1,1,0,0,1,11,24Z"/>
-                        </g>
-                    </svg>
+                    <div v-if="paymentMethod?.isCreditCard" class="flex space-x-3" >
+                        <span class="font-normal">Transaction date:</span>
+                        <span class="font-light">{{ paymentMethod.transactionDate }}</span>
+                    </div>
+                    <div v-if="paymentMethod?.isCreditCard && paymentMethod.defaultInterestRate !=0" class="flex space-x-3" >
+                        <span class="font-normal">Interest rate:</span>
+                        <span class="font-light">{{ paymentMethod.defaultInterestRate }}%</span>
+                    </div>
+                </div>
+                <div class="mt-3 text-gray-500 flex flex-row space-x-2 h-fit">
+                    <RouterLink :to="{ name: 'new-card' }" class="cursor-pointer rounded-full bg-emerald-100 p-2">
+                        <GrEdit/>
+                    </RouterLink>
+                    <div @click="store.deleteCard(paymentMethod.id)" class="cursor-pointer rounded-full bg-rose-200 p-2">
+                        <GrTrash/>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="flex space-x-3" v-if="!(paymentMethod?.paymentMethodType?.name === 'Cash') && paymentMethod?.bank">
-            <span class="text-xl font-normal">Bank:</span>
-            <p class="text-xl font-light">{{ paymentMethod.bank }}</p>
-        </div>
-        <div class="flex space-x-3" v-if="paymentMethod?.isCreditCard">
-            <span class="text-xl font-normal">Due date:</span>
-            <p class="text-xl font-light">{{ paymentMethod.dueDate }}</p>
-        </div>
-        <div class="flex space-x-3" v-if="paymentMethod?.isCreditCard">
-            <span class="text-xl font-normal">Transaction date:</span>
-            <p class="text-xl font-light">{{ paymentMethod.transactionDate }}</p>
-        </div>
-        <div class="flex space-x-3" v-if="paymentMethod?.isCreditCard && paymentMethod.defaultInterestRate !=0">
-            <span class="text-xl font-normal">Interest rate:</span>
-            <p class="text-xl font-light">{{ paymentMethod.defaultInterestRate }}%</p>
         </div>
     </div>
 </template>

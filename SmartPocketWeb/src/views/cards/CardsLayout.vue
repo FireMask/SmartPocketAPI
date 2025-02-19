@@ -1,27 +1,32 @@
 <script setup>
-    import CardItem from '../../components/CardItem.vue';
     import { useCardsStore } from '../../stores/cards';
+    import { formatShowDate } from '../../helpers';
+    import CardItem from '../../components/CardItem.vue';
+    
     const store = useCardsStore();
+    const today = new Date();
 </script>
 
 <template>    
-    <div class="flex justify-between items-center">
-        <div >
-            <h1 class="text-2xl lg:text-6xl font-black text-gray-800">Cards</h1>
-        </div>
-        <div class="flex flex-col items-center">
-            <nav class="flex gap-2 items-center justify-end">
-                <RouterLink :to="{ name: 'new-card' }"
-                    class="p-3 text-gray-200 uppercase text-xs font-black rounded-lg bg-teal-500">
+    <header class="flex sticky justify-between mb-4 flex-col lg:flex-row">
+          <h3 class="text-3xl font-medium text-gray-700">
+            Cards
+          </h3>
+          <div class="w-auto text-lg lg:text-xl mt-3 lg:mt-0">
+            <p class="font-medium text-gray-700">
+              {{ formatShowDate(today) }}
+            </p>
+            <p>
+                <RouterLink :to="{ name: 'new-card' }" class="text-indigo-600 hover:text-indigo-900 font-medium">
                     New card
                 </RouterLink>
-            </nav>
-        </div>
-    </div>
+            </p>
+          </div>
+      </header >
 
-    <div class="grid grid-cols-2 gap-5 mt-5">
+    <div class="flex flex-wrap gap-12 m-5">
         <CardItem
-            v-for="paymentMethod in store.userPaymentMethods"
+            v-for="paymentMethod in store.userCards"
             :key="paymentMethod._id"
             :paymentMethod="paymentMethod"
         />

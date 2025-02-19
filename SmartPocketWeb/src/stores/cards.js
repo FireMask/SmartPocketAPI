@@ -8,6 +8,7 @@ export const useCardsStore = defineStore( 'cards', () => {
     const typesToAdd = ref([])
     const userPaymentMethods = ref([]);
     const userCreditCards = ref([]);
+    const userCards = ref([]);
     const toast = inject('toast')
 
     onMounted(async () => {
@@ -29,6 +30,7 @@ export const useCardsStore = defineStore( 'cards', () => {
         const {data} = await CardsAPI.all()
         userPaymentMethods.value = data.data.map(card => { card.label = card.name; card.value = card.id; return card})
         userCreditCards.value = userPaymentMethods.value.filter(type => type.isCreditCard);
+        userCards.value = userPaymentMethods.value.filter(m => !m.isDefault);
     }
 
     const getCreditCardId = computed( () => {
@@ -94,6 +96,7 @@ export const useCardsStore = defineStore( 'cards', () => {
         userPaymentMethods,
         userCreditCards,
         getCreditCardId,
+        userCards,
         addCard,
         deleteCard,
         updateCard

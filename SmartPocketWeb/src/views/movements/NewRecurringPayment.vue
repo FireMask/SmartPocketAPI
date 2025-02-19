@@ -152,7 +152,7 @@
                 <FormKit
                     type="select"
                     label="Frequency"
-                    name="frecuencyId"
+                    name="frequencyId"
                     placeholder="Select the payment frequency."
                     :options="store.frecuencies"
                     validation="required"

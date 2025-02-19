@@ -79,12 +79,21 @@ export const useMovementsStore = defineStore( 'movements', () => {
     }
 
     const AddPendingMovement = async(pendingData) => {
-        pendingData.isInstallment = true;
-        pendingData.frecuencyId = 1;
-        const {success} = await addMovement(pendingData)
-        if(success) {
-            toast.open({ message: 'Movement added', type: 'success' });
-            await getPendingMovements();
+        try {
+            const { data } = await MovementsAPI.CreatePendingMovement(pendingData)
+            
+            if(data.success){
+                toast.open({ message: 'Movement added', type: 'success' });
+                await getPendingMovements();
+                await getDashboard();
+            }
+            else 
+                toast.open({ message: message, type: 'error' });
+            return data;
+        } catch (error)
+        {
+            console.log(error);
+            toast.open({ message: error.response.data.message, type: 'error' })
         }
     }
 

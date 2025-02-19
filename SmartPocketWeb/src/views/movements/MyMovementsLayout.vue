@@ -36,7 +36,7 @@ const newMovement = ref({
     movementTypeId: null,
     installmentCount: null,
     isInterestFreePayment: false,
-    frecuencyId: null,
+    frequencyId: null,
     creditCardPaymentId: null
 });
 
@@ -51,8 +51,8 @@ const handleSubmit = async (formData) => {
     newMovement.value.amount = formatMoney(newMovement.value.amount);
     if (!newMovement.value.installmentCount)
         newMovement.value.installmentCount = 0
-    if (!newMovement.value.frecuencyId)
-        newMovement.value.frecuencyId = 0
+    if (!newMovement.value.frequencyId)
+        newMovement.value.frequencyId = 0
 
     const resp = await store.addMovement(newMovement.value);
 
@@ -194,10 +194,10 @@ watch(selectedMovementType, (newValue) => {
                     <div class="flex items-center space-x-2">
                         <FormKit
                             type="select"
-                            label="Frecuency"
-                            name="frecuencyId"
+                            label="Frequency"
+                            name="frequencyId"
                             placeholder="Select one."
-                            v-model="newMovement.frecuencyId"
+                            v-model="newMovement.frequencyId"
                             :options="recurringStore.frequencies"
                         />
                         <FormKit

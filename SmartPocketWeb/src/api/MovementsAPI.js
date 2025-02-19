@@ -74,4 +74,13 @@ export default {
             }
         })
     },
+    CreatePendingMovement(movementData){
+        console.log('api', movementData);
+        const token = localStorage.getItem('AUTH_TOKEN')
+        return api.post('/createNewMovementFromRecurringPayment', movementData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    },
 }

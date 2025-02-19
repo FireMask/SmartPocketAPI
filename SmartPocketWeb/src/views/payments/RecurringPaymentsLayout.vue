@@ -1,6 +1,7 @@
 <script setup>
     import { formatShowDate, formatMoney } from '../../helpers';
     import { useRecurringPaymentsStore } from '../../stores/recurringPayments';
+    import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
 
     const store = useRecurringPaymentsStore()
 </script>
@@ -28,6 +29,7 @@
                     <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
                         Paid count
                     </th>
+                    <th class="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50"></th>
                 </tr>
             </thead>
 
@@ -79,6 +81,17 @@
 
                     <td class="px-6 py-4 text-sm font-medium leading-5 text-right border-b border-gray-200 whitespace-nowrap">
                         {{ m.paidCount }}
+                    </td>
+
+                    <td class="px-6 py-4 text-sm font-medium leading-5 text-right border-b border-gray-200 whitespace-nowrap text-gray-500 ">
+                        <div class="text-gray-500 flex flex-row space-x-2 h-fit">
+                            <RouterLink :to="{ name: 'new-recurring-payment' }" class="cursor-pointer rounded-full bg-emerald-100 p-2 h-fit">
+                                <GrEdit size="20"/>
+                            </RouterLink>
+                            <div @click="store.deleteRecurringPayment(m.id)" class="cursor-pointer rounded-full bg-rose-200 p-2 h-fit">
+                                <GrTrash size="20"/>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             </tbody>
