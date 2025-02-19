@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Helpers.Extensions;
-using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
@@ -77,31 +76,33 @@ public class MovementController : Controller
                 CategoryId = movementViewModel.CategoryId,
                 PaymentMethodId = movementViewModel.PaymentMethodId,
                 MovementTypeId = movementViewModel.MovementTypeId,
-                CreditCardPaymentId = movementViewModel.CreditCardPaymentId
-            };
-
-            RecurringPaymentViewModel recurringPayment = new RecurringPaymentViewModel()
-            {
-                Description = movementViewModel.Description,
-                IsInterestFreePayment = movementViewModel.IsInterestFreePayment,
-                InstallmentCount = movementViewModel.InstallmentCount <= 0 ? 1 : movementViewModel.InstallmentCount,
-                LastInstallmentDate = movementViewModel.MovementDate,
-                NextInstallmentDate = RecurringPaymentHelper.GetNextDate(movementViewModel.MovementDate, movementViewModel.FrecuencyId),
-                NextInstallmentCount = 2, //The first movement will be created, so the next will be the 2nd
-                InstallmentAmount = movementViewModel.Amount,
-                StartDate = movementViewModel.MovementDate,
-                IsActive = true,
-                CategoryId = movementViewModel.CategoryId,
-                PaymentMethodId = movementViewModel.PaymentMethodId,
-                MovementTypeId = movementViewModel.MovementTypeId,
-                FrecuencyId = movementViewModel.FrecuencyId,
-                UserId = userId,
+                CreditCardPaymentId = movementViewModel.CreditCardPaymentId,
+                InstallmentNumber = movementViewModel.InstallmentNumber
             };
 
             using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             if (movementViewModel.IsInstallment)
             {
+                RecurringPaymentViewModel recurringPayment = new RecurringPaymentViewModel()
+                {
+                    Description = movementViewModel.Description,
+                    IsInterestFreePayment = movementViewModel.IsInterestFreePayment,
+                    InstallmentCount = movementViewModel.InstallmentCount <= 0 ? 1 : movementViewModel.InstallmentCount,
+                    LastInstallmentDate = movementViewModel.MovementDate,
+                    NextInstallmentDate = RecurringPaymentHelper.GetNextDate(movementViewModel.MovementDate, movementViewModel.FrequencyId),
+                    NextInstallmentCount = 2, //The first movement will be created, so the next will be the 2nd
+                    InstallmentAmount = movementViewModel.Amount,
+                    StartDate = movementViewModel.MovementDate,
+                    IsActive = true,
+                    CategoryId = movementViewModel.CategoryId,
+                    PaymentMethodId = movementViewModel.PaymentMethodId,
+                    MovementTypeId = movementViewModel.MovementTypeId,
+                    FrequencyId = movementViewModel.FrequencyId,
+                    UserId = userId,
+                };
+
                 var rpResult = await _recurringPaymentService.CreateRecurringPaymentAsync(recurringPayment);
+
                 movement.RecurringPaymentId = rpResult.Id;
                 movement.InstallmentNumber = 1; //Its the first movement of the recurringPayment
                 movement.Amount = movementViewModel.Amount / rpResult.InstallmentCount;
@@ -186,6 +187,57 @@ public class MovementController : Controller
         {
             _logger.LogError(ex.ToString());
             return ex.Message.ToApiError(Constants.FETCH_ERROR);
+        }
+    }
+
+    [HttpPost("/CreateNewMovementFromRecurringPayment")]
+    public async Task<IResult> CreateNewMovementFromRecurringPayment(MovementMSIViewModel movementMSIViewModel)
+    {
+        try
+        {
+            Guid userId = HttpContext.GetUserId();
+            
+            int recurringPaymentId = movementMSIViewModel.RecurringPaymentId ?? 0;
+
+            var recurringPayment = await _recurringPaymentService.GetRecurringPaymentByIdAsync(userId, recurringPaymentId);
+            if (recurringPayment == null)
+                throw new Exception("Recurring payment does not exists");
+
+            MovementViewModel movement = new MovementViewModel()
+            {
+                MovementDate = movementMSIViewModel.MovementDate,
+                Description = movementMSIViewModel.Description,
+                Amount = movementMSIViewModel.Amount,
+                UserId = userId,
+                CategoryId = movementMSIViewModel.CategoryId,
+                PaymentMethodId = movementMSIViewModel.PaymentMethodId,
+                RecurringPaymentId = movementMSIViewModel.RecurringPaymentId,
+                MovementTypeId = movementMSIViewModel.MovementTypeId,
+                InstallmentNumber = movementMSIViewModel.InstallmentNumber,
+                CreditCardPaymentId = movementMSIViewModel.CreditCardPaymentId
+            };
+
+            using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+            var newMovement = await _movementService.CreateMovementAsync(movement);
+
+            await _recurringPaymentService.UpdateRecurringPaymentNewMovementAsync(new UpdateRecurringPaymentViewModel()
+            {
+                UserId = userId,
+                Id = recurringPaymentId,
+                NextInstallmentDate = RecurringPaymentHelper.GetNextDate(movementMSIViewModel.MovementDate, recurringPayment.FrequencyId),
+                NextInstallmentCount = recurringPayment.NextInstallmentCount + 1,
+                LastInstallmentDate = movementMSIViewModel.MovementDate
+            });
+
+            scope.Complete();
+
+            return newMovement.ToApiResponse(Constants.INSERT_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.INSERT_ERROR);
         }
     }
 

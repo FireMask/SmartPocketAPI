@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartPocketAPI.Auth;
 using SmartPocketAPI.Database;
+using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.ViewModels;
@@ -70,7 +71,7 @@ public class RecurringPaymentService : IRecurringPaymentService
             MovementTypeId = recurringvm.MovementTypeId,
             CreditCardPaymentId = recurringvm.CreditCardPaymentId,
             UserId = recurringvm.UserId,
-            FrecuencyId = recurringvm.FrecuencyId,
+            FrequencyId = recurringvm.FrequencyId,
         };
 
         _context.RecurringPayments.Add(newRecurringPayment);
@@ -119,5 +120,19 @@ public class RecurringPaymentService : IRecurringPaymentService
         await _context.SaveChangesAsync();
 
         return recurringPayment;
+    }
+
+    public async Task UpdateRecurringPaymentNewMovementAsync(UpdateRecurringPaymentViewModel updateRP)
+    {
+        RecurringPayment? recurringPaymentDb = await GetRecurringPaymentByIdAsync(updateRP.UserId, updateRP.Id);
+        if (recurringPaymentDb == null)
+            throw new ArgumentNullException("Recurrent payment does not exists");
+
+        recurringPaymentDb.NextInstallmentCount = updateRP.NextInstallmentCount;
+        recurringPaymentDb.NextInstallmentDate = updateRP.NextInstallmentDate;
+        recurringPaymentDb.LastInstallmentDate = updateRP.LastInstallmentDate;
+
+        _context.RecurringPayments.Update(recurringPaymentDb);
+        await _context.SaveChangesAsync();
     }
 }

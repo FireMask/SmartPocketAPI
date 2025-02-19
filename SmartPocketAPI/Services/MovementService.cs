@@ -147,7 +147,7 @@ public class MovementService : IMovementService
 
         Dictionary<string, object> result = new Dictionary<string, object>()
         {
-            { "top20Movements", movementThisMonth },
+            { "top20Movements", top20Movements },
             { "thisMonthMovementsCount", movementsCount },
             { "thisMonthSpent", thisMonthSpent },
             { "thisMonthIncome", thisMonthIncome },
@@ -168,6 +168,7 @@ public class MovementService : IMovementService
             .Include(x => x.PaymentMethod)
             .Include(x => x.MovementType)
             .Include(x => x.CreditCardPayment)
+            .Include(x => x.Frequency)
             .ToListAsync();
 
         if (untilDate == null)
@@ -204,8 +205,10 @@ public class MovementService : IMovementService
                     InstallmentNumber = installmentNo++,
                     CreditCardPaymentId = rPayment.CreditCardPaymentId,
                     CreditCardPaymentName = rPayment.CreditCardPayment?.Name ?? "",
+                    FrequencyId = rPayment.FrequencyId,
+                    FrequencyName = rPayment.Frequency.Name
                 });
-                nextDate = RecurringPaymentHelper.GetNextDate(nextDate, rPayment.FrecuencyId);            
+                nextDate = RecurringPaymentHelper.GetNextDate(nextDate, rPayment.FrequencyId);            
             }
         }
 

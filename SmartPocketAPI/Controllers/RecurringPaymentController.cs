@@ -74,7 +74,7 @@ public class RecurringPaymentController : Controller
         }
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<IResult> DeleteRecurringPayment(int id)
     {
         try

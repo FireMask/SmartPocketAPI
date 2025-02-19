@@ -16,4 +16,6 @@ public class MovementFromRecurringPaymentsViewModel
     public int InstallmentNumber { get; set; }
     public int? CreditCardPaymentId { get; set; }
     public string CreditCardPaymentName { get; set; } = string.Empty;
+    public int FrequencyId { get; set; }
+    public string FrequencyName { get; set; } = string.Empty;
 }

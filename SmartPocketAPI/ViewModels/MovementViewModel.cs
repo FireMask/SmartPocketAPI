@@ -33,7 +33,7 @@ public class UpdateMovementViewModel
 public class MovementMSIViewModel
 {
     public Guid? UserId { get; set; }
-    public required bool IsInstallment { get; set; } = false;
+    public bool IsInstallment { get; set; } = false;
     public DateOnly MovementDate { get; set; }
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
@@ -41,9 +41,11 @@ public class MovementMSIViewModel
     public int PaymentMethodId { get; set; }
     public int MovementTypeId { get; set; }
     public int InstallmentCount { get; set; }
+    public int? InstallmentNumber { get; set; }
     public bool IsInterestFreePayment { get; set; }
-    public required int FrecuencyId { get; set; }
+    public int FrequencyId { get; set; }
     public int? CreditCardPaymentId { get; set; }
+    public int? RecurringPaymentId { get; set; }
 }
 
 public class MovementReportEntity

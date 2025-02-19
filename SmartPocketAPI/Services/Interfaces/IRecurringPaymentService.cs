@@ -10,4 +10,5 @@ public interface IRecurringPaymentService
     Task<bool> DeleteRecurringPaymentAsync(Guid userid, int id);
     Task<RecurringPayment> UpdateRecurringPaymentAsync(RecurringPaymentViewModel recurringPaymentViewModel);
     Task<RecurringPayment?> GetRecurringPaymentByIdAsync(Guid userid, int id);
+    Task UpdateRecurringPaymentNewMovementAsync(UpdateRecurringPaymentViewModel updateRP);
 }

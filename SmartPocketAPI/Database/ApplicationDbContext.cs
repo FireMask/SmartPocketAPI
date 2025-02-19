@@ -127,7 +127,7 @@ public class ApplicationDbContext : DbContext
             modelBuilder.Entity<RecurringPayment>()
                     .HasOne(c => c.Frequency)
                     .WithMany(p => p.RecurringPayments)
-                    .HasForeignKey(c => c.FrecuencyId);
+                    .HasForeignKey(c => c.FrequencyId);
 
         #endregion
 

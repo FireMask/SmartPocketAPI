@@ -15,7 +15,16 @@ public class RecurringPaymentViewModel
     public required int PaymentMethodId { get; set; }
     public required int MovementTypeId { get; set; }
     public int? CreditCardPaymentId { get; set; }
-    public required int FrecuencyId { get; set; }
+    public required int FrequencyId { get; set; }
+    public Guid UserId { get; set; }
+    public DateOnly? LastInstallmentDate { get; set; }
+    public DateOnly NextInstallmentDate { get; set; }
+}
+
+public class UpdateRecurringPaymentViewModel
+{
+    public int Id { get; set; }
+    public int NextInstallmentCount { get; set; }
     public Guid UserId { get; set; }
     public DateOnly? LastInstallmentDate { get; set; }
     public DateOnly NextInstallmentDate { get; set; }

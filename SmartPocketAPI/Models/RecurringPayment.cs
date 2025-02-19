@@ -32,7 +32,7 @@ public class RecurringPayment
     public Guid UserId { get; set; }
     public User User { get; set; }
 
-    public int FrecuencyId { get; set; }
+    public int FrequencyId { get; set; }
     public Frequency Frequency { get; set; }
 
     [JsonIgnore]
