@@ -30,6 +30,12 @@ public class ReportService : IReportService
         var resultList = data
             .Select(x =>
             {
+                var instCount = "";
+                if(x.RecurringPayment != null)
+                {
+                    instCount = x.RecurringPayment?.InstallmentCount == -1 ? $"{x.InstallmentNumber}" : $"{x.InstallmentNumber}/{x.RecurringPayment?.InstallmentCount}";
+                }
+
                 return new MovementReportEntity
                 {
                     MovementDate = x.MovementDate,
@@ -39,7 +45,7 @@ public class ReportService : IReportService
                     Amount = x.Amount,
                     IsIncome = x.MovementTypeId == 2,
                     IsRecurringPayment = x.RecurringPaymentId != null,
-                    InstallmentCount = x.RecurringPayment.InstallmentCount == -1 ? $"{x.InstallmentNumber}" : $"{x.InstallmentNumber}/{x.RecurringPayment.InstallmentCount}"
+                    InstallmentCount = instCount
                 };
             })
             .ToList();
