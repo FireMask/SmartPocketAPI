@@ -154,7 +154,7 @@
                     label="Frequency"
                     name="frequencyId"
                     placeholder="Select the payment frequency."
-                    :options="store.frecuencies"
+                    :options="store.frequencies"
                     validation="required"
                     :validation-messages="{
                         required: 'The payment payment frequency is required.'

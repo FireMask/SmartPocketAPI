@@ -1,130 +1,146 @@
 <script setup>
     import { ref, watch } from 'vue';
-    import { useCardsStore } from '../../stores/cards';
     import { reset } from '@formkit/vue';
+    import { useCardsStore } from '../../stores/cards';
     import { RouterLink, useRouter } from 'vue-router'
-    
+    import { FormKitSchema } from '@formkit/vue';
+    import { formatShowDate } from '../../helpers';
+
     const store = useCardsStore();
     const isCreditCard = ref(false);
     const selectedCardType = ref({});
     const router = useRouter()
+    const today = new Date();
+
+    const schema = [
+        {
+            $formkit: "text",
+                    name: "name",
+                    label: "Alias",
+                    placeholder: "Alias for this card.",
+                    validation: "required",
+                    validationMessages: { required: 'The alias is required.', },
+        },
+
+        {
+            $formkit: "radio",
+            name: "paymentMethodTypeId",
+            label: "Type of card",
+            options: store.typesToAdd,
+            validation: "required",
+            validationMessages: { required: 'Type of card is required.', }
+        },
+        {
+            $formkit: "text",
+            name: "bank",
+            label: "Bank [optional]",
+            placeholder: "Bank of this card [optional].",
+        },
+        {
+            $formkit: "text",
+            name: "dueDate",
+            label: "Due day",
+            if: "$isCreditCard",
+            placeholder: "Example: on the 12th of each month, enter 12.",
+            validation: "required|length:1,2|number",
+            validationMessages: {
+                required: 'Due day is required.',
+                length: 'Please enter a valid day of the month.',
+                number: 'The due day must have only numbers.'
+            }
+        },
+        {
+            $formkit: "text",
+            name: "transactionDate",
+            label: "Transaction day",
+            if: "$isCreditCard",
+            placeholder: "Example: on the 27th of each month, enter 27.",
+            validation: "required|length:1,2|number",
+            validationMessages: {
+                required: 'Transaction day is required.',
+                length: 'Please enter a valid day of the month.',
+                number: 'The transaction day must have only numbers.'
+            }
+        },
+        {
+            $formkit: "text",
+            name: "defaultInterestRate",
+            label: "Interest rate % [optional]",
+            if: "$isCreditCard",
+            placeholder: "Example: 2.4%, enter 2.4.",
+            validation: "number|regex:/^\\d*\\.?\\d+$/|length:1,5",
+            validationMessages: {
+                regex: 'The interest rate must be a valid number.',
+                number: 'The interest rate must have only numbers.',
+                length: 'The interest rate must be between 1 and 5 characters long.'
+            }
+        },
+        {
+            $formkit: "submit",
+            label: "Save"
+        },
+    ];
+
+    const data = ref({
+    name: null,
+    paymentMethodTypeId: null,
+    bank: '',
+    dueDate: null,
+    transactionDate: null,
+    defaultInterestRate: null,
+    isCreditCard: false
+    });
 
     const handleSubmit = async (formData) => {
-        formData.isCreditCard = isCreditCard.value
+        if(!formData.dueDate)
+            formData.dueDate = 0
+        if(!formData.transactionDate)
+            formData.transactionDate = 0
+        if(!formData.defaultInterestRate)
+            formData.defaultInterestRate = 0
+
         const response = await store.addCard(formData)
-        console.log(response)
-        if(response.success)
-        {
+
+        if (response.success) {
             reset('cardForm')
-            router.push({name:'cards'});
+            router.push({ name: 'cards' });
         }
     }
 
-    watch(selectedCardType, (newValue) => {
-        handleCardTypeChange(newValue);
+    watch(data, (newValue) => {
+        data.value.isCreditCard = newValue.paymentMethodTypeId === store.getCreditCardId
     });
 
-    const handleCardTypeChange = (newValue) => {
-        isCreditCard.value = (newValue === store.getCreditCardId);
-    }
 </script>
 
-<template>    
-    <div class="flex justify-between items-center">
-        <div>
-            <h1 class="text-2xl lg:text-6xl font-black text-gray-800">New card</h1>
-        </div>
-        <div class="flex flex-col items-center">
-            <nav class="flex gap-2 items-center justify-end">
-                <RouterLink :to="{ name: 'cards' }"
-                    class="p-3 text-gray-200 uppercase text-xs font-black rounded-lg bg-teal-500">
+<template>
+    <header class="flex sticky justify-between mb-4 flex-col lg:flex-row">
+        <h3 class="text-3xl font-medium text-gray-700">
+            New card
+        </h3>
+        <div class="w-auto text-lg lg:text-xl mt-3 lg:mt-0">
+            <p class="font-medium text-gray-700">
+                {{ formatShowDate(today) }}
+            </p>
+            <p>
+                <RouterLink :to="{ name: 'cards' }" class="text-indigo-600 hover:text-indigo-900 font-medium">
                     Cards
                 </RouterLink>
-            </nav>
+            </p>
         </div>
-    </div>
+    </header>
 
-    <div class="mt-10 lg:w-1/2">
-        <FormKit
-            id="cardForm"
-            type="form"
-            :actions="false"
-            incomplete-message="Error sending the data, please, see the notifications."
-            @submit="handleSubmit"
-        >
-            <FormKit
-                type="text"
-                label="Alias"
-                name="name"
-                placeholder="Alias for this card."
-                validation="required"
-                :validation-messages="{
-                        required: 'The alias is required.',
-                    }"
-            />
-            <FormKit
-                name="paymentMethodTypeId"
-                type="radio"
-                label="Type of card"
-                v-model="selectedCardType"
-                :options="store.typesToAdd"
-                validation="required"
-                :validation-messages="{
-                    required: 'Type of card is required.',
-                }"
-            />
-
-            <FormKit
-                type="text"
-                label="Bank [optional]"
-                name="bank"
-                placeholder="Bank of this card [optional]."
-            />
-
-            <div v-if="isCreditCard" class="flex items-center justify-between space-x-4">
-                <div class="w-1/3">
-                    <FormKit
-                        type="text"
-                        label="Due day [optional]"
-                        name="dueDate"
-                        placeholder="Example: on the 12th of each month, enter 12."
-                        validation="length:1,2|number"
-                        :validation-messages="{
-                            length: 'Please enter a valid day of the month.',
-                            number: 'The due day must have only numbers.'
-                        }"
-                    />
-                </div>
-                <div class="w-1/3">
-                <FormKit
-                    type="text"
-                    label="Transaction day [optional]"
-                    name="transactionDate"
-                    placeholder="Example: on the 27th of each month, enter 27."
-                    validation="length:1,2|number"
-                    :validation-messages="{
-                        length: 'Please enter a valid day of the month.',
-                        number: 'The transaction day must have only numbers.'
-                    }"
-                />
-                </div>
-                <div class="w-1/3">
-                <FormKit
-                    type="text"
-                    label="Interest rate % [optional]"
-                    name="defaultInterestRate"
-                    placeholder="Example: 2.4%, enter 2.4."
-                    validation="number|regex:/^\\d*\\.?\\d+$/|length:1,5"
-                    :validation-messages="{
-                        regex: 'The interest rate must be a valid number.',
-                        number: 'The interest rate must have only numbers.',
-                        length: 'The interest rate must be between 1 and 5 characters long.'
-                    }"
-                />
-                </div>
-            </div>
-
-            <FormKit type="submit">Save</FormKit>
-        </FormKit>
+    <div class="mt-4">
+        <div class="p-6 bg-white rounded-md shadow-md max-w-md">
+            <FormKit 
+                id="cardForm"
+                type="form" 
+                v-model="data" 
+                :actions="false"
+                @submit="handleSubmit"
+                incomplete-message="Error sending the data, please, see the notifications.">
+                <FormKitSchema :schema="schema" :data="data" />
+            </FormKit>
+        </div>
     </div>
 </template>
