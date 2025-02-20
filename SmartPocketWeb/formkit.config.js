@@ -11,7 +11,7 @@ const config = {
                 input: 'w-full p-3 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-400',
             },
             submit: {
-                input: '$reset bg-teal-400 hover:bg-teal-500 rounded-lg text-gray-800 font-bold w-full p-3 mt-10'
+                input: '$reset mt-6 px-4 py-2 text-gray-200 bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:bg-gray-700'
             },
             radio: {
                 wrapper: 'flex items-center space-x-4 mb-0 space-y-0',

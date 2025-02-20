@@ -5,7 +5,7 @@ import RecurringPaymentAPI from '../api/RecurringPaymentAPI';
 export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () => {
 
     const userRecurringPayments = ref([]);
-    const frecuencies = ref([])
+    const frequencies = ref([])
     const toast = inject('toast')
 
     onMounted(async () => {
@@ -23,7 +23,7 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
     }
     const getFrequencies = async () => {
         const {data} = await RecurringPaymentAPI.frequencies()
-        frecuencies.value = data.data.map(freq => { return {label: freq.name, value: freq.id, id: freq.id}})
+        frequencies.value = data.data.map(freq => { return {label: freq.name, value: freq.id, id: freq.id}})      
     }
 
     const addRecurringPayment = async (paymentData) => {
@@ -66,7 +66,7 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
 
     return {
         userRecurringPayments,
-        frecuencies,
+        frequencies,
         addRecurringPayment,
         deleteRecurringPayment,
     }
