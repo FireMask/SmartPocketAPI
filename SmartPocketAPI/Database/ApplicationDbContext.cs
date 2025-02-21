@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using SmartPocketAPI.Helpers.Extensions;
 using SmartPocketAPI.Models;
+using SmartPocketAPI.Models.General;
 using SmartPocketAPI.Options;
 
 namespace SmartPocketAPI.Database;
@@ -27,6 +28,34 @@ public class ApplicationDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer(_options.ConnectionString);
+    }
+
+    private void SetTimeStamp()
+    {
+        var entries = ChangeTracker
+            .Entries()
+            .Where(e => e.Entity is ITimestampedEntity && (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+        foreach (var entityEntry in entries)
+        {
+            ((ITimestampedEntity)entityEntry.Entity).UpdatedAt = DateTime.UtcNow;
+            if (entityEntry.State == EntityState.Added)
+            {
+                ((ITimestampedEntity)entityEntry.Entity).CreatedAt = DateTime.UtcNow;
+            }
+        }
+    }
+
+    public override int SaveChanges()
+    {
+        SetTimeStamp();
+        return base.SaveChanges();
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        SetTimeStamp();
+        return base.SaveChangesAsync(cancellationToken);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -136,7 +165,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Movement>()
             .ToTable("Movement");
 
-            modelBuilder.Entity<Movement>()
+        modelBuilder.Entity<Movement>()
                 .HasOne(c => c.User)
                 .WithMany(u => u.Movements)
                 .HasForeignKey(c => c.UserId)

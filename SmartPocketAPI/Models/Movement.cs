@@ -1,6 +1,8 @@
-﻿namespace SmartPocketAPI.Models;
+﻿using SmartPocketAPI.Models.General;
 
-public class Movement
+namespace SmartPocketAPI.Models;
+
+public class Movement : ITimestampedEntity
 {
     public int Id { get; set; }
     public DateOnly MovementDate { get; set; }
@@ -25,5 +27,6 @@ public class Movement
 
     public int? CreditCardPaymentId { get; set; }
     public PaymentMethod CreditCardPayment { get; set; }
-
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }

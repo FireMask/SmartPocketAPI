@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using SmartPocketAPI.Models.General;
+using System.Text.Json.Serialization;
 
 namespace SmartPocketAPI.Models;
 
-public class RecurringPayment
+public class RecurringPayment : ITimestampedEntity
 {
     public int Id { get; set; } = 0;
     public string Description { get; set; } = string.Empty;
@@ -38,4 +39,6 @@ public class RecurringPayment
     [JsonIgnore]
     public ICollection<Movement> Movements { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 }

@@ -122,6 +122,7 @@ public class MovementService : IMovementService
             .Include(x => x.MovementType)
             .Include(x => x.CreditCardPayment)
             .OrderByDescending(x => x.MovementDate)
+            .ThenByDescending(x => x.CreatedAt)
             .AsQueryable();
 
         var movementThisMonth = await query.Where(x => x.MovementDate.Year == DateTime.Now.Year
