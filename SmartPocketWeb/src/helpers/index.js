@@ -7,7 +7,7 @@ export const formatAPIDate = dateString =>
 
 export const formatShowDate = dateString => 
 {
-    const newDate = new Date(dateString);
+    const newDate = new Date(dateString + 'T00:00:00');
     var options = { year: 'numeric', month: 'long', day: 'numeric' };
     return newDate.toLocaleDateString("en-US", options)
 }
