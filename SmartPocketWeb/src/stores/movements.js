@@ -8,6 +8,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
     const categories = ref([]);
     const types = ref([]);
     const userPendingMovements = ref([]);
+    const userMovementsPaginate = ref([]);
     const paymentTypeId = 1;
     const incomeTypeId = 2;
     const purchaseTypeId = 3;
@@ -24,14 +25,26 @@ export const useMovementsStore = defineStore( 'movements', () => {
 
     onMounted(async () => {
         try {
-            getDashboard();
-            getCategories();
-            getTypes();
-            getPendingMovements();
+            await getDashboard();
+            await getCategories();
+            await getTypes();
+            await getPendingMovements();
+            await getMovements();
         } catch (error) {
             console.log(error);
         }
     })
+
+    const reload = async () => {
+        try {
+            await getDashboard();
+            await getCategories();
+            await getPendingMovements();
+            await getMovements();
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const getDashboard = async () => {
         try {
@@ -60,7 +73,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
 
     const getMovements = async () => {
         const {data} = await MovementsAPI.all()
-        userMovements.value = data.data;
+        userMovementsPaginate.value = data.data;
     }
 
     const getCategories = async () => {
@@ -86,6 +99,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
                 toast.open({ message: 'Movement added', type: 'success' });
                 await getPendingMovements();
                 await getDashboard();
+                await getMovements();
             }
             else 
                 toast.open({ message: message, type: 'error' });
@@ -118,9 +132,10 @@ export const useMovementsStore = defineStore( 'movements', () => {
         try {
             const { data } = await MovementsAPI.create(movementData)
             
-            if(data.success)
+            if(data.success){
                 await getDashboard();
-            else 
+                await getMovements();
+            } else 
                 toast.open({ message: message, type: 'error' });
             return data;
         } catch (error)
@@ -140,6 +155,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
                 })
 
                 await getDashboard();
+                await getMovements();
             } catch (error)
             {
                 console.log(error);
@@ -153,9 +169,10 @@ export const useMovementsStore = defineStore( 'movements', () => {
             const { data } = await MovementsAPI.update(movementData)
             console.log("movement data response", data);
             
-            if(data.success)
+            if(data.success) {
                 await getDashboard();
-            else 
+                await getMovements();
+            } else 
                 toast.open({ message: message, type: 'error' });
             return data;
         } catch (error)
@@ -179,11 +196,13 @@ export const useMovementsStore = defineStore( 'movements', () => {
         incomeTypeId,
         purchaseTypeId,
         creditCardPaymentTypeId,
+        userMovementsPaginate,
         addMovement,
         deleteMovement,
         updateMovement,
         getMovements,
         AddCategory,
         AddPendingMovement,
+        reload,
     }
 })

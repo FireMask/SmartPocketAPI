@@ -47,7 +47,7 @@
             </nav>
         </div>
     </div>
-    <div class="h-[calc(93vh-8rem)] w-full mb-10">
+    <div class="w-full mb-10">
         <RouterView />
     </div>
 </template>

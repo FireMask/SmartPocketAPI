@@ -5,12 +5,12 @@
 
 	const user = useUserStore()
 
-	const isOpen = ref(true);
+	const isOpen = ref(false);
 
 </script>
 
 <template>
-	<div class="flex h-screen overflow-hidden w-auto">
+	<div class="flex h-screen overflow-hidden">
 		<div :class="isOpen ? 'w-1/6' : 'w-15'" class="flex flex-col h-screen p-3 dark:bg-gray-50 dark:text-gray-800">
 			<div class="space-y-3">
 				<div class="flex items-center justify-between">
@@ -119,7 +119,7 @@
 			</div>
 		</div>
 
-		<div :class="isOpen ? 'w-5/6' : 'w-screen'" class="container p-10 lg:h-screen overflow-y-scroll lg:overflow-hidden">
+		<div class="p-10 lg:h-screen w-full overflow-y-auto">
 			<RouterView />
 		</div>
 	</div>

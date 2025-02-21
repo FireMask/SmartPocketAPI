@@ -1,19 +1,24 @@
 <script setup>
-import { ref } from 'vue'
-import { useMovementsStore } from '../../stores/movements';
-import { formatShowDate, formatMoney } from '../../helpers';
-import { AiFillContainer, AiOutlineMinusCircle, AiOutlinePlusCircle } from 'vue-icons-plus/ai';
-import { GiWallet } from 'vue-icons-plus/gi';
-import { LuCopyCheck } from 'vue-icons-plus/lu';
-import { HiOutlineCursorClick } from 'vue-icons-plus/hi';
-import ExpectedPaymentItem from '../../components/ExpectedPaymentItem.vue';
+  import { ref } from 'vue'
+  import { useMovementsStore } from '../../stores/movements';
+  import { formatShowDate, formatMoney } from '../../helpers';
+  import { AiFillContainer, AiOutlineMinusCircle, AiOutlinePlusCircle } from 'vue-icons-plus/ai';
+  import { GiWallet } from 'vue-icons-plus/gi';
+  import { LuCopyCheck } from 'vue-icons-plus/lu';
+  import { HiOutlineCursorClick } from 'vue-icons-plus/hi';
+  import { useRouter } from 'vue-router';
+  import ExpectedPaymentItem from '../../components/ExpectedPaymentItem.vue';
 
-const store = useMovementsStore();
-const today = new Date();
+  const router = useRouter()
+
+  const store = useMovementsStore();
+  store.reload();
+
+  const today = new Date();
 </script>
 
 <template>
-  <div class="flex flex-col lg:h-screen h-auto">
+  <div class="flex flex-col h-auto">
 
     <header class="flex sticky justify-between mb-4 flex-col lg:flex-row">
       <h3 class="text-3xl font-medium text-gray-700">
@@ -32,9 +37,9 @@ const today = new Date();
     <main class="">
 
       <section class="h-auto mt-4">
-        <div class="flex flex-wrap -mx-4 space-y-4 lg:space-y-0">
+        <div class="flex flex-wrap -mx-4 ">
 
-          <div class="w-full px-3 lg:w-1/4">
+          <div class="px-3 mb-5 flex-grow">
             <div class="flex items-center px-3 py-4 bg-white rounded-md shadow-sm">
               <div class="p-3 bg-indigo-600 text-white bg-opacity-75 rounded-full">
                 <GiWallet />
@@ -51,7 +56,7 @@ const today = new Date();
             </div>
           </div>
 
-          <div class="w-full px-3 lg:w-1/4">
+          <div class="px-3 mb-5 flex-grow">
             <div class="flex items-center px-3 py-4 bg-white rounded-md shadow-sm">
               <div class="p-3 bg-blue-600 bg-opacity-75 rounded-full">
                 <svg class="w-8 h-8 text-white" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -78,13 +83,13 @@ const today = new Date();
             </div>
           </div>
 
-          <div class="w-full px-3 lg:w-1/4">
+          <div class="px-3 mb-5 flex-grow">
             <div class="flex items-center px-3 py-4 bg-white rounded-md shadow-sm">
               <div class="p-3 bg-pink-600 bg-opacity-75 text-white rounded-full">
                 <AiFillContainer />
               </div>
 
-              <div class="mx-5">
+              <div class="mx-5 w-full">
                 <h4 class="text-2xl font-semibold text-gray-700">
                   {{ store.monthMovementsCount }}
                 </h4>
@@ -95,7 +100,7 @@ const today = new Date();
             </div>
           </div>
 
-          <div class="w-full px-3 lg:w-1/4">
+          <div class="px-3 mb-5 flex-grow">
             <div class="flex items-center px-3 py-4 bg-white rounded-md shadow-sm">
               <div class="p-3 bg-amber-400 bg-opacity-75 text-white rounded-full">
                 <LuCopyCheck />
@@ -122,7 +127,7 @@ const today = new Date();
         </div>
       </section>
 
-      <section class="lg:h-[calc(80vh-8rem)] h-auto mt-4 lg:-mr-1 flex space-x-7 flex-col overflow-auto xl:flex-row xl:overflow-hidden min-w-full space-y-4">
+      <section class="lg:h-[calc(80vh-8rem)] h-auto mt-4 lg:-mr-1 flex space-x-7 flex-col  xl:flex-row min-w-full space-y-4">
         <div class="flex flex-col w-full lg:w-3/4">
           <p class="font-medium text-xl text-gray-700 pb-4">Recent movements:</p>
           <div class="my-1 lg:pr-1 overflow-auto lg:scroll-pr-2 min-w-full">
@@ -173,7 +178,8 @@ const today = new Date();
                         {{ m.paymentMethod?.name }}
                       </div>
                       <div class="text-sm leading-5 text-gray-500" v-if="m.installmentNumber">
-                        Installment {{ m.installmentNumber }} / {{ m.recurringPayment?.installmentCount }}
+                        <span v-if="m.recurringPayment?.installmentCount > 0"> Installment {{ m.installmentNumber }} / {{ m.recurringPayment?.installmentCount }} </span>
+                        <span v-else>Payment # {{ m.installmentNumber }}</span>
                       </div>
                     </td>
 
@@ -189,7 +195,7 @@ const today = new Date();
                     </td>
                   </tr>
                   <tr class="cursor-pointer">
-                    <td class="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
+                    <td class="px-6 py-4 border-b border-gray-200 whitespace-nowrap" @click="router.push({name:'movements'})">
                       <div class="flex items-center">
                         See more...
                       </div>

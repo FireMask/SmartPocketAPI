@@ -31,13 +31,6 @@ const router = createRouter({
           name: 'movements',
           component: MovementsLayout,
           meta: { requiresAuth: true },
-          children: [
-            {
-              path: '',
-              name: 'my-movements',
-              component: MyMovementsLayout
-            },
-          ]
         },
         {
           path: '/movement/new',

@@ -7,10 +7,10 @@
 </script>
 
 <template>
-  <div class="flex h-screen">
-    <div class="md:w-screen h-screen">
-        <div class="mx-auto lg:w-4/5 h-screen">
-            <div class="flex flex-col items-center lg:flex-row lg: justify-between h-1/6">
+  <div class="flex">
+    <div class="md:w-screen">
+        <div class="mx-auto lg:w-1/2 ">
+            <div class="flex flex-col items-center lg:flex-row lg: justify-between my-16">
                 <RouterLink
                     v-for="authRoute in authRoutes"
                     class="uppercase font-bold text-gray-800"
