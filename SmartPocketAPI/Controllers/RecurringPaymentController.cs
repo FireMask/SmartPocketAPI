@@ -23,7 +23,7 @@ public class RecurringPaymentController : Controller
     }
 
     [HttpGet("/RecurringPayments")]
-    public async Task<IResult> GetRecurringPayments([FromBody] RecurringPaymentsRequest request)
+    public async Task<IResult> GetRecurringPayments([FromQuery] RecurringPaymentsRequest request)
     {
         try
         {

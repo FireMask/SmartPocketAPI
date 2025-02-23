@@ -27,7 +27,7 @@ public class MovementController : Controller
     }
 
     [HttpGet("/Movements")]
-    public async Task<IResult> GetMovementTypes([FromBody] MovementsRequest request)
+    public async Task<IResult> GetMovementTypes([FromQuery] MovementsRequest request)
     {
         try
         {
@@ -239,6 +239,22 @@ public class MovementController : Controller
         {
             _logger.LogError(ex.ToString());
             return ex.Message.ToApiError(Constants.INSERT_ERROR);
+        }
+    }
+
+    [HttpGet("/FilterCatalogs")]
+    public async Task<IResult> FilterCatalogs()
+    {
+        try
+        {
+            Guid userId = HttpContext.GetUserId();
+            var result = await _movementService.GetCatalogs(userId);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
         }
     }
 

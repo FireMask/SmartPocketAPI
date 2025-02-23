@@ -15,4 +15,5 @@ public interface IMovementService
     Task<List<MovementFromRecurringPaymentsViewModel>> GetPendingMovementsFromRecurringPayments(Guid userId, int? paymentMethodId = null, DateOnly? untilDate = null);
     Task<object> GetDashboardInfoAsync(Guid userId);
     Task<object> GetSummaryPaymentMethods(Guid userId);
+    Task<object> GetCatalogs(Guid userId);
 }

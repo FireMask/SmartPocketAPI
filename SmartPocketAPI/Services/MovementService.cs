@@ -301,4 +301,48 @@ public class MovementService : IMovementService
 
         return cardsMonthSummary;
     }
+
+    public async Task<object> GetCatalogs(Guid userId)
+    {
+        var categories = await _context.Categories
+            .Where(x => x.UserId == userId || x.IsDefault)
+            .Select(o => new {
+                o.Id,
+                o.Name
+            })
+            .ToListAsync();
+
+        var frequencies = await _context.Frequency
+            .Select(o => new
+            {
+                o.Id,
+                o.Name
+            })
+            .ToListAsync();
+
+        var paymentMethods = await _context.PaymentMethods
+            .Where(x => x.UserId == userId || x.IsDefault)
+            .Select(o => new
+            {
+                o.Id,
+                o.Name
+            })
+            .ToListAsync();
+
+        var movementTypes = await _context.MovementType
+            .Select(o => new
+            {
+                o.Id,
+                o.Name
+            })
+            .ToListAsync();
+
+        return new Dictionary<string, object>()
+        {
+            { "categories", categories },
+            { "frequencies", frequencies },
+            { "paymentMethods", paymentMethods },
+            { "movementTypes", movementTypes }
+        }; ;
+    }
 }
