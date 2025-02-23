@@ -1,6 +1,8 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using SmartPocketAPI.ApiResponse;
 using SmartPocketAPI.Database;
+using SmartPocketAPI.Extensions;
 using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interfaces;
@@ -17,7 +19,7 @@ public class MovementService : IMovementService
         _context = context;
     }
 
-    public async Task<List<Movement>> GetMovementsAsync(Guid id)
+    public async Task<PagedResult<Movement>> GetMovementsAsync(Guid id, int pageNumber, int pageSize)
     {
         return await _context.Movements
             .Where(x => x.UserId == id)
@@ -27,7 +29,8 @@ public class MovementService : IMovementService
             .Include(x => x.RecurringPayment)
             .Include(x => x.MovementType)
             .Include(x => x.CreditCardPayment)
-            .ToListAsync();
+            .AsQueryable()
+            .ToPagedListAsync(pageNumber, pageSize);
     }
 
     public async Task<Movement> CreateMovementAsync(MovementViewModel movementViewModel)
@@ -190,6 +193,9 @@ public class MovementService : IMovementService
 
             while (nextDate <= untilDate)
             {
+                if (rPayment.InstallmentCount < installmentNo)
+                    break;
+
                 addMovementList.Add(new MovementFromRecurringPaymentsViewModel()
                 {
                     MovementDate = nextDate,

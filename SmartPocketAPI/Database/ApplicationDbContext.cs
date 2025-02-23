@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using SmartPocketAPI.Helpers.Extensions;
+using SmartPocketAPI.Extensions;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Models.General;
 using SmartPocketAPI.Options;

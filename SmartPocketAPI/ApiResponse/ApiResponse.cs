@@ -1,4 +1,4 @@
-﻿namespace SmartPocketAPI.Models;
+﻿namespace SmartPocketAPI.ApiResponse;
 
 public class ApiResponse<T>
 {

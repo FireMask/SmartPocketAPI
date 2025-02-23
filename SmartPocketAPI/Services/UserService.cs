@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SmartPocketAPI.Auth;
 using SmartPocketAPI.Database;
-using SmartPocketAPI.Helpers.Extensions;
+using SmartPocketAPI.Extensions;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;

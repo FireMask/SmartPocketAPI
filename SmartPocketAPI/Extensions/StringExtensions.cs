@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace SmartPocketAPI.Helpers.Extensions;
+namespace SmartPocketAPI.Extensions;
 
 public static class StringExtensions
 {

@@ -1,11 +1,12 @@
-﻿using SmartPocketAPI.Models;
+﻿using SmartPocketAPI.ApiResponse;
+using SmartPocketAPI.Models;
 using SmartPocketAPI.ViewModels;
 
 namespace SmartPocketAPI.Services.Interfaces;
 
 public interface IMovementService
 {
-    Task<List<Movement>> GetMovementsAsync(Guid id);
+    Task<PagedResult<Movement>> GetMovementsAsync(Guid id, int pageNumber, int pageSize);
     Task<Movement> CreateMovementAsync(MovementViewModel newMovement);
     Task<bool> DeleteMovementAsync(Guid userId, int id);
     Task<Movement> GetMovementByIdAsync(Guid userId, int movementId);

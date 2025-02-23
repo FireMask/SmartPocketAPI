@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartPocketAPI.Models;
 
-namespace SmartPocketAPI.Helpers.Extensions;
+namespace SmartPocketAPI.Extensions;
 
 public static class ModelBuilderExtensions
 {

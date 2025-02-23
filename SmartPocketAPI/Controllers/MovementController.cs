@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartPocketAPI.Extensions;
 using SmartPocketAPI.Helpers;
-using SmartPocketAPI.Helpers.Extensions;
 using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
@@ -26,12 +26,12 @@ public class MovementController : Controller
     }
 
     [HttpGet("/Movements")]
-    public async Task<IResult> GetMovementTypes()
+    public async Task<IResult> GetMovementTypes([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
         try
         {
             Guid userId = HttpContext.GetUserId();
-            var result = await _movementService.GetMovementsAsync(userId);
+            var result = await _movementService.GetMovementsAsync(userId, pageNumber, pageSize);
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace SmartPocketAPI.Helpers.Extensions;
+namespace SmartPocketAPI.Extensions;
 
 public static class BoolExtensions
 {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.ViewModels;
 using SmartPocketAPI.Helpers;
-using SmartPocketAPI.Helpers.Extensions;
+using SmartPocketAPI.Extensions;
 
 namespace SmartPocketAPI.Controllers;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SmartPocketAPI.Extensions;
 using SmartPocketAPI.Helpers;
-using SmartPocketAPI.Helpers.Extensions;
 using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
 

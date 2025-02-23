@@ -1,4 +1,4 @@
-﻿namespace SmartPocketAPI.Helpers.Extensions;
+﻿namespace SmartPocketAPI.Extensions;
 
 public static class GuidExtensions
 {
