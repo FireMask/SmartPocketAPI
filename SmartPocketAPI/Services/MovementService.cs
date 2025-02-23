@@ -7,6 +7,7 @@ using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
+using SmartPocketAPI.ViewModels.RequestModels;
 
 namespace SmartPocketAPI.Services;
 
@@ -19,9 +20,9 @@ public class MovementService : IMovementService
         _context = context;
     }
 
-    public async Task<PagedResult<Movement>> GetMovementsAsync(Guid id, int pageNumber, int pageSize)
+    public async Task<PagedResult<Movement>> GetMovementsAsync(Guid id, MovementsRequest request)
     {
-        return await _context.Movements
+        var query = _context.Movements
             .Where(x => x.UserId == id)
             .AsNoTracking()
             .Include(x => x.Category)
@@ -29,8 +30,29 @@ public class MovementService : IMovementService
             .Include(x => x.RecurringPayment)
             .Include(x => x.MovementType)
             .Include(x => x.CreditCardPayment)
-            .AsQueryable()
-            .ToPagedListAsync(pageNumber, pageSize);
+            .AsQueryable();
+
+        if (request.CategoryId != null && request.CategoryId.Any())
+            query = query.Where(x => request.CategoryId.Contains(x.CategoryId));
+
+        if (request.PaymentMethodId != null && request.PaymentMethodId.Any())
+            query = query.Where(x => request.PaymentMethodId.Contains(x.PaymentMethodId));
+
+        if (request.MovementTypeId != null && request.MovementTypeId.Any())
+            query = query.Where(x => request.MovementTypeId.Contains(x.MovementTypeId));
+
+        if (request.StartDate.HasValue)
+            query = query.Where(x => x.MovementDate >= request.StartDate.Value);
+
+        if (request.EndDate.HasValue)
+            query = query.Where(x => x.MovementDate <= request.EndDate.Value);
+
+        if (!string.IsNullOrEmpty(request.Search))
+            query = query.Where(x => x.Description.Contains(request.Search));
+
+        var result = await query.ToPagedListAsync(request.PageNumber, request.PageSize);
+
+        return result;
     }
 
     public async Task<Movement> CreateMovementAsync(MovementViewModel movementViewModel)

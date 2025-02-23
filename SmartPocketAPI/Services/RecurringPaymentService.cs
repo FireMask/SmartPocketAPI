@@ -1,11 +1,14 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using SmartPocketAPI.ApiResponse;
 using SmartPocketAPI.Auth;
 using SmartPocketAPI.Database;
+using SmartPocketAPI.Extensions;
 using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.ViewModels;
+using SmartPocketAPI.ViewModels.RequestModels;
 using System.Security.Claims;
 
 namespace SmartPocketAPI.Services;
@@ -19,35 +22,56 @@ public class RecurringPaymentService : IRecurringPaymentService
         _context = context;
     }
 
-    public async Task<object> GetRecurringPaymentsAsync(Guid userid)
+    public async Task<PagedResult<RecurringPaymentsViewModel>> GetRecurringPaymentsAsync(Guid userid, RecurringPaymentsRequest request)
     {
-        var result = await _context.RecurringPayments
+        var query = _context.RecurringPayments
             .Where(x => x.UserId == userid)
             .Include(x => x.Category)
             .Include(x => x.PaymentMethod)
             .Include(x => x.MovementType)
             .Include(x => x.CreditCardPayment)
             .Include(x => x.Frequency)
+            .AsQueryable();
+
+        if (request.CategoryId.HasValue)
+        {
+            query = query.Where(x => x.CategoryId == request.CategoryId);
+        }
+        if (request.IsActive.HasValue)
+        {
+            query = query.Where(x => x.IsActive == request.IsActive.Value);
+        }
+        if (request.StartDate.HasValue)
+        {
+            query = query.Where(x => x.StartDate >= request.StartDate.Value);
+        }
+        if (request.EndDate.HasValue)
+        {
+            query = query.Where(x => x.StartDate <= request.EndDate.Value);
+        }
+
+        var result = await query
             .OrderByDescending(x => x.IsActive)
             .ThenByDescending(x => x.StartDate)
             .ThenByDescending(x => x.PaymentMethod.Id)
             .ThenBy(x => x.Id)
-            .Select(r => new
+            .Select(r => new RecurringPaymentsViewModel()
             {
-                r.Id,
+                Id = r.Id,
                 CategoryName = r.Category.Name,
-                r.Description,
+                Description = r.Description,
                 PaymentMethodName = r.PaymentMethod.Name,
-                r.StartDate,
-                r.LastInstallmentDate,
-                r.NextInstallmentDate,
+                StartDate = r.StartDate,
+                LastInstallmentDate = r.LastInstallmentDate,
+                NextInstallmentDate = r.NextInstallmentDate,
                 FrequencyName = r.Frequency.Name,
-                r.InstallmentAmountPerPeriod,
+                InstallmentAmountPerPeriod = r.InstallmentAmountPerPeriod,
                 MovementTypename = r.MovementType.Name,
-                r.IsActive,
+                IsActive = r.IsActive,
                 PaidCount = r.InstallmentCount == -1 ? $"{r.NextInstallmentCount - 1}" : $"{r.NextInstallmentCount - 1}/{r.InstallmentCount}"
             })
-            .ToListAsync();
+            .ToPagedListAsync(request.PageNumber, request.PageSize);
+
         return result;
     }
 

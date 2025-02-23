@@ -4,6 +4,7 @@ using SmartPocketAPI.Services.Interface;
 using SmartPocketAPI.ViewModels;
 using SmartPocketAPI.Helpers;
 using SmartPocketAPI.Extensions;
+using SmartPocketAPI.ViewModels.RequestModels;
 
 namespace SmartPocketAPI.Controllers;
 
@@ -22,12 +23,12 @@ public class RecurringPaymentController : Controller
     }
 
     [HttpGet("/RecurringPayments")]
-    public async Task<IResult> GetRecurringPayments()
+    public async Task<IResult> GetRecurringPayments([FromBody] RecurringPaymentsRequest request)
     {
         try
         {
             Guid userId = HttpContext.GetUserId();
-            var result = await _recurringPaymentService.GetRecurringPaymentsAsync(userId);
+            var result = await _recurringPaymentService.GetRecurringPaymentsAsync(userId, request);
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
