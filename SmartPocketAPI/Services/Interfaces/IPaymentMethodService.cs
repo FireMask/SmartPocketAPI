@@ -9,4 +9,5 @@ public interface IPaymentMethodService
     Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethodViewModel paymentMethodViewModel);
     Task<bool> DeletePaymentMethodAsync(Guid userid, int id);
     Task<PaymentMethod?> GetPaymentMethodByIdAsync(Guid userid, int id);
+    Task<PaymentMethod> UpdatePaymentMethodAsync(PaymentMethodViewModel paymentMethodVM);
 }

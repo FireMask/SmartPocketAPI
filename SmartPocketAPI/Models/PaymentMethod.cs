@@ -19,6 +19,7 @@ public class PaymentMethod
     public int TransactionDate { get; set; } //Fecha de corte
     public decimal DefaultInterestRate { get; set; }
     public bool IsDefault {  get; set; } = false;
+    public bool IsActive { get; set; } = true;
 
     [JsonIgnore]
     public ICollection<Movement> Movements { get; set; }

@@ -13,4 +13,5 @@ public class PaymentMethodViewModel
     public int DueDate { get; set; }
     public int TransactionDate { get; set; }
     public decimal DefaultInterestRate { get; set; }
+    public bool IsActive { get; set; }
 }

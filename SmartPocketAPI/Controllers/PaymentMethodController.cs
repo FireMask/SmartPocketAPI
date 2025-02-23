@@ -1,15 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol;
-using SmartPocketAPI.Auth;
-using SmartPocketAPI.Database;
 using SmartPocketAPI.Extensions;
 using SmartPocketAPI.Helpers;
-using SmartPocketAPI.Middlewares;
 using SmartPocketAPI.Models;
-using SmartPocketAPI.Services;
 using SmartPocketAPI.Services.Interface;
-using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
 
 namespace SmartPocketAPI.Controllers;
@@ -27,6 +21,8 @@ public class PaymentMethodController : Controller
         _paymentMethodService = paymentMethodService;
         _logger = logger;
     }
+
+    #region CRUD
 
     [HttpGet("/PaymentMethods")]
     public async Task<IResult> GetPaymentMethods()
@@ -95,4 +91,23 @@ public class PaymentMethodController : Controller
             return ex.Message.ToApiError(Constants.DELETE_ERROR);
         }
     }
+
+    [HttpPut]
+    public async Task<IResult> UpdatePaymentMethod(PaymentMethodViewModel paymentMethodViewModel)
+    {
+        try
+        {
+            Guid userId = HttpContext.GetUserId();
+            paymentMethodViewModel.UserId = userId;
+            var result = await _paymentMethodService.UpdatePaymentMethodAsync(paymentMethodViewModel);
+            return result.ToApiResponse(Constants.UPDATE_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.UPDATE_ERROR);
+        }
+    }
+
+    #endregion
 }

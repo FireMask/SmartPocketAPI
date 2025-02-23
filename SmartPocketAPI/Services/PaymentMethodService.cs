@@ -17,6 +17,8 @@ public class PaymentMethodService : IPaymentMethodService
         _context = context;
     }
 
+    #region CRUD
+
     public async Task<List<PaymentMethod>> GetPaymentMethodsAsync(Guid userid)
     {
         var result = await _context.PaymentMethods
@@ -70,10 +72,51 @@ public class PaymentMethodService : IPaymentMethodService
         if (paymentMethod == null)
             throw new Exception("Payment method does not exists");
 
+        if (paymentMethod.IsDefault)
+            throw new Exception("Can not delete default payment methods");
+
         _context.PaymentMethods.Remove(paymentMethod);
 
         await _context.SaveChangesAsync();
 
         return true;
     }
+
+    public async Task<PaymentMethod> UpdatePaymentMethodAsync(PaymentMethodViewModel paymentMethodVM)
+    {
+        PaymentMethod? paymentMethod = await _context.PaymentMethods.FirstOrDefaultAsync(x => x.Id == paymentMethodVM.Id && x.UserId == paymentMethodVM.UserId);
+        if (paymentMethod == null)
+            throw new Exception("Payment method does not exist");
+
+        if (paymentMethod.IsDefault)
+            throw new Exception("Can not update default payment methods");
+
+        if (string.IsNullOrWhiteSpace(paymentMethodVM.Name))
+            throw new ArgumentException("Payment method name cannot be empty");
+
+        if (string.IsNullOrWhiteSpace(paymentMethodVM.Bank))
+            throw new ArgumentException("Payment method name cannot be empty");
+
+        if (paymentMethodVM.DueDate <= 0)
+            throw new ArgumentException("Invalid due date");
+
+        if (paymentMethodVM.TransactionDate <= 0)
+            throw new ArgumentException("Invalid transaction date");
+
+        if (paymentMethodVM.DefaultInterestRate < 0)
+            throw new ArgumentException("Interest rate cannot be negative");
+
+        paymentMethod.Name = paymentMethodVM.Name;
+        paymentMethod.Bank = paymentMethodVM.Bank;
+        paymentMethod.DueDate = paymentMethodVM.DueDate;
+        paymentMethod.TransactionDate = paymentMethodVM.TransactionDate;
+        paymentMethod.DefaultInterestRate = paymentMethodVM.DefaultInterestRate;
+        paymentMethod.IsActive = paymentMethodVM.IsActive;
+
+        await _context.SaveChangesAsync();
+
+        return paymentMethod;
+    }
+
+    #endregion
 }

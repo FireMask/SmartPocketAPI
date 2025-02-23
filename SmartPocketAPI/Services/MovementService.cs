@@ -19,6 +19,7 @@ public class MovementService : IMovementService
     {
         _context = context;
     }
+    #region CRUD
 
     public async Task<PagedResult<Movement>> GetMovementsAsync(Guid id, MovementsRequest request)
     {
@@ -78,6 +79,41 @@ public class MovementService : IMovementService
         return newMovement;
     }
 
+    public async Task<Movement> UpdateMovementAsync(UpdateMovementViewModel updateMovement)
+    {
+        if (updateMovement == null)
+            throw new ArgumentNullException(nameof(updateMovement));
+
+        Movement movement = await _context.Movements.FirstAsync(x => x.Id == updateMovement.Id && x.UserId == updateMovement.userId);
+
+        if (movement == null)
+            throw new Exception("Movement does not exists");
+
+        if(updateMovement.MovementDate.HasValue)
+            movement.MovementDate = updateMovement.MovementDate.Value;
+
+        if(updateMovement.Description != null)
+            movement.Description = updateMovement.Description;
+
+        if(updateMovement.Amount.HasValue)
+            movement.Amount = updateMovement.Amount.Value;
+
+        if(updateMovement.CategoryId.HasValue)
+            movement.CategoryId = updateMovement.CategoryId.Value;
+
+        if(updateMovement.PaymentMethodId.HasValue)
+            movement.PaymentMethodId = updateMovement.PaymentMethodId.Value;
+
+        if(updateMovement.MovementTypeId.HasValue)
+            movement.MovementTypeId = updateMovement.MovementTypeId.Value;
+
+        _context.Movements.Update(movement);
+
+        await _context.SaveChangesAsync();
+
+        return movement;
+    }
+
     public async Task<bool> DeleteMovementAsync(Guid userId, int id)
     {
         Movement? movement = await GetMovementByIdAsync(userId, id);
@@ -89,6 +125,8 @@ public class MovementService : IMovementService
 
         return true;
     }
+
+    #endregion
 
     public async Task<Movement> GetMovementByIdAsync(Guid userId, int movementId)
     {
@@ -107,35 +145,6 @@ public class MovementService : IMovementService
         return movement;
     }
 
-    public async Task<Movement> UpdateMovementAsync(UpdateMovementViewModel updateMovement)
-    {
-        if (updateMovement == null)
-            throw new ArgumentNullException(nameof(updateMovement));
-
-        Movement movement = await _context.Movements.FirstAsync(x => x.Id == updateMovement.Id && x.UserId == updateMovement.userId);
-
-        if (movement == null)
-            throw new Exception("Movement does not exists");
-
-        if(updateMovement.MovementDate != null)
-            movement.MovementDate = (DateOnly)updateMovement.MovementDate;
-        if(updateMovement.Description != null)
-            movement.Description = updateMovement.Description;
-        if(updateMovement.Amount != null)
-            movement.Amount = (decimal)updateMovement.Amount;
-        if(updateMovement.CategoryId != null)
-            movement.CategoryId = (int)updateMovement.CategoryId;
-        if(updateMovement.PaymentMethodId != null)
-            movement.PaymentMethodId = (int)updateMovement.PaymentMethodId;
-        if(updateMovement.MovementTypeId != null)
-            movement.MovementTypeId = (int)updateMovement.MovementTypeId;
-
-        _context.Movements.Update(movement);
-
-        await _context.SaveChangesAsync();
-
-        return movement;
-    }
 
     public async Task<object> GetDashboardInfoAsync(Guid userId)
     {
@@ -310,6 +319,7 @@ public class MovementService : IMovementService
                 o.Id,
                 o.Name
             })
+            .OrderBy(x => x.Name)
             .ToListAsync();
 
         var frequencies = await _context.Frequency
@@ -318,6 +328,7 @@ public class MovementService : IMovementService
                 o.Id,
                 o.Name
             })
+            .OrderBy(x => x.Name)
             .ToListAsync();
 
         var paymentMethods = await _context.PaymentMethods
@@ -327,6 +338,7 @@ public class MovementService : IMovementService
                 o.Id,
                 o.Name
             })
+            .OrderBy(x => x.Name)
             .ToListAsync();
 
         var movementTypes = await _context.MovementType
@@ -335,6 +347,7 @@ public class MovementService : IMovementService
                 o.Id,
                 o.Name
             })
+            .OrderBy(x => x.Name)
             .ToListAsync();
 
         return new Dictionary<string, object>()
