@@ -5,6 +5,7 @@ import { createPinia } from 'pinia'
 import { plugin, defaultConfig } from '@formkit/vue'
 import { useToast } from 'vue-toast-notification'
 import config from '../formkit.config'
+import Antd from "ant-design-vue";
 
 import App from './App.vue'
 import router from './router'
@@ -22,5 +23,6 @@ app.provide('toast', $toast)
 app.use(createPinia())
 app.use(plugin, defaultConfig(config))
 app.use(router)
+app.use(Antd)
 
 app.mount('#app')

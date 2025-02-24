@@ -9,6 +9,19 @@ export default {
             }
         });
     },
+    paginate(data) {
+        const token = localStorage.getItem('AUTH_TOKEN')
+        return api.get('/movements', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            params: data,
+            paramsSerializer: {
+                indexes: null, // no brackets at all
+              }
+        });
+    },
     dashboard() {
         const token = localStorage.getItem('AUTH_TOKEN')
         return api.get('/dashboard', {

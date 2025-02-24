@@ -1,6 +1,7 @@
 import { ref, onMounted, inject, computed } from 'vue';
 import { defineStore } from 'pinia';
 import MovementsAPI from '../api/MovementsAPI';
+import CatalogsAPI from '@/api/CatalogsAPI';
 
 export const useMovementsStore = defineStore( 'movements', () => {
     const toast = inject('toast')
@@ -8,20 +9,38 @@ export const useMovementsStore = defineStore( 'movements', () => {
     const categories = ref([]);
     const types = ref([]);
     const userPendingMovements = ref([]);
-    const userMovementsPaginate = ref([]);
     const paymentTypeId = 1;
     const incomeTypeId = 2;
     const purchaseTypeId = 3;
     const creditCardPaymentTypeId = 4;
     
     //DashboardData
-    const userMovements = ref([]);
+    const topMovements = ref([]);
     const pendingRecurringMovementsCount = ref(0);
     const summaryByPaymentMethods = ref(0);
     const monthIncome = ref(0);
     const monthMovementsCount = ref(0);
     const monthSpent = ref(0);
 
+    //Movements table
+    const userMovements = ref([])
+    const filters = ref(
+    {
+        pageNumber: 1, 
+        pageSize: 10,
+        search: "", //description
+        categoryId: [],
+        paymentMethodId: [],
+        movementTypeId: [],
+        startDate: null, //YYYY-MM-DD
+        endDate: null //YYYY-MM-DD
+    })
+    const pageNumber = ref(1)
+    const totalCount = ref(0)
+    const totalPages = ref(0)
+    const filterCatalogs = ref({
+        categories: []
+    })
 
     onMounted(async () => {
         try {
@@ -30,6 +49,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
             await getTypes();
             await getPendingMovements();
             await getMovements();
+            await getFilters();
         } catch (error) {
             console.log(error);
         }
@@ -57,7 +77,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
                 thisMonthSpent
             }}} = await MovementsAPI.dashboard()
             
-            userMovements.value = top20Movements;
+            topMovements.value = top20Movements;
             pendingRecurringMovementsCount.value = pendingMovementsRecurring
             summaryByPaymentMethods.value = summaryPaymentMethods
             monthIncome.value =thisMonthIncome
@@ -72,18 +92,35 @@ export const useMovementsStore = defineStore( 'movements', () => {
     }
 
     const getMovements = async () => {
-        const {data} = await MovementsAPI.all()
-        userMovementsPaginate.value = data.data;
+        try {            
+            const {data: { data : { items, pageNumber: pn, totalCount: tc, totalPages:tp } }} = await MovementsAPI.paginate(filters.value)            
+            userMovements.value = items;
+            pageNumber.value = pn
+            totalCount.value = tc
+            totalPages.value = tp
+        } catch (error)
+        {
+            console.log(error);
+            toast.open({ message: error?.response?.data?.message, type: 'error' })
+        }   
     }
 
     const getCategories = async () => {
         const {data} = await MovementsAPI.categories();
-        categories.value = data.data.map(category => { return {label: category.name, value: category.id, id: category.id}})
+        categories.value = data.data.map(category => { return {label: category.name, text: category.name, value: category.id, id: category.id}})
     }
 
     const getTypes = async () => {
         const {data} = await MovementsAPI.types();
         types.value = data.data.map(type => { return {label: type.name, value: type.id, id: type.id}})
+    }
+
+    const getFilters = async () => {
+        const {data: {data : {categories, frequencies, paymentMethods, movementTypes}}} = await CatalogsAPI.filterCatalogs();
+        filterCatalogs.value.categories = categories.map(item => { return {label: item.name, text: item.name, value: item.id, id: item.id}})
+        filterCatalogs.value.frequencies = frequencies.map(item => { return {label: item.name, text: item.name, value: item.id, id: item.id}})
+        filterCatalogs.value.paymentMethods = paymentMethods.map(item => { return {label: item.name, text: item.name, value: item.id, id: item.id}})
+        filterCatalogs.value.movementTypes = movementTypes.map(item => { return {label: item.name, text: item.name, value: item.id, id: item.id}})
     }
 
     const getPendingMovements = async () => {
@@ -183,7 +220,13 @@ export const useMovementsStore = defineStore( 'movements', () => {
     }
 
     return {
+        filterCatalogs,
         userMovements,
+        pageNumber,
+        totalCount,
+        totalPages,
+        filters,
+        topMovements,
         userPendingMovements,
         pendingRecurringMovementsCount,
         summaryByPaymentMethods,
@@ -196,7 +239,6 @@ export const useMovementsStore = defineStore( 'movements', () => {
         incomeTypeId,
         purchaseTypeId,
         creditCardPaymentTypeId,
-        userMovementsPaginate,
         addMovement,
         deleteMovement,
         updateMovement,

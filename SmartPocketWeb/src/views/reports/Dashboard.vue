@@ -24,13 +24,8 @@
       <h3 class="text-3xl font-medium text-gray-700">
         Dashboard
       </h3>
-      <div class="w-auto text-lg lg:text-xl mt-3 lg:mt-0">
-        <p class="font-medium text-gray-700">
-          {{ formatShowDate(today) }}
-        </p>
-        <RouterLink :to="{ name: 'new-movement' }" class="text-indigo-600 hover:text-indigo-900 font-medium">
-          New Movement
-        </RouterLink>
+      <div class="w-auto text-lg lg:text-xl mt-3 lg:mt-0">        
+        <a-button type="primary" size="Large"> <RouterLink :to="{ name: 'new-movement' }"> New Movement </RouterLink> </a-button>
       </div>
     </header>
 
@@ -151,7 +146,7 @@
                 </thead>
 
                 <tbody class="bg-white">
-                  <tr v-for="(m, index) in store.userMovements" :key="index">
+                  <tr v-for="(m, index) in store.topMovements" :key="index">
                     <td class="px-6 py-4 border-b border-gray-200 whitespace-nowrap">
                       <div class="flex items-center">
                         <div v-if="m.movementTypeId == store.incomeTypeId" class="w-5 h-5 rounded-full text-lime-600 bg-green-100 flex items-center">

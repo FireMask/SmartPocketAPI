@@ -1,11 +1,129 @@
 <script setup>
+    import { ref, reactive, watch, computed } from 'vue';
     import { useMovementsStore } from '../../stores/movements';
     import { formatShowDate, formatMoney } from '../../helpers';
     import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
     import { AiOutlineMinusCircle, AiOutlinePlusCircle } from 'vue-icons-plus/ai';
+    import { SearchOutlined, DeleteOutlined } from '@ant-design/icons-vue';
     
     const store = useMovementsStore()
-    const today = new Date();
+    const searchInput = ref();
+    
+    const columns = ref([
+        {
+            title: 'Date',
+            dataIndex: 'movementDate',
+        },
+        {
+            title: 'Type',
+            key: 'type',
+            name: 'type',
+            filters: [],
+            filterMultiple: true,
+        },
+        {
+            title: 'Category',
+            key: 'category',
+            name: 'category',
+            filters: [],
+            filterMultiple: true,
+        },
+        {
+            title: 'Movement',
+            dataIndex: 'description',
+            key: 'description',
+            customFilterDropdown: true,
+            onFilter: (value, record) => console.log('onFilter desc',value, record),
+            onFilterDropdownOpenChange: visible => {
+            if (visible) {
+                setTimeout(() => {
+                searchInput.value.focus();
+                }, 100);
+            }
+            },
+        },
+        {
+            title: 'Payment Method',
+            key: 'paymentMethod',
+            name: 'paymentMethod',
+            filters: [],
+            filterMultiple: true,
+        },
+        {
+            title: 'Amount',
+            dataIndex: 'amount',
+            key: 'amount'
+        },
+        {
+            title: '',
+            key: 'actions',
+            name: 'actions',
+        },
+    ]);
+
+    const onChange = async (pagination, filters, sorter) => {
+        store.filters.pageNumber = pagination.current;
+        store.filters.categoryId = filters.category;
+        store.filters.paymentMethodId = filters.paymentMethod;
+        store.filters.movementTypeId = filters.type;
+        //TODO: add dates
+        await store.getMovements();
+    };
+
+    const handleSearch = async (selectedKeys, confirm, dataIndex) => {
+        store.filters.search = selectedKeys;
+        await store.getMovements();
+    };
+
+    const handleReset = async clearFilters => {
+        console.log('handleReset', clearFilters); 
+        searchInput.value = ''
+        store.filters.search = '';
+        await store.getMovements();
+        clearFilters({
+            confirm: true,
+            closeDropdown: true
+        });
+    };
+
+    watch(store.filterCatalogs, (newFilters) => {
+        if(newFilters)
+        {
+            columns.value = columns.value.map(column => {
+                if (column.key === 'category') {
+                    return {
+                        ...column,
+                        filters: newFilters.categories,
+                    };
+                }
+                else if (column.key === 'paymentMethod') {
+                    return {
+                        ...column,
+                        filters: newFilters.paymentMethods,
+                    };
+                }
+                else if (column.key === 'type') {
+                    return {
+                        ...column,
+                        filters: newFilters.movementTypes,
+                    };
+                }
+                return column;
+            });
+        }
+    });
+
+    const pagination = computed(() => ({
+        total: store.totalCount,
+        current: store.pageNumber,
+        pageSize: 10,
+        onChange: (page, pageSize) => {
+            console.log(page, pageSize);
+          }
+    }));
+
+    const loading = ref(false);
+    
 </script>
 
 <template>
@@ -14,9 +132,6 @@
             Movements
         </h3>
         <div class="w-auto text-lg lg:text-xl mt-3 lg:mt-0">
-            <p class="font-medium text-gray-700">
-                {{ formatShowDate(today) }}
-            </p>
             <p>
                 <RouterLink :to="{ name: 'new-movement' }" class="text-indigo-600 hover:text-indigo-900 font-medium">
                     New Movement
@@ -32,154 +147,84 @@
     </header>
 
     <main class="max-w-6xl">
-        <div class="flex flex-col mt-3 sm:flex-row">
-            <div class="flex">
-                <div class="relative">
-                    <select
-                        class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500">
-                        <option>5</option>
-                        <option>10</option>
-                        <option>20</option>
-                    </select>
-
-                    <div class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
-                        <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                        </svg>
+        <a-table 
+            :columns="columns" 
+            :data-source="store.userMovements" 
+            :pagination="pagination"
+            :loading="loading"
+            @change="onChange" 
+            size="small">
+            <template #bodyCell="{ column, record }">
+                <template v-if="column.key === 'category'">
+                    {{ record.category.name }}
+                </template>
+                <template v-else-if="column.key === 'paymentMethod'">
+                    {{ record.paymentMethod.name }}
+                    <div class="text-sm text-gray-500" v-if="record.installmentNumber">
+                        <span v-if="record.recurringPayment?.installmentCount > 0"> Installment {{ record.installmentNumber }} / {{ record.recurringPayment?.installmentCount }} </span>
+                        <span v-else>Payment # {{ record.installmentNumber }}</span>
                     </div>
-                </div>
+                </template>
+                <template v-else-if="column.key === 'type'">
+                    <div class="flex items-center">
+                        <div v-if="record.movementTypeId == store.incomeTypeId" class="w-5 h-5 rounded-full text-lime-600 bg-green-100 flex items-center">
+                        <AiOutlinePlusCircle />
+                        </div>
+                        <div v-else class="w-5 h-5 rounded-full text-red-600 bg-red-100 flex items-center">
+                        <AiOutlineMinusCircle />
+                        </div>
 
-                <div class="relative">
-                    <select
-                        class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border-t border-b border-r border-gray-400 rounded-r appearance-none sm:rounded-r-none sm:border-r-0 focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500">
-                        <option>All</option>
-                        <option>Active</option>
-                        <option>Inactive</option>
-                    </select>
-
-                    <div class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
-                        <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                        </svg>
+                        <div class="ml-2">
+                            <div class="font-normal text-" :class="record.creditCardPaymentId? 'text-xs' : 'text-sm'">{{ record.movementType.name }}</div>
+                            <div class="text-gray-500" v-if="record.creditCardPaymentId">
+                                {{ record.creditCardPayment?.name }}
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="relative block mt-2 sm:mt-0">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-                    <svg viewBox="0 0 24 24" class="w-4 h-4 text-gray-500 fill-current">
-                        <path
-                            d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z" />
-                    </svg>
-                </span>
-
-                <input placeholder="Search"
-                    class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-b border-gray-400 rounded-l rounded-r appearance-none sm:rounded-l-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none">
-            </div>
-        </div>
-        <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8">
-            <div class="inline-block min-w-full overflow-hidden rounded-lg shadow">
-                <table class="min-w-full leading-normal">
-                    <thead>
-                        <tr>
-                            <th class="px-3 py-2 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">
-                                Date
-                            </th>
-                            <th class="px-3 py-2 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">
-                                Movement
-                            </th>
-                            <th class="px-3 py-2 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">
-                                Payment Method
-                            </th>
-                            <th class="px-3 py-2 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">
-                                type
-                            </th>
-                            <th class="px-3 py-2 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">
-                                Amount
-                            </th>
-                            <th class="px-3 py-2 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200">
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(u, id) in store.userMovementsPaginate" :key="id">
-                            <td class="px-3 py-2 text-sm bg-white border-b border-gray-200">
-                                <p class="text-gray-900 whitespace-nowrap">
-                                    {{ formatShowDate(u.movementDate) }}
-                                </p>
-                            </td>
-                            <td class="px-3 py-2 text-sm bg-white border-b border-gray-200">
-                                <div class="text-gray-900 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div v-if="u.movementTypeId == store.incomeTypeId" class="w-5 h-5 rounded-full text-lime-600 bg-green-100 flex items-center">
-                                        <AiOutlinePlusCircle />
-                                        </div>
-                                        <div v-else class="w-5 h-5 rounded-full text-red-600 bg-red-100 flex items-center">
-                                        <AiOutlineMinusCircle />
-                                        </div>
-
-                                        <div class="ml-4">
-                                        <div class="text-sm font-medium leading-5 text-gray-900">
-                                            {{ u.category.name }}
-                                        </div>
-                                        <div class="text-sm leading-5 text-gray-500">
-                                            {{ u.description }}
-                                        </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-3 py-2 text-sm bg-white border-b border-gray-200">
-                                <div class="text-gray-900 whitespace-nowrap">
-                                    <div class="text-sm leading-5 text-gray-900">
-                                        {{ u.paymentMethod?.name }}
-                                    </div>
-                                    <div class="text-sm leading-5 text-gray-500" v-if="u.installmentNumber">
-                                        <span v-if="u.recurringPayment?.installmentCount > 0"> Installment {{ u.installmentNumber }} / {{ u.recurringPayment?.installmentCount }} </span>
-                                        <span v-else>Payment # {{ u.installmentNumber }}</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-3 py-2 text-sm bg-white border-b border-gray-200">
-                                <div class="inline-flex text-xs font-semibold leading-5 ">{{ u.movementType?.name }}</div>
-                                <div class="text-sm leading-5 text-gray-500" v-if="u.creditCardPaymentId">
-                                    {{ u.creditCardPayment?.name }}
-                                </div>
-                            </td>
-                            <td class="px-3 py-2 text-sm bg-white border-b border-gray-200 font-semibold">
-                                {{ formatMoney(u.amount) }}
-                            </td>
-                            <td class="px-3 py-2 text-sm bg-white border-b border-gray-200 font-semibold">
-                                <div class="flex flex-row space-x-2 h-fit text-gray-500">
-                                    <RouterLink :to="{ name: 'new-movement' }" class="cursor-pointer rounded-full bg-emerald-100 p-2 h-fit">
-                                        <GrEdit size="20"/>
-                                    </RouterLink>
-                                    <div @click="store.deleteMovement(u.id)" class="cursor-pointer rounded-full bg-rose-200 p-2 h-fit">
-                                        <GrTrash size="20"/>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between">
-                    <span class="text-xs text-gray-900 xs:text-sm">Showing 1 to 4 of 50 Entries</span>
-
-                    <div class="inline-flex mt-2 xs:mt-0">
-                        <button
-                            class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400">
-                            Prev
-                        </button>
-                        <button
-                            class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-r hover:bg-gray-400">
-                            Next
-                        </button>
+                </template>
+                <template v-else-if="column.key === 'amount'">
+                    <div class="font-semibold">
+                        {{ formatMoney(record.amount) }}
                     </div>
+                </template>
+                <template v-else-if="column.key === 'actions'" class="font-semibold">
+                    <div class="flex flex-row space-x-2 h-fit text-gray-500">
+                        <RouterLink :to="{ name: 'new-movement' }" class="cursor-pointer rounded-full text-cyan-700 p-2 h-fit">
+                            <GrEdit size="17"/>
+                        </RouterLink>
+                        <div @click="store.deleteMovement(u.id)" class="cursor-pointer rounded-full text-rose-600 hover:text-red-500 p-2 h-fit">
+                            <GrTrash size="17"/>
+                        </div>
+                    </div>
+                </template>
+            </template>
+            <template #customFilterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }" >
+                <div style="padding: 8px">
+                    <a-input
+                        ref="searchInput"
+                        :placeholder="`Search ${column.dataIndex}`"
+                        :value="selectedKeys[0]"
+                        style="width: 188px; margin-bottom: 8px; display: block"
+                        @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+                        @pressEnter="handleSearch(selectedKeys, confirm, column.dataIndex)"
+                    />
+                    <a-button
+                        type="primary"
+                        size="small"
+                        style="width: 90px; margin-right: 8px"
+                        @click="handleSearch(selectedKeys, confirm, column.dataIndex)"
+                    >
+                    <template #icon><SearchOutlined /></template>
+                        Search
+                    </a-button>
+                    <a-button size="small" style="width: 90px" @click="handleReset(clearFilters)">
+                        Reset
+                    </a-button>
                 </div>
-            </div>
-        </div>
-
+            </template>
+            <template #customFilterIcon="{ filtered }">
+                <search-outlined :style="{ color: filtered ? '#108ee9' : undefined }" />
+            </template>
+        </a-table>
     </main>
-
-    <div class="m-7"></div>
 </template>
