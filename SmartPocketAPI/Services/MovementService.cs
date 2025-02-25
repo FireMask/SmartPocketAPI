@@ -51,6 +51,9 @@ public class MovementService : IMovementService
         if (!string.IsNullOrEmpty(request.Search))
             query = query.Where(x => x.Description.Contains(request.Search));
 
+        query = query.OrderByDescending(x => x.MovementDate)
+            .ThenByDescending(x => x.CreatedAt);
+
         var result = await query.ToPagedListAsync(request.PageNumber, request.PageSize);
 
         return result;
