@@ -8,11 +8,14 @@
     
     const store = useMovementsStore()
     const searchInput = ref();
+    const dateFilter = ref();
     
     const columns = ref([
         {
             title: 'Date',
+            key: 'date',
             dataIndex: 'movementDate',
+            width: 150,
         },
         {
             title: 'Type',
@@ -20,6 +23,7 @@
             name: 'type',
             filters: [],
             filterMultiple: true,
+            width: 155,
         },
         {
             title: 'Category',
@@ -27,9 +31,10 @@
             name: 'category',
             filters: [],
             filterMultiple: true,
+            width: 130,
         },
         {
-            title: 'Movement',
+            title: 'Description',
             dataIndex: 'description',
             key: 'description',
             customFilterDropdown: true,
@@ -48,30 +53,57 @@
             name: 'paymentMethod',
             filters: [],
             filterMultiple: true,
+            width: 160,
         },
         {
             title: 'Amount',
             dataIndex: 'amount',
-            key: 'amount'
+            key: 'amount',
+            width: 100,
         },
         {
             title: '',
             key: 'actions',
             name: 'actions',
+            width: 100,
         },
     ]);
+
+    const clearFilters = async () => {
+        store.filters.pageNumber = 1
+        store.filters.pageSize = 10,
+        store.filters.search = "", 
+        store.filters.categoryId = [],
+        store.filters.paymentMethodId = [],
+        store.filters.movementTypeId = [],
+        store.filters.startDate = null, 
+        store.filters.endDate = null 
+        await store.getMovements();
+    };
+
+    const filterByDates = async (date, dateString) => {
+        console.log(dateString);
+        
+        store.filters.startDate = dateString[0];
+        store.filters.endDate = dateString[1];
+        store.filters.pageNumber = 1
+        await store.getMovements();
+    };
 
     const onChange = async (pagination, filters, sorter) => {
         store.filters.pageNumber = pagination.current;
         store.filters.categoryId = filters.category;
         store.filters.paymentMethodId = filters.paymentMethod;
         store.filters.movementTypeId = filters.type;
-        //TODO: add dates
+
+        loading.value = true;
         await store.getMovements();
+        loading.value = false;
     };
 
     const handleSearch = async (selectedKeys, confirm, dataIndex) => {
         store.filters.search = selectedKeys;
+        store.filters.pageNumber = 1
         await store.getMovements();
     };
 
@@ -79,6 +111,7 @@
         console.log('handleReset', clearFilters); 
         searchInput.value = ''
         store.filters.search = '';
+        store.filters.pageNumber = 1
         await store.getMovements();
         clearFilters({
             confirm: true,
@@ -117,6 +150,7 @@
         total: store.totalCount,
         current: store.pageNumber,
         pageSize: 10,
+        position: ['topRight'],
         onChange: (page, pageSize) => {
             console.log(page, pageSize);
           }
@@ -147,6 +181,16 @@
     </header>
 
     <main class="max-w-6xl">
+        <a-form-item
+            class="w-fit m-0"
+            label="Filter movements by dates"
+            name="dates">
+            <a-range-picker v-model:value="dateFilter" @change="filterByDates"/>
+        </a-form-item>
+        <div class="w-fit mt-2">
+            <a-button type="link" class="p-0" @click='clearFilters'>Clear All filters</a-button>
+        </div>
+
         <a-table 
             :columns="columns" 
             :data-source="store.userMovements" 
@@ -155,6 +199,11 @@
             @change="onChange" 
             size="small">
             <template #bodyCell="{ column, record }">
+                <template v-if="column.key === 'date'">
+                    <div class="h-11">
+                        {{ formatShowDate(record.movementDate) }}
+                    </div>
+                </template>
                 <template v-if="column.key === 'category'">
                     {{ record.category.name }}
                 </template>
