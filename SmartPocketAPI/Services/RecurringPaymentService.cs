@@ -31,6 +31,7 @@ public class RecurringPaymentService : IRecurringPaymentService
             .Include(x => x.MovementType)
             .Include(x => x.CreditCardPayment)
             .Include(x => x.Frequency)
+            .Include(x => x.Movements)
             .AsQueryable();
 
         if (request.CategoryId.HasValue)
@@ -68,7 +69,8 @@ public class RecurringPaymentService : IRecurringPaymentService
                 InstallmentAmountPerPeriod = r.InstallmentAmountPerPeriod,
                 MovementTypename = r.MovementType.Name,
                 IsActive = r.IsActive,
-                PaidCount = r.InstallmentCount == -1 ? $"{r.NextInstallmentCount - 1}" : $"{r.NextInstallmentCount - 1}/{r.InstallmentCount}"
+                PaidCount = r.InstallmentCount == -1 ? $"{r.NextInstallmentCount - 1}" : $"{r.NextInstallmentCount - 1}/{r.InstallmentCount}",
+                CanDelete = r.Movements.Count == 0
             })
             .ToPagedListAsync(request.PageNumber, request.PageSize);
 

@@ -14,4 +14,5 @@ public class RecurringPaymentsViewModel
     public string MovementTypename { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public string PaidCount { get; set; } = string.Empty;
+    public bool CanDelete { get; set; }
 }
