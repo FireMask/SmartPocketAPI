@@ -19,7 +19,7 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
 
     const getRecurringPayments = async () => {
         const {data} = await RecurringPaymentAPI.all()
-        userRecurringPayments.value = data.data;
+        userRecurringPayments.value = data.data.items;
     }
     const getFrequencies = async () => {
         const {data} = await RecurringPaymentAPI.frequencies()
