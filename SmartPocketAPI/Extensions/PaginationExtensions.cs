@@ -12,4 +12,12 @@ public static class PaginationExtensions
 
         return new PagedResult<T>(items, totalCount, pageNumber, pageSize);
     }
+
+    public static PagedResult<T> ToPagedListAsync<T>(this IEnumerable<T> result, int pageNumber, int pageSize)
+    {
+        var totalCount = result.Count();
+        var items = result.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+        return new PagedResult<T>(items, totalCount, pageNumber, pageSize);
+    }
 }

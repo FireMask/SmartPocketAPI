@@ -176,12 +176,12 @@ public class MovementController : Controller
     }
 
     [HttpGet("/PendingMovements")]
-    public async Task<IResult> PendingMovements()
+    public async Task<IResult> PendingMovements([FromQuery] RecurringPaymentsRequest request)
     {
         try
         {
             Guid userId = HttpContext.GetUserId();
-            var result = await _movementService.GetRecurringPaymentsWithPendingMovements(userId);
+            var result = await _movementService.GetRecurringPaymentsWithPendingMovements(userId, request);
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)

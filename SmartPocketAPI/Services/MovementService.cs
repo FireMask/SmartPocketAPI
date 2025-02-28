@@ -9,6 +9,7 @@ using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
 using SmartPocketAPI.ViewModels.RequestModels;
 using System.Collections.Generic;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SmartPocketAPI.Services;
 
@@ -196,47 +197,72 @@ public class MovementService : IMovementService
         return result;
     }
 
-    public async Task<List<RecurringPaymentsViewModel>> GetRecurringPaymentsWithPendingMovements(Guid userId, int? paymentMethodId = null, DateOnly? untilDate = null)
+    public async Task<PagedResult<RecurringPaymentsViewModel>> GetRecurringPaymentsWithPendingMovements(Guid userId, RecurringPaymentsRequest request)
     {
-        List<RecurringPayment> recurringPayments = await _context.RecurringPayments
+        var query = _context.RecurringPayments
             .Where(x => x.UserId == userId)
-            .Where(x => paymentMethodId != null ? x.PaymentMethodId == paymentMethodId : true)
+            .Where(x => request.PaymentMethodId != null ? x.PaymentMethodId == request.PaymentMethodId : true)
             .Include(x => x.Movements)
             .Include(x => x.Category)
             .Include(x => x.PaymentMethod)
             .Include(x => x.MovementType)
             .Include(x => x.CreditCardPayment)
             .Include(x => x.Frequency)
-            .ToListAsync();
+            .AsQueryable();
 
-        var pendingMovements = await GetPendingMovementsFromRecurringPayments(userId, paymentMethodId, untilDate);
-
-        var result = new List<RecurringPaymentsViewModel>();
-
-        foreach (var rp in recurringPayments)
+        if (request.CategoryId.HasValue)
         {
-            result.Add(new RecurringPaymentsViewModel()
-            {
-                Id = rp.Id,
-                CategoryName = rp.Category.Name,
-                Description = rp.Description,
-                PaymentMethodName = rp.PaymentMethod.Name,
-                StartDate = rp.StartDate,
-                LastInstallmentDate = rp.LastInstallmentDate,
-                NextInstallmentDate = rp.NextInstallmentDate,
-                FrequencyName = rp.Frequency.Name,
-                InstallmentAmountPerPeriod = rp.InstallmentAmountPerPeriod,
-                MovementTypename = rp.MovementType.Name,
-                IsActive = rp.IsActive,
-                PaidCount = $"{rp.InstallmentCount - rp.NextInstallmentCount}/{rp.InstallmentCount}",
-                CanDelete = rp.Movements.Count == 0,
-                PendingMovements = pendingMovements
-                    .Where(x => x.RecurringPaymentId == rp.Id)
-                    .ToList()
-            });
+            query = query.Where(x => x.CategoryId == request.CategoryId);
+        }
+        if (request.IsActive.HasValue)
+        {
+            query = query.Where(x => x.IsActive == request.IsActive.Value);
+        }
+        if (request.StartDate.HasValue)
+        {
+            query = query.Where(x => x.StartDate >= request.StartDate.Value);
+        }
+        if (request.EndDate.HasValue)
+        {
+            query = query.Where(x => x.StartDate <= request.EndDate.Value);
         }
 
-        return result;
+        var recurringPayments = await query
+            .OrderByDescending(x => x.IsActive)
+            .ThenByDescending(x => x.StartDate)
+            .ThenByDescending(x => x.PaymentMethod.Id)
+            .ThenBy(x => x.Id)
+            .Select(r => new RecurringPaymentsViewModel()
+            {
+                Id = r.Id,
+                CategoryName = r.Category.Name,
+                Description = r.Description,
+                PaymentMethodName = r.PaymentMethod.Name,
+                StartDate = r.StartDate,
+                LastInstallmentDate = r.LastInstallmentDate,
+                NextInstallmentDate = r.NextInstallmentDate,
+                FrequencyName = r.Frequency.Name,
+                InstallmentAmountPerPeriod = r.InstallmentAmountPerPeriod,
+                MovementTypename = r.MovementType.Name,
+                IsActive = r.IsActive,
+                PaidCount = r.InstallmentCount == -1 ? $"{r.NextInstallmentCount - 1}" : $"{r.NextInstallmentCount - 1}/{r.InstallmentCount}",
+                CanDelete = r.Movements.Count == 0
+            })
+            .ToListAsync();
+
+        var pendingMovements = await GetPendingMovementsFromRecurringPayments(userId, request.PaymentMethodId, request.UntilDate);
+
+        recurringPayments.ForEach(x =>
+        {
+            x.PendingMovements = pendingMovements
+                .Where(y => y.RecurringPaymentId == x.Id)
+                .ToList();
+        });
+
+        if (request.HasPendingMovements)
+            recurringPayments = recurringPayments.Where(x => x.PendingMovements.Count > 0).ToList();
+
+        return recurringPayments.ToPagedListAsync(request.PageNumber, request.PageSize);
     }
 
     public async Task<List<MovementFromRecurringPaymentsViewModel>> GetPendingMovementsFromRecurringPayments(Guid userId, int? paymentMethodId = null, DateOnly? untilDate = null)

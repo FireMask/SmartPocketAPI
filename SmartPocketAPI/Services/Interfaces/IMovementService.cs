@@ -12,7 +12,7 @@ public interface IMovementService
     Task<bool> DeleteMovementAsync(Guid userId, int id);
     Task<Movement> GetMovementByIdAsync(Guid userId, int movementId);
     Task<Movement> UpdateMovementAsync(UpdateMovementViewModel updateMovement);
-    Task<List<RecurringPaymentsViewModel>> GetRecurringPaymentsWithPendingMovements(Guid userId, int? paymentMethodId = null, DateOnly? untilDate = null);
+    Task<PagedResult<RecurringPaymentsViewModel>> GetRecurringPaymentsWithPendingMovements(Guid userId, RecurringPaymentsRequest request);
     Task<List<MovementFromRecurringPaymentsViewModel>> GetPendingMovementsFromRecurringPayments(Guid userId, int? paymentMethodId = null, DateOnly? untilDate = null);
     Task<object> GetDashboardInfoAsync(Guid userId);
     Task<object> GetSummaryPaymentMethods(Guid userId);
