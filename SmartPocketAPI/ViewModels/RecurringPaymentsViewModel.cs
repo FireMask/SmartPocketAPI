@@ -15,4 +15,5 @@ public class RecurringPaymentsViewModel
     public bool IsActive { get; set; }
     public string PaidCount { get; set; } = string.Empty;
     public bool CanDelete { get; set; }
+    public List<MovementFromRecurringPaymentsViewModel> PendingMovements { get; set; } = new List<MovementFromRecurringPaymentsViewModel>();
 }

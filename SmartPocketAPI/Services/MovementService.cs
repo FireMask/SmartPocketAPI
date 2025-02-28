@@ -8,6 +8,7 @@ using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
 using SmartPocketAPI.ViewModels.RequestModels;
+using System.Collections.Generic;
 
 namespace SmartPocketAPI.Services;
 
@@ -148,7 +149,6 @@ public class MovementService : IMovementService
         return movement;
     }
 
-
     public async Task<object> GetDashboardInfoAsync(Guid userId)
     {
         var query = _context.Movements
@@ -192,6 +192,49 @@ public class MovementService : IMovementService
             { "pendingMovementsRecurring", pendingMovementsRecurring.Count },
             { "summaryPaymentMethods", summaryPaymentMethods },
         };
+
+        return result;
+    }
+
+    public async Task<List<RecurringPaymentsViewModel>> GetRecurringPaymentsWithPendingMovements(Guid userId, int? paymentMethodId = null, DateOnly? untilDate = null)
+    {
+        List<RecurringPayment> recurringPayments = await _context.RecurringPayments
+            .Where(x => x.UserId == userId)
+            .Where(x => paymentMethodId != null ? x.PaymentMethodId == paymentMethodId : true)
+            .Include(x => x.Movements)
+            .Include(x => x.Category)
+            .Include(x => x.PaymentMethod)
+            .Include(x => x.MovementType)
+            .Include(x => x.CreditCardPayment)
+            .Include(x => x.Frequency)
+            .ToListAsync();
+
+        var pendingMovements = await GetPendingMovementsFromRecurringPayments(userId, paymentMethodId, untilDate);
+
+        var result = new List<RecurringPaymentsViewModel>();
+
+        foreach (var rp in recurringPayments)
+        {
+            result.Add(new RecurringPaymentsViewModel()
+            {
+                Id = rp.Id,
+                CategoryName = rp.Category.Name,
+                Description = rp.Description,
+                PaymentMethodName = rp.PaymentMethod.Name,
+                StartDate = rp.StartDate,
+                LastInstallmentDate = rp.LastInstallmentDate,
+                NextInstallmentDate = rp.NextInstallmentDate,
+                FrequencyName = rp.Frequency.Name,
+                InstallmentAmountPerPeriod = rp.InstallmentAmountPerPeriod,
+                MovementTypename = rp.MovementType.Name,
+                IsActive = rp.IsActive,
+                PaidCount = $"{rp.InstallmentCount - rp.NextInstallmentCount}/{rp.InstallmentCount}",
+                CanDelete = rp.Movements.Count == 0,
+                PendingMovements = pendingMovements
+                    .Where(x => x.RecurringPaymentId == rp.Id)
+                    .ToList()
+            });
+        }
 
         return result;
     }

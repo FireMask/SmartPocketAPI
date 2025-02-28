@@ -181,7 +181,7 @@ public class MovementController : Controller
         try
         {
             Guid userId = HttpContext.GetUserId();
-            var result = await _movementService.GetPendingMovementsFromRecurringPayments(userId);
+            var result = await _movementService.GetRecurringPaymentsWithPendingMovements(userId);
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
