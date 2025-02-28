@@ -1,6 +1,7 @@
+import { defaultConfig } from '@formkit/vue'
 import { generateClasses } from '@formkit/themes'
 
-const config = {
+export default defaultConfig({
     config: {
         classes: generateClasses ({
             global: {
@@ -9,6 +10,8 @@ const config = {
                 label: 'block mb-1 font-bold text-lg text-gray-800',
                 legend: 'block font-bold text-lg text-gray-800',
                 input: 'w-full p-3 border border-gray-300 rounded-lg text-gray-700 placeholder-gray-400',
+                suffixIcon: 'custom-suffix-icon',
+                inner: 'flex items-center space-x-1'
             },
             submit: {
                 input: '$reset mt-6 px-4 py-2 text-gray-200 bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:bg-gray-700'
@@ -25,11 +28,9 @@ const config = {
                 label: 'block text-lg font-normal pb-2 mb-0',
             },
             date: {
-                wrapper: 'collapse h-0',
-                input: 'collapse h-0',
-            },
+                
+            }
         })
     }   
-}
-
-export default config;
+})
+//export default config;

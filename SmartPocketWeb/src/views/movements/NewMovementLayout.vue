@@ -1,34 +1,33 @@
 <script setup>
-    import { watch, ref, inject } from 'vue';
-    import { reset } from '@formkit/vue';
-    import { useRouter } from 'vue-router';
+    import { watch, ref, onMounted } from 'vue';
+    import { reset, FormKitSchema } from '@formkit/vue';
+    import { useRouter, useRoute } from 'vue-router';
     import { useMovementsStore } from '../../stores/movements';
     import { useCardsStore } from '../../stores/cards';
     import { useRecurringPaymentsStore } from '@/stores/recurringPayments';
     import { formatAPIDate, formatMoney, formatterDate } from '../../helpers';
-    import { CgAddR } from 'vue-icons-plus/cg';
-    import VueTailwindDatepicker from 'vue-tailwind-datepicker'
     import NewCategoyModal from '../../components/NewCategoyModal.vue';
 
-    const toast = inject('toast')
     const router = useRouter()
+    const route = useRoute()
     const store = useMovementsStore();
     const cardsStore = useCardsStore();
     const recurringStore = useRecurringPaymentsStore()
-    const selectedMovementType = ref(null);
-    const amountLabel = ref('Amount $');
     const openNewCategory = ref(false)
-
     const today = new Date();
-    const formattedDate = new Intl.DateTimeFormat('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    }).format(today);
+    const isEditing = ref(false);
 
-    const newMovement = ref({
+    onMounted(() => {
+        
+        if (route.state?.movement) {
+            isEditing.value = true;
+            console.log(isEditing.value, movement);
+        }
+    });
+    
+    const data = ref({
         isInstallment: false,
-        movementDate: formattedDate,
+        movementDate: today.toISOString().split('T')[0],
         description: "",
         amount: null,
         categoryId: null,
@@ -37,214 +36,223 @@
         installmentCount: null,
         isInterestFreePayment: false,
         frequencyId: null,
-        creditCardPaymentId: null
+        creditCardPaymentId: null,
+        creditCardPaymentTypeId: store.creditCardPaymentTypeId,
+        purchaseTypeId: store.purchaseTypeId,
+        handleAddCategory : () => {
+            openNewCategory.value = true
+        },
+        attributesNMSI: {
+            class: 'cursor-pointer py-0 px-2 text-md bg-gray-200 mr-2 rounded',
+            onClick: (d) => {                
+                data.value.installmentCount = d.srcElement.innerText.replace('MSI',''),
+                data.value.frequencyId = 3,
+                data.value.isInterestFreePayment = true
+            },
+        },
+        attributesShortcutMSI: {
+            class: 'flex items-end mb-3',
+        },
     });
 
-    const disableDate = (date) => {
-        const today = new Date()
-        return date > today
-    }
+    const schema = [
+        {
+            $formkit: "select",
+            name: "movementTypeId",
+            label: "Type of movement",
+            placeholder: "Select the type of movement.",
+            options: store.types,
+            validation: "required",
+            validationMessages: { required: 'The type of movement is required.', },
+        },
+        {
+            $formkit: "select",
+            name: "creditCardPaymentId",
+            label: "Credit card",
+            if: "$movementTypeId == $creditCardPaymentTypeId",
+            placeholder: "Select one.",
+            options: cardsStore.userCreditCards,
+            validation: "required",
+            validationMessages: {
+                required: 'Credit card is required. Please select one.',
+            }
+        },
+        {
+            $formkit: "select",
+            name: "categoryId",
+            label: "Category",
+            placeholder: "Select a category.",
+            options: store.categories,
+            suffixIcon: 'add',
+            onSuffixIconClick: '$handleAddCategory',
+            validation: "required",
+            validationMessages: { required: 'The type of category is required.', },
+        },
+        {
+            $formkit: "date",
+            name: "movementDate",
+            label: "Transaction date",
+            disableDates:"disableDate",
+            validation: "required",
+            validationMessages: {
+                required: 'Transaction date is required.',
+            }
+        },
+        {
+            $formkit: "text",
+            name: "description",
+            label: "Description [Optional]",
+            placeholder: "Describe your movement.",
+            validation: "length:0,200",
+            validationMessages: {
+                length: 'Please enter a shorter description. Max length: 200.',
+            }
+        },
+        {
+            $formkit: "text",
+            name: "amount",
+            label: "Amount",
+            placeholder: "Amount of movement.",
+            validation: "required|number|regex:/^\\d*\\.?\\d+$/",
+            validationMessages: {
+                regex: 'The interest rate must be a valid number.',
+                number: 'The interest rate must have only numbers.',
+                required: 'The amount is required.'
+            },
+            __raw__sectionsSchema: {
+                prefix: {
+                $el: 'div',
+                attrs: {
+                    class:
+                    '$classes.prefix + "p-2 stretch flex items-center bg-gray-100 mr-2 rounded"',
+                },
+                children: '$',
+                },
+            },
+        },
+        {
+            $formkit: "select",
+            name: "paymentMethodId",
+            label: "Payment method",
+            placeholder: "Select a payment method.",
+            options: cardsStore.userPaymentMethods,
+            validation: "required",
+            validationMessages: { required: 'The payment method is required.', },
+        },
+        {
+            $formkit: "checkbox",
+            name: "isInstallment",
+            label: "Is installment?",
+            if: "$movementTypeId == $purchaseTypeId", //TODO: Solo mostrar si el método de pago es tarjeta de credito
+        },
+        {
+            $el: 'div',
+            name: 'group',
+            if: "$movementTypeId == $purchaseTypeId && $isInstallment",
+            bind: "$attributesShortcutMSI",
+            children: [
+            {
+                $el: 'h1',
+                bind: '$attributesNMSI',
+                children: '3MSI',
+            },
+            {
+                $el: 'h1',
+                bind: "$attributesNMSI",
+                children: '6MSI'
+            },
+            {
+                $el: 'h1',
+                bind: "$attributesNMSI",
+                children: '9MSI'
+            },
+            {
+                $el: 'h1',
+                bind: "$attributesNMSI",
+                children: '12MSI'
+            },
+            {
+                $el: 'h1',
+                bind: "$attributesNMSI",
+                children: '18MSI'
+            },
+            ]
+        },
+        {
+            $formkit: "select",
+            name: "frequencyId",
+            label: "Frequency",
+            if: "$movementTypeId == $purchaseTypeId && $isInstallment",
+            placeholder: "Select one.",
+            options: recurringStore.frequencies,
+            validation: "required",
+            validationMessages: { required: 'The installment frequency is required.', },
+        },
+        {
+            $formkit: "text",
+            name: "installmentCount",
+            label: "Installment count",
+            if: "$movementTypeId == $purchaseTypeId && $isInstallment",
+            placeholder: "Quantity of installments.",
+            validation: "required|number",
+            validationMessages: { 
+                required: 'The installment count is required.', 
+                number: 'Only numbers.'
+            },
+        },
+        {
+            $formkit: "checkbox",
+            name: "isInterestFreePayment",
+            label: "Is Interest free? [Optional]",
+            if: "$movementTypeId == $purchaseTypeId && $isInstallment",
+        },
+        {
+            $formkit: "submit",
+            label: "Save"
+        },
+    ];
 
     const handleSubmit = async (formData) => {
-        newMovement.value.movementTypeId = selectedMovementType.value;
-        newMovement.value.movementDate = formatAPIDate(newMovement.value.movementDate);
-        newMovement.value.amount = formatMoney(newMovement.value.amount);
-        if (!newMovement.value.installmentCount)
-            newMovement.value.installmentCount = 0
-        if (!newMovement.value.frequencyId)
-            newMovement.value.frequencyId = 0
+        if (!formData.isInstallment){
+            formData.installmentCount = 0
+            formData.frequencyId = 0
+        }
 
-        const resp = await store.addMovement(newMovement.value);
+        const resp = await store.addMovement(formData);
 
         if (resp?.success) {
             reset('movementForm')
             router.push({ name: 'dashboard' });
         }
     }
-
-    watch(selectedMovementType, (newValue) => {
-        if (newMovement.value.isInstallment)
-            amountLabel.value = 'Amount -$ (total amount of your purchase)'
-        else {
-            if (newValue === store.incomeTypeId)
-                amountLabel.value = 'Amount +$'
-            else
-                amountLabel.value = 'Amount -$'
-        }
-    });
-
-    watch(newMovement.value.movementDate, (newValue) => {
-        console.log('newMovement.movementDate',newValue)
-    });
 </script>
 
 <template>
-    <div class="flex items-center justify-center h-auto px-6 bg-gray-200">
-        <div class="w-full max-w-sm p-6 bg-white rounded-md shadow-md">
-            <div class="flex items-center justify-center">
-                <span class="text-2xl font-semibold text-gray-700">New Movement</span>
-            </div>
+        <header class="flex sticky justify-between mb-4 flex-col lg:flex-row">
+        <h3 class="text-3xl font-medium text-gray-700">
+            New Movement
+        </h3>
+        <div class="w-auto text-lg lg:text-xl mt-3 lg:mt-0">
+            <p>
+                <RouterLink :to="{ name: 'movements' }" class="text-indigo-600 hover:text-indigo-900 font-medium">
+                    Movements
+                </RouterLink>
+            </p>
+        </div>
+    </header>
 
-            <FormKit id="movementForm" type="form" :actions="false"
-                incomplete-message="Error sending the data, please, see the notifications." 
-                @submit="">
-
-                <FormKit
-                    type="select"
-                    label="Type of movement"
-                    name="movementTypeId"
-                    v-model="selectedMovementType"
-                    placeholder="Select the type of movement"
-                    :options="store.types"
-                    validation="required"
-                    :validation-messages="{
-                        required: 'The type of movement is required.'
-                    }"
-                />
-
-                <div v-if="selectedMovementType === store.creditCardPaymentTypeId">
-                    <FormKit
-                        type="select"
-                        label="Credit card"
-                        name="creditCardPaymentId"
-                        v-model="newMovement.creditCardPaymentId"
-                        placeholder="Select one"
-                        :options="cardsStore.userCreditCards"
-                    />
-                </div>
-
-                <div class="flex">
-                    <div class="flex-1 w-full">
-                        <FormKit
-                            type="select"
-                            label="Category"
-                            name="categoryId"
-                            v-model="newMovement.categoryId"
-                            placeholder="Select a category"
-                            
-                            :options="store.categories"
-                            validation="required"
-                            :validation-messages="{
-                                required: 'The type of category is required.'
-                            }"
-                        />
-                    </div>
-                    <div class="text-indigo-600 hover:text-indigo-900 my-auto pt-5 ms-2 flex-none" @click="openNewCategory = true">
-                        <CgAddR/>
-                    </div>
-                </div>
-
-                <NewCategoyModal v-model:open="openNewCategory" />
-
-                <p class="block mb-1 font-bold text-lg text-gray-800">Transaction date</p>
-                <div class="w-full mb-3">
-                    <VueTailwindDatepicker
-                        :disable-date="disableDate"
-                        as-single
-                        :formatter="formatterDate"
-                        v-model="newMovement.movementDate"
-                        validation="required"
-                        :validation-messages="{
-                            required: 'The type of movement is required.'
-                        }"
-                    />
-                </div>
-
-                <FormKit
-                    type="date"
-                    v-model="newMovement.movementDate"
-                    :disable-date="disableDate"
-                    :formatter="formatterDate"
-                    validation="required"
-                        :validation-messages="{
-                            required: 'The transaction date is required.'
-                        }"
-                    />
-
-                <FormKit
-                    type="text"
-                    label="Description [Optional]"
-                    name="description"
-                    placeholder="Describe your movement."
-                    v-model="newMovement.description"
-                />
-
-                <FormKit
-                    type="text"
-                    :label=amountLabel
-                    name="amount"
-                    placeholder="Amount of movement."
-                    v-model="newMovement.amount"
-                    validation="required|number|regex:/^\\d*\\.?\\d+$/"
-                    :validation-messages="{
-                        regex: 'The interest rate must be a valid number.',
-                        number: 'The interest rate must have only numbers.',
-                        required: 'The amount is required.'
-                    }"
-                />
-                <FormKit
-                    type="select"
-                    label="Payment Method"
-                    name="paymentMethodId"
-                    placeholder="Select one"
-                    :options="cardsStore.userPaymentMethods"
-                    v-model="newMovement.paymentMethodId"
-                    validation="required"
-                    :validation-messages="{
-                        required: 'The payment method is required.'
-                    }"
-                />
-
-                <div v-if="selectedMovementType === store.purchaseTypeId">  <!--TODO: Solo mostrar si el método de pago es tarjeta de credito-->
-                    <FormKit
-                        type="checkbox"
-                        label="Is installment?"
-                        name="isInstallment"
-                        v-model="newMovement.isInstallment"
-                    />
-                </div>
-
-                <div v-if="selectedMovementType === store.purchaseTypeId && newMovement.isInstallment">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-1/2">
-                            <FormKit
-                                type="select"
-                                label="Frequency"
-                                name="frequencyId"
-                                placeholder="Select one"
-                                v-model="newMovement.frequencyId"
-                                :options="recurringStore.frequencies"
-                            />
-                        </div>
-                        <div class="w-1/2">
-                            <FormKit
-                                type="text"
-                                label="Installment Count"
-                                name="installmentCount"
-                                placeholder="Quantity of installments."
-                                v-model="newMovement.installmentCount"
-                                validation="number"
-                                :validation-messages="{
-                                    number: 'Only numbers.'
-                                }"
-                            />
-                        </div>
-                    </div>
-                    <FormKit
-                        type="checkbox"
-                        label="Is Interest free? [Optional]"
-                        name="isInterestFreePayment"
-                        v-model="newMovement.isInterestFreePayment"
-                    />
-                </div>
-
-
-                <div class="mt-6">
-                    <button type="button" @click=handleSubmit class="w-full px-4 py-2 text-sm text-center text-white bg-indigo-600 rounded-md focus:outline-none hover:bg-indigo-500">
-                        Save
-                    </button>
-                </div>
+    <div class="mt-4">
+        <div class="p-6 bg-white rounded-md shadow-md max-w-md">
+            <FormKit 
+                id="movementForm"
+                type="form" 
+                v-model="data" 
+                :actions="false"
+                @submit="handleSubmit"
+                incomplete-message="Error sending the data, please, see the notifications.">
+                <FormKitSchema :schema="schema" :data="data" />
             </FormKit>
         </div>
     </div>
+    <NewCategoyModal v-model:open="openNewCategory" />
 </template>

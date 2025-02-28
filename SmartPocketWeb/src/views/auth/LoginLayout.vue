@@ -41,7 +41,7 @@
         <p class=" text-gray-800 text-center my-5">Enter in your Smart Pocket account.</p>
 
         <FormKit
-            id="registerForm"
+            id="loginForm"
             type="form"
             :actions="false"
             incomplete-message="Error sending the data, please, see the notifications."

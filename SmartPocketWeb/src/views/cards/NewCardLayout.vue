@@ -82,13 +82,13 @@
     ];
 
     const data = ref({
-    name: null,
-    paymentMethodTypeId: null,
-    bank: '',
-    dueDate: null,
-    transactionDate: null,
-    defaultInterestRate: null,
-    isCreditCard: false
+        name: null,
+        paymentMethodTypeId: null,
+        bank: '',
+        dueDate: null,
+        transactionDate: null,
+        defaultInterestRate: null,
+        isCreditCard: false
     });
 
     const handleSubmit = async (formData) => {
@@ -119,9 +119,6 @@
             New card
         </h3>
         <div class="w-auto text-lg lg:text-xl mt-3 lg:mt-0">
-            <p class="font-medium text-gray-700">
-                {{ formatShowDate(today) }}
-            </p>
             <p>
                 <RouterLink :to="{ name: 'cards' }" class="text-indigo-600 hover:text-indigo-900 font-medium">
                     Cards

@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.custom-suffix-icon svg {
+    width: 1.8rem; /* Ajusta el tamaño según tus necesidades */
+    height: 1.8rem; /* Ajusta el tamaño según tus necesidades */
+}

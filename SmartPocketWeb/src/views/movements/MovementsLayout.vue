@@ -122,6 +122,8 @@
     watch(store.filterCatalogs, (newFilters) => {
         if(newFilters)
         {
+            console.log(newFilters);
+            
             columns.value = columns.value.map(column => {
                 if (column.key === 'category') {
                     return {
@@ -238,10 +240,10 @@
                 </template>
                 <template v-else-if="column.key === 'actions'" class="font-semibold">
                     <div class="flex flex-row space-x-2 h-fit text-gray-500">
-                        <RouterLink :to="{ name: 'new-movement' }" class="cursor-pointer rounded-full text-cyan-700 p-2 h-fit">
+                        <RouterLink :to="{ name: 'edit-movement', params: { id: record.id } }" class="cursor-pointer rounded-full text-cyan-700 p-2 h-fit">
                             <GrEdit size="17"/>
                         </RouterLink>
-                        <div @click="store.deleteMovement(u.id)" class="cursor-pointer rounded-full text-rose-600 hover:text-red-500 p-2 h-fit">
+                        <div @click="store.deleteMovement(record.id)" class="cursor-pointer rounded-full text-rose-600 hover:text-red-500 p-2 h-fit">
                             <GrTrash size="17"/>
                         </div>
                     </div>

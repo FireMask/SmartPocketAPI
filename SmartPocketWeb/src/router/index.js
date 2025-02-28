@@ -38,6 +38,11 @@ const router = createRouter({
           component: NewMovementLayout
         },
         {
+          path: '/movement/:id?',
+          name: 'edit-movement',
+          component: NewMovementLayout
+        },
+        {
           path: '/payments',
           name: 'payments',
           component: PaymentsLayout,
