@@ -17,12 +17,13 @@
     const today = new Date();
     const isEditing = ref(false);
 
-    onMounted(() => {
+    onMounted(async() => {
         
         if (route.state?.movement) {
             isEditing.value = true;
             console.log(isEditing.value, movement);
         }
+        await cardsStore.getCards();
     });
     
     const data = ref({
