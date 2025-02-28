@@ -296,7 +296,9 @@ public class MovementService : IMovementService
 
             while (nextDate <= untilDate)
             {
-                if (rPayment.InstallmentCount < installmentNo)
+                if (rPayment.InstallmentCount != -1 //Si la el pago recurrente es indefinido
+                    && rPayment.InstallmentCount < installmentNo //Si el numero de cuotas ya se cumplio
+                    )
                     break;
 
                 addMovementList.Add(new MovementFromRecurringPaymentsViewModel()
