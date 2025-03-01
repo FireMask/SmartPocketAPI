@@ -376,6 +376,8 @@ public class MovementService : IMovementService
             {
                 CardName = card.Name,
                 TotalSum = thisPeriodSpent + pendingMovementsRange,
+                ThisPeriodAmount = thisPeriodSpent,
+                PendingMovementsAmount = pendingMovementsRange,
                 TransactionStartDate = startTransactionDate,
                 TransactionEndDate = endTransactionDate,
                 DueDate = dueDate
