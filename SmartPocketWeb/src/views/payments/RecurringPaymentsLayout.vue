@@ -1,100 +1,205 @@
 <script setup>
+    import { ref, computed } from 'vue';
+    import { useRouter } from 'vue-router';
     import { formatShowDate, formatMoney } from '../../helpers';
     import { useRecurringPaymentsStore } from '../../stores/recurringPayments';
     import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
 
+    const router = useRouter()
     const store = useRecurringPaymentsStore()
+    const dateFilter = ref();
+    const filteredInfo = ref({});
+    const loading = ref(false);
+
+    const columns = computed(() => {
+        const filtered = filteredInfo.value || {};
+        return [
+            {
+                title: 'Payment Method',
+                key: 'paymentMethod',
+                name: 'paymentMethod',
+                dataIndex: 'paymentMethodName',
+                filteredValue: filtered.paymentMethod || null,
+                filters: store.filterCatalogs?.paymentMethods,
+                filterMultiple: true,
+                width: 160,
+                ellipsis: true,
+                align: 'center',
+            },
+            {
+                title: 'Category',
+                key: 'category',
+                name: 'category',
+                dataIndex: 'categoryName',
+                filteredValue: filtered.category || null,
+                filters: store.filterCatalogs?.categories,
+                filterMultiple: true,
+                width: 130,
+                ellipsis: true,
+                align: 'center',
+            },
+            {
+                title: 'Description',
+                dataIndex: 'description',
+                key: 'description',
+            },
+            {
+                title: 'Frequency',
+                key: 'frequency',
+                name: 'frequency',
+                dataIndex: 'frequencyName',
+                width: 100,
+            },
+            {
+                title: 'Amount',
+                dataIndex: 'installmentAmountPerPeriod',
+                key: 'installmentAmountPerPeriod',
+                width: 100,
+            },
+            {
+                title: 'Paid Count',
+                dataIndex: 'paidCount',
+                key: 'paidCount',
+                width: 80,
+            },
+            {
+                title: 'Start Date',
+                key: 'startDate',
+                name: 'startDate',
+                dataIndex: 'startDate',
+                width: 130,
+            },
+            {
+                title: 'Last payment',
+                key: 'lastInstallmentDate',
+                name: 'lastInstallmentDate',
+                dataIndex: 'lastInstallmentDate',
+                width: 130,
+            },
+            {
+                title: 'Next payment',
+                key: 'nextInstallmentDate',
+                name: 'nextInstallmentDate',
+                dataIndex: 'nextInstallmentDate',
+                width: 130,
+            },
+            {
+                title: '',
+                key: 'actions',
+                name: 'actions',
+                width: 60,
+                align: 'right'
+            },
+        ]
+    });
+
+    const clearFilters = async () => {
+        loading.value = true;
+        dateFilter.value = null;
+        filteredInfo.value = null;
+        store.filters.pageNumber = 1
+        store.filters.pageSize = 10,
+            store.filters.isActive = null,
+            store.filters.categoryId = [],
+            store.filters.startDate = null
+        store.filters.endDate = null
+        store.filters.paymentMethodId = [],
+            store.filters.untilDate = [],
+            store.filters.hasPendingMovements = null,
+            await store.getRecurringPayments();
+        loading.value = false;
+    };
+
+    const filterByDates = async (date, dateString) => {
+        loading.value = true;
+        store.filters.startDate = dateString[0];
+        store.filters.endDate = dateString[1];
+        store.filters.pageNumber = 1
+        await store.getRecurringPayments();
+        loading.value = false;
+    };
+
+    const onChange = async (pagination, filters, sorter) => {
+        loading.value = true;
+        filteredInfo.value = filters;
+
+        store.filters.pageNumber = pagination.current;
+
+        if (store.filters.pageSize !== pagination.pageSize ||
+            store.filters.categoryId !== filters.category ||
+            store.filters.paymentMethodId !== filters.paymentMethod ||
+            store.filters.isActive !== filters.isActive) 
+        {
+            store.filters.pageNumber = 1;
+        }
+
+        store.filters.pageSize = pagination.pageSize;
+        store.filters.categoryId = filters.category;
+        store.filters.paymentMethodId = filters.paymentMethod;
+        store.filters.isActive = filters.isActive;
+
+        await store.getRecurringPayments();
+        loading.value = false;
+    };
+
+    const pagination = computed(() => ({
+        total: store.totalCount,
+        current: store.pageNumber,
+        size: "middle",
+        pageSize: store.pageSize,
+        position: ['topRight']
+    }));
+
+    const edit = async recurring => {
+        //store.movementToUpdate.value = movement
+        //router.push({name : 'edit-movement', params: { id: movement.id }})
+    };
+
 </script>
 
 <template>
-    <div class="overflow-auto h-fit">
-        <table class="w-full h-max align-middle border-b border-gray-200 shadow sm:rounded-lg">
-            <thead>
-                <tr>
-                    <th class="px-3 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                        Payment
-                    </th>
-                    <th class="px-3 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                        Payment Method
-                    </th>
-                    <th class="px-3 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                        Dates
-                    </th>
-                    <th class="px-3 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                        Frequency
-                    </th>
-                    <th class="px-3 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                        Amount
-                    </th>
-                    <th class="px-3 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                        Paid count
-                    </th>
-                    <th class="px-3 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50"></th>
-                </tr>
-            </thead>
+    <div class="overflow-auto h-fit max-w-7xl">
+        <div class="w-fit mt-2">
+            <a-button type="link" class="p-0" @click='clearFilters'>Clear All filters</a-button>
+        </div>
 
-            <tbody class="bg-white">
-                <tr v-for="(m, id) in store.userRecurringPayments" :key="id">
-                    <td class="px-3 py-4 border-b border-gray-200 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="ml-4">
-                                <div class="text-sm font-medium leading-5 text-gray-900">
-                                    {{ m.categoryName }}
-                                </div>
-                                <div class="text-sm leading-5 text-gray-500">
-                                    {{ m.description }}
-                                </div>
-                            </div>
+        <a-form-item class="w-fit mb-2" label="Filter by start date" name="dates">
+            <a-range-picker v-model:value="dateFilter" @change="filterByDates" />
+        </a-form-item>
+
+        <a-table 
+            :columns="columns" 
+            :data-source="store.userRecurringPayments" 
+            :pagination="pagination"
+            :loading="loading" 
+            @change="onChange" 
+            size="small">
+            <template #bodyCell="{ column, record }">
+                <template v-if="column.key === 'startDate'">
+                    <span class="text-xs">{{ formatShowDate(record.startDate) }} </span>
+                </template>
+                <template v-if="column.key === 'lastInstallmentDate'">
+                    <span class="text-xs">{{ formatShowDate(record.lastInstallmentDate) }} </span>
+                </template>
+                <template v-if="column.key === 'nextInstallmentDate'">
+                    <span class="text-xs">{{ formatShowDate(record.nextInstallmentDate) }} </span>
+                </template>
+                <template v-else-if="column.key === 'actions'" class="font-semibold">
+                    <div class="flex flex-row w-full justify-end space-x-2 h-fit text-gray-500">
+                        <div @click="edit(record)"
+                            class="cursor-pointer rounded-full text-cyan-700 hover:text-sky-600 p-0 h-fit">
+                            <GrEdit size="17" />
                         </div>
-                    </td>
-
-                    <td class="px-3 py-4 border-b border-gray-200 whitespace-nowrap">
-                        <div class="text-sm leading-5 text-gray-900">
-                            {{ m.paymentMethodName }}
+                        <div v-if="record.canDelete" @click="store.deleteRecurringPayment(record.id)"
+                            class="cursor-pointer rounded-full text-rose-600 hover:text-red-500 p-0 h-fit">
+                            <GrTrash size="17" />
                         </div>
-                    </td>
-
-                    <td class="px-3 py-4 border-b border-gray-200 whitespace-nowrap">
-                        <span class="inline-flex text-xs font-normal leading-5">
-                            <div class="ml-4">
-                                <div class="text-sm font-medium leading-5 text-gray-900">
-                                    <span>Start:</span>{{ formatShowDate(m.startDate) }}
-                                </div>
-                                <div v-if="!!m.lastInstallmentDate" class="text-sm leading-5 text-gray-500">
-                                    Last payment:{{ formatShowDate(m.lastInstallmentDate) }}
-                                </div>
-                                <div class="text-sm leading-5 text-gray-500">
-                                    <span>Next payment:</span> {{ m.nextInstallmentDate }}
-                                </div>
-                            </div>
-                        </span>
-                    </td>
-
-                    <td class="px-3 py-4 border-b border-gray-200 whitespace-nowrap">
-                        <span class="inline-flex text-xs font-semibold leading-5">
-                            {{ m.frequencyName }}</span>
-                    </td>
-
-                    <td class="px-3 py-4 text-sm leading-5 font-bold border-b border-gray-200 whitespace-nowrap">
-                        {{ formatMoney(m.installmentAmountPerPeriod) }}
-                    </td>
-
-                    <td class="px-3 py-4 text-sm font-medium leading-5 text-right border-b border-gray-200 whitespace-nowrap">
-                        {{ m.paidCount }}
-                    </td>
-
-                    <td class="px-3 py-4 text-sm font-medium leading-5 text-right border-b border-gray-200 whitespace-nowrap text-gray-500 ">
-                        <div class="text-gray-500 flex flex-row space-x-2 h-fit">
-                            <RouterLink :to="{ name: 'new-recurring-payment' }" class="cursor-pointer rounded-full bg-emerald-100 p-2 h-fit">
-                                <GrEdit size="20"/>
-                            </RouterLink>
-                            <div @click="store.deleteRecurringPayment(m.id)" class="cursor-pointer rounded-full bg-rose-200 p-2 h-fit">
-                                <GrTrash size="20"/>
-                            </div>
+                        <div v-else class="rounded-full text-gray-400 p-0 h-fit">
+                            <GrTrash size="17" />
                         </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                    </div>
+                </template>
+            </template>
+        </a-table>
     </div>
 </template>

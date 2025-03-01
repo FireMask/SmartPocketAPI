@@ -1,13 +1,18 @@
 import api from "../lib/axios";
 
 export default {
-    all() {
+    paginate(data) {
         const token = localStorage.getItem('AUTH_TOKEN')
-        return api.get('/recurringPayments',{
+        return api.get('/pendingMovements', {
             headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            params: data,
+            paramsSerializer: {
+                indexes: null, // no brackets at all
+              }
+        });
     },
     create(paymentData){
         const token = localStorage.getItem('AUTH_TOKEN')

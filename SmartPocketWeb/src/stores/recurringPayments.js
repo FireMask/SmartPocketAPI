@@ -1,29 +1,64 @@
 import { ref, onMounted, computed, inject } from 'vue';
 import { defineStore } from 'pinia';
 import RecurringPaymentAPI from '../api/RecurringPaymentAPI';
+import CatalogsAPI from '@/api/CatalogsAPI';
 
 export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () => {
 
-    const userRecurringPayments = ref([]);
     const frequencies = ref([])
     const toast = inject('toast')
+    
+    //Recurring table 
+    const userRecurringPayments = ref([]);
+    const filters = ref(
+    {
+        pageNumber: 1, 
+        pageSize: 10,
+        isActive: null,
+        categoryId: [],
+        startDate: null, //YYYY-MM-DD
+        endDate: null, //YYYY-MM-DD
+        paymentMethodId: [],
+        untilDate: null,
+        hasPendingMovements: null,
+    })
+
+    const pageNumber = ref(1)
+    const pageSize = ref(10)
+    const totalCount = ref(0)
+    const totalPages = ref(0)
+    const filterCatalogs = ref({})
 
     onMounted(async () => {
         try {
             await getRecurringPayments();
             await getFrequencies();
+            await getFilters();
         } catch (error) {
             console.log(error);
         }
     })
 
     const getRecurringPayments = async () => {
-        const {data} = await RecurringPaymentAPI.all()
-        userRecurringPayments.value = data.data.items;
+        const {data: { data : { items, pageNumber: pn, totalCount: tc, totalPages:tp, pageSize:pz } }} = await RecurringPaymentAPI.paginate(filters.value)            
+        userRecurringPayments.value = items;
+        pageNumber.value = pn
+        totalCount.value = tc
+        totalPages.value = tp
+        pageSize.value = pz
     }
+
     const getFrequencies = async () => {
         const {data} = await RecurringPaymentAPI.frequencies()
         frequencies.value = data.data.map(freq => { return {label: freq.name, value: freq.id, id: freq.id}})      
+    }
+
+    const getFilters = async () => {
+        const {data: {data : {categories, frequencies, paymentMethods, movementTypes}}} = await CatalogsAPI.filterCatalogs();
+        filterCatalogs.value.categories = categories.map(item => { return {label: item.name, text: item.name, value: item.id, id: item.id}})
+        filterCatalogs.value.frequencies = frequencies.map(item => { return {label: item.name, text: item.name, value: item.id, id: item.id}})
+        filterCatalogs.value.paymentMethods = paymentMethods.map(item => { return {label: item.name, text: item.name, value: item.id, id: item.id}})
+        filterCatalogs.value.movementTypes = movementTypes.map(item => { return {label: item.name, text: item.name, value: item.id, id: item.id}})
     }
 
     const addRecurringPayment = async (paymentData) => {
@@ -67,7 +102,14 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
     return {
         userRecurringPayments,
         frequencies,
+        pageNumber,
+        pageSize,
+        totalCount,
+        totalPages,
+        filters,
+        filterCatalogs,
         addRecurringPayment,
         deleteRecurringPayment,
+        getRecurringPayments,
     }
 })

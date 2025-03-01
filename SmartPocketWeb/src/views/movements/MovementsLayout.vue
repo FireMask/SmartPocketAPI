@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, reactive, watch, computed } from 'vue';
+    import { ref, computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { useMovementsStore } from '../../stores/movements';
     import { formatShowDate, formatMoney } from '../../helpers';
@@ -141,7 +141,6 @@
 
     const handleReset = async clearFilters => {
         loading.value = true;
-        console.log('handleReset', clearFilters); 
         searchInput.value = ''
         store.filters.search = '';
         store.filters.pageNumber = 1
