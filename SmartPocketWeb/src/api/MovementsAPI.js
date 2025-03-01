@@ -31,7 +31,6 @@ export default {
         });
     },
     create(movementData){
-        console.log('api', movementData);
         const token = localStorage.getItem('AUTH_TOKEN')
         return api.post('/movement', movementData, {
             headers: {

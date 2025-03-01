@@ -1,5 +1,5 @@
 <script setup>
-    import { watch, ref, onMounted } from 'vue';
+    import { watch, ref, onMounted, reactive, computed } from 'vue';
     import { reset, FormKitSchema } from '@formkit/vue';
     import { useRouter, useRoute } from 'vue-router';
     import { useMovementsStore } from '../../stores/movements';
@@ -7,6 +7,7 @@
     import { useRecurringPaymentsStore } from '@/stores/recurringPayments';
     import { formatAPIDate, formatMoney, formatterDate } from '../../helpers';
     import NewCategoyModal from '../../components/NewCategoyModal.vue';
+    import TicketLayout from '@/components/TicketLayout.vue';
 
     const router = useRouter()
     const route = useRoute()
@@ -17,16 +18,11 @@
     const today = new Date();
     const isEditing = ref(false);
 
-    onMounted(async() => {
-        
-        if (route.state?.movement) {
-            isEditing.value = true;
-            console.log(isEditing.value, movement);
-        }
-        await cardsStore.getCards();
-    });
+    const cashId = 1
     
     const data = ref({
+        isEditing: false,
+
         isInstallment: false,
         movementDate: today.toISOString().split('T')[0],
         description: "",
@@ -37,6 +33,7 @@
         installmentCount: null,
         isInterestFreePayment: false,
         frequencyId: null,
+
         creditCardPaymentId: null,
         creditCardPaymentTypeId: store.creditCardPaymentTypeId,
         purchaseTypeId: store.purchaseTypeId,
@@ -56,7 +53,26 @@
         },
     });
 
-    const schema = [
+    onMounted(async() => {
+        
+        if (route.params?.id) {
+            isEditing.value = true;
+            const {recurringPaymentId, recurringPayment, ...movement} = store.movementToUpdate.value;
+            
+            data.value = {
+                ...data.value, 
+                ...movement, 
+                isEditing: true,
+                isInstallment: recurringPaymentId !== null,
+                frequencyId: recurringPayment?.frequencyId,
+                installmentCount: recurringPayment?.installmentCount,
+                isInterestFreePayment: recurringPayment?.isInterestFreePayment,
+            }
+        }
+
+    });
+
+    const schema = computed(() => [
         {
             $formkit: "select",
             name: "movementTypeId",
@@ -122,12 +138,12 @@
             },
             __raw__sectionsSchema: {
                 prefix: {
-                $el: 'div',
-                attrs: {
-                    class:
-                    '$classes.prefix + "p-2 stretch flex items-center bg-gray-100 mr-2 rounded"',
-                },
-                children: '$',
+                    $el: 'div',
+                    attrs: {
+                        class:
+                        '$classes.prefix + " px-1 py-1 stretch flex items-center bg-gray-100 mr-1 rounded"',
+                    },
+                    children: '$',
                 },
             },
         },
@@ -144,12 +160,13 @@
             $formkit: "checkbox",
             name: "isInstallment",
             label: "Is installment?",
-            if: "$movementTypeId == $purchaseTypeId", //TODO: Solo mostrar si el método de pago es tarjeta de credito
+            disabled: isEditing.value,
+            if: "$isEditing === false && $movementTypeId == $purchaseTypeId", //TODO: Solo mostrar si el método de pago es tarjeta de credito
         },
         {
             $el: 'div',
             name: 'group',
-            if: "$movementTypeId == $purchaseTypeId && $isInstallment",
+            if: "$isEditing === false && $movementTypeId == $purchaseTypeId && $isInstallment",
             bind: "$attributesShortcutMSI",
             children: [
             {
@@ -183,35 +200,38 @@
             $formkit: "select",
             name: "frequencyId",
             label: "Frequency",
-            if: "$movementTypeId == $purchaseTypeId && $isInstallment",
+            if: "$isEditing === false && $movementTypeId == $purchaseTypeId && $isInstallment",
             placeholder: "Select one.",
             options: recurringStore.frequencies,
             validation: "required",
             validationMessages: { required: 'The installment frequency is required.', },
+            disabled: isEditing.value,
         },
         {
             $formkit: "text",
             name: "installmentCount",
             label: "Installment count",
-            if: "$movementTypeId == $purchaseTypeId && $isInstallment",
+            if: "$isEditing === false && $movementTypeId == $purchaseTypeId && $isInstallment",
             placeholder: "Quantity of installments.",
             validation: "required|number",
             validationMessages: { 
                 required: 'The installment count is required.', 
                 number: 'Only numbers.'
             },
+            disabled: isEditing.value,
         },
         {
             $formkit: "checkbox",
             name: "isInterestFreePayment",
             label: "Is Interest free? [Optional]",
-            if: "$movementTypeId == $purchaseTypeId && $isInstallment",
+            if: "$isEditing === false && $movementTypeId == $purchaseTypeId && $isInstallment",
+            disabled: isEditing.value,
         },
         {
             $formkit: "submit",
             label: "Save"
         },
-    ];
+    ]);
 
     const handleSubmit = async (formData) => {
         if (!formData.isInstallment){
@@ -219,13 +239,51 @@
             formData.frequencyId = 0
         }
 
-        const resp = await store.addMovement(formData);
+        let resp;
+        if (isEditing.value) 
+            resp = await store.updateMovement(formData);
+        else
+            resp = await store.addMovement(formData);
 
         if (resp?.success) {
             reset('movementForm')
-            router.push({ name: 'dashboard' });
+            router.go(-1)
         }
     }
+
+    const type = computed(() => {
+      const selected = store.types
+        ? store.types.find((option) => option.id === data.value.movementTypeId)
+        : null;
+      return selected ? selected.label : ''; 
+    });
+
+    const category = computed(() => {
+      const selected = store.categories
+        ? store.categories.find((option) => option.id === data.value.categoryId)
+        : null;
+      return selected ? selected.label : ''; 
+    });
+
+    const payment = computed(() => {
+        if(data.value.paymentMethodId === cashId)
+        return "";
+        const selected = cardsStore.userPaymentMethods
+        ? cardsStore.userPaymentMethods.find((option) => option.id === data.value.paymentMethodId)
+        : null;
+        return selected ? selected.label : ''; 
+    });
+
+    const cash = computed(() => {
+        return (data.value.paymentMethodId === cashId) ? "Cash" : null;
+    });
+
+    const frequency = computed(() => {
+      const selected = recurringStore.frequencies
+        ? recurringStore.frequencies.find((option) => option.id === data.value.frequencyId)
+        : null;
+      return selected ? selected.label : ''; 
+    });
 </script>
 
 <template>
@@ -242,11 +300,11 @@
         </div>
     </header>
 
-    <div class="mt-4">
-        <div class="p-6 bg-white rounded-md shadow-md max-w-md">
+    <div class="mt-4 flex flex-wrap space-x-0 md:space-x-14 space-y-14 items-start">
+        <div class="p-6 bg-white rounded-md shadow-md w-full max-w-md flex-shrink-0">
             <FormKit 
                 id="movementForm"
-                type="form" 
+                type="form"
                 v-model="data" 
                 :actions="false"
                 @submit="handleSubmit"
@@ -254,6 +312,8 @@
                 <FormKitSchema :schema="schema" :data="data" />
             </FormKit>
         </div>
+
+        <TicketLayout :data="data" :category="category" :type="type" :payment="payment" :cash="cash" :frequency="frequency" class="w-full max-w-sm" />
     </div>
     <NewCategoyModal v-model:open="openNewCategory" />
 </template>

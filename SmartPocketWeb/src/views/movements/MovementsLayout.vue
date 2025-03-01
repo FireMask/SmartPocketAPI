@@ -1,75 +1,92 @@
 <script setup>
     import { ref, reactive, watch, computed } from 'vue';
+    import { useRouter } from 'vue-router';
     import { useMovementsStore } from '../../stores/movements';
     import { formatShowDate, formatMoney } from '../../helpers';
     import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
     import { AiOutlineMinusCircle, AiOutlinePlusCircle } from 'vue-icons-plus/ai';
     import { SearchOutlined, DeleteOutlined } from '@ant-design/icons-vue';
     
+    const router = useRouter()
     const store = useMovementsStore()
     const searchInput = ref();
     const dateFilter = ref();
+    const filteredInfo = ref({});
+    const loading = ref(false);
     
-    const columns = ref([
-        {
-            title: 'Date',
-            key: 'date',
-            dataIndex: 'movementDate',
-            width: 150,
-        },
-        {
-            title: 'Type',
-            key: 'type',
-            name: 'type',
-            filters: [],
-            filterMultiple: true,
-            width: 155,
-        },
-        {
-            title: 'Category',
-            key: 'category',
-            name: 'category',
-            filters: [],
-            filterMultiple: true,
-            width: 130,
-        },
-        {
-            title: 'Description',
-            dataIndex: 'description',
-            key: 'description',
-            customFilterDropdown: true,
-            onFilter: (value, record) => console.log('onFilter desc',value, record),
-            onFilterDropdownOpenChange: visible => {
-            if (visible) {
-                setTimeout(() => {
-                searchInput.value.focus();
-                }, 100);
-            }
+    const columns = computed(() => {
+        const filtered = filteredInfo.value || {};
+        return [
+            {
+                title: 'Date',
+                key: 'date',
+                dataIndex: 'movementDate',
+                width: 150,
             },
-        },
-        {
-            title: 'Payment Method',
-            key: 'paymentMethod',
-            name: 'paymentMethod',
-            filters: [],
-            filterMultiple: true,
-            width: 160,
-        },
-        {
-            title: 'Amount',
-            dataIndex: 'amount',
-            key: 'amount',
-            width: 100,
-        },
-        {
-            title: '',
-            key: 'actions',
-            name: 'actions',
-            width: 100,
-        },
-    ]);
+            {
+                title: 'Type',
+                key: 'type',
+                name: 'type',
+                filteredValue: filtered.type || null,
+                filters: store.filterCatalogs?.movementTypes,
+                filterMultiple: true,
+                width: 155,
+                ellipsis: true,
+            },
+            {
+                title: 'Category',
+                key: 'category',
+                name: 'category',
+                filteredValue: filtered.category || null,
+                filters: store.filterCatalogs?.categories,
+                filterMultiple: true,
+                width: 130,
+                ellipsis: true,
+            },
+            {
+                title: 'Description',
+                dataIndex: 'description',
+                key: 'description',
+                filteredValue: filtered.description || null,
+                customFilterDropdown: true,
+                onFilterDropdownOpenChange: visible => {
+                    if (visible) {
+                        setTimeout(() => {
+                        searchInput.value.focus();
+                        }, 100);
+                    }
+                },
+                ellipsis: true,
+            },
+            {
+                title: 'Payment Method',
+                key: 'paymentMethod',
+                name: 'paymentMethod',
+                filteredValue: filtered.paymentMethod || null,
+                filters: store.filterCatalogs?.paymentMethods,
+                filterMultiple: true,
+                width: 160,
+                ellipsis: true,
+            },
+            {
+                title: 'Amount',
+                dataIndex: 'amount',
+                key: 'amount',
+                width: 100,
+            },
+            {
+                title: '',
+                key: 'actions',
+                name: 'actions',
+                width: 100,
+            },
+        ]}
+    );
 
     const clearFilters = async () => {
+        loading.value = true;
+        filteredInfo.value = null;
+        searchInput.value = ''
         store.filters.pageNumber = 1
         store.filters.pageSize = 10,
         store.filters.search = "", 
@@ -79,86 +96,76 @@
         store.filters.startDate = null, 
         store.filters.endDate = null 
         await store.getMovements();
+        loading.value = false;
     };
 
     const filterByDates = async (date, dateString) => {
-        console.log(dateString);
-        
+        loading.value = true;
         store.filters.startDate = dateString[0];
         store.filters.endDate = dateString[1];
         store.filters.pageNumber = 1
         await store.getMovements();
+        loading.value = false;
     };
 
     const onChange = async (pagination, filters, sorter) => {
+        loading.value = true;
+        filteredInfo.value = filters;
+
         store.filters.pageNumber = pagination.current;
+
+        if(store.filters.pageSize !== pagination.pageSize ||
+            store.filters.categoryId !== filters.category ||
+            store.filters.paymentMethodId !== filters.paymentMethod ||
+            store.filters.movementTypeId !== filters.type ) 
+        {
+            store.filters.pageNumber = 1;
+        }
+
+        store.filters.pageSize = pagination.pageSize;
         store.filters.categoryId = filters.category;
         store.filters.paymentMethodId = filters.paymentMethod;
         store.filters.movementTypeId = filters.type;
 
-        loading.value = true;
         await store.getMovements();
         loading.value = false;
     };
 
     const handleSearch = async (selectedKeys, confirm, dataIndex) => {
+        loading.value = true;
         store.filters.search = selectedKeys;
         store.filters.pageNumber = 1
         await store.getMovements();
+        loading.value = false;
     };
 
     const handleReset = async clearFilters => {
+        loading.value = true;
         console.log('handleReset', clearFilters); 
         searchInput.value = ''
         store.filters.search = '';
         store.filters.pageNumber = 1
+        store.filters.pageSize = 10
         await store.getMovements();
         clearFilters({
             confirm: true,
             closeDropdown: true
         });
+        loading.value = false;
     };
-
-    watch(store.filterCatalogs, (newFilters) => {
-        if(newFilters)
-        {
-            console.log(newFilters);
-            
-            columns.value = columns.value.map(column => {
-                if (column.key === 'category') {
-                    return {
-                        ...column,
-                        filters: newFilters.categories,
-                    };
-                }
-                else if (column.key === 'paymentMethod') {
-                    return {
-                        ...column,
-                        filters: newFilters.paymentMethods,
-                    };
-                }
-                else if (column.key === 'type') {
-                    return {
-                        ...column,
-                        filters: newFilters.movementTypes,
-                    };
-                }
-                return column;
-            });
-        }
-    });
 
     const pagination = computed(() => ({
         total: store.totalCount,
         current: store.pageNumber,
-        pageSize: 10,
-        position: ['topRight'],
-        onChange: (page, pageSize) => {
-            console.log(page, pageSize);
-          }
+        size: "middle",
+        pageSize: store.pageSize,
+        position: ['topRight']
     }));
 
-    const loading = ref(false);
+    const edit = async movement => {
+        store.movementToUpdate.value = movement
+        router.push({name : 'edit-movement', params: { id: movement.id }})
+    };
     
 </script>
 
@@ -183,15 +190,16 @@
     </header>
 
     <main class="max-w-6xl">
+        <div class="w-fit mt-2">
+            <a-button type="link" class="p-0" @click='clearFilters'>Clear All filters</a-button>
+        </div>
+
         <a-form-item
-            class="w-fit m-0"
+            class="w-fit mb-2"
             label="Filter movements by dates"
             name="dates">
             <a-range-picker v-model:value="dateFilter" @change="filterByDates"/>
         </a-form-item>
-        <div class="w-fit mt-2">
-            <a-button type="link" class="p-0" @click='clearFilters'>Clear All filters</a-button>
-        </div>
 
         <a-table 
             :columns="columns" 
@@ -240,9 +248,9 @@
                 </template>
                 <template v-else-if="column.key === 'actions'" class="font-semibold">
                     <div class="flex flex-row space-x-2 h-fit text-gray-500">
-                        <RouterLink :to="{ name: 'edit-movement', params: { id: record.id } }" class="cursor-pointer rounded-full text-cyan-700 p-2 h-fit">
+                        <div @click="edit(record)" class="cursor-pointer rounded-full text-cyan-700 hover:text-sky-600 p-2 h-fit">
                             <GrEdit size="17"/>
-                        </RouterLink>
+                        </div>
                         <div @click="store.deleteMovement(record.id)" class="cursor-pointer rounded-full text-rose-600 hover:text-red-500 p-2 h-fit">
                             <GrTrash size="17"/>
                         </div>

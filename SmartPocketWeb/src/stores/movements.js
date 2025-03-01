@@ -36,11 +36,14 @@ export const useMovementsStore = defineStore( 'movements', () => {
         endDate: null //YYYY-MM-DD
     })
     const pageNumber = ref(1)
+    const pageSize = ref(10)
     const totalCount = ref(0)
     const totalPages = ref(0)
     const filterCatalogs = ref({
         categories: []
     })
+
+    const movementToUpdate = ref({});
 
     onMounted(async () => {
         try {
@@ -93,11 +96,12 @@ export const useMovementsStore = defineStore( 'movements', () => {
 
     const getMovements = async () => {
         try {            
-            const {data: { data : { items, pageNumber: pn, totalCount: tc, totalPages:tp } }} = await MovementsAPI.paginate(filters.value)            
+            const {data: { data : { items, pageNumber: pn, totalCount: tc, totalPages:tp, pageSize:pz } }} = await MovementsAPI.paginate(filters.value)            
             userMovements.value = items;
             pageNumber.value = pn
             totalCount.value = tc
             totalPages.value = tp
+            pageSize.value = pz
         } catch (error)
         {
             console.log(error);
@@ -223,6 +227,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
         filterCatalogs,
         userMovements,
         pageNumber,
+        pageSize,
         totalCount,
         totalPages,
         filters,
@@ -239,6 +244,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
         incomeTypeId,
         purchaseTypeId,
         creditCardPaymentTypeId,
+        movementToUpdate,
         addMovement,
         deleteMovement,
         updateMovement,

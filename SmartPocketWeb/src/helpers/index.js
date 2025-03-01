@@ -13,6 +13,9 @@ export const formatShowDate = dateString =>
 }
 
 export const formatMoney = amount => {
+    if (amount == null) {
+    return '$0.00'; 
+    }
     return amount.toLocaleString('en-US', {
         style: 'currency',
         currency: 'USD',
