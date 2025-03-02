@@ -1,11 +1,9 @@
 <script setup>
-    import { ref, computed } from 'vue';
-    import { useRouter } from 'vue-router';
+    import { ref, computed, onMounted } from 'vue';
     import { formatShowDate, formatMoney } from '../../helpers';
     import { useRecurringPaymentsStore } from '../../stores/recurringPayments';
     import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
 
-    const router = useRouter()
     const store = useRecurringPaymentsStore()
     const dateFilter = ref();
     const filteredInfo = ref({});
@@ -98,15 +96,14 @@
         dateFilter.value = null;
         filteredInfo.value = null;
         store.filters.pageNumber = 1
-        store.filters.pageSize = 10,
-            store.filters.isActive = null,
-            store.filters.categoryId = [],
-            store.filters.startDate = null
+        store.filters.pageSize = 10
+        store.filters.isActive = null
+        store.filters.categoryId = []
+        store.filters.startDate = null
         store.filters.endDate = null
-        store.filters.paymentMethodId = [],
-            store.filters.untilDate = [],
-            store.filters.hasPendingMovements = null,
-            await store.getRecurringPayments();
+        store.filters.paymentMethodId = []
+        store.filters.untilDate = []
+        await store.getRecurringPayments();
         loading.value = false;
     };
 

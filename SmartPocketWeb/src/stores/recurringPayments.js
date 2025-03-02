@@ -8,8 +8,11 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
     const frequencies = ref([])
     const toast = inject('toast')
     
+    //Pending table
+    const userPendingMovements = ref([]);
     //Recurring table 
     const userRecurringPayments = ref([]);
+    //Pagination
     const filters = ref(
     {
         pageNumber: 1, 
@@ -32,6 +35,7 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
     onMounted(async () => {
         try {
             await getRecurringPayments();
+            await getPendingMovements();
             await getFrequencies();
             await getFilters();
         } catch (error) {
@@ -40,12 +44,21 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
     })
 
     const getRecurringPayments = async () => {
-        const {data: { data : { items, pageNumber: pn, totalCount: tc, totalPages:tp, pageSize:pz } }} = await RecurringPaymentAPI.paginate(filters.value)            
-        userRecurringPayments.value = items;
+        userRecurringPayments.value = await getData({...filters.value, hasPendingMovements: null});
+    }
+
+    const getPendingMovements = async () => {           
+        userPendingMovements.value = await getData({...filters.value, hasPendingMovements: true});
+    }
+
+    const getData = async (filters) => {
+        const {data: { data : { items, pageNumber: pn, totalCount: tc, totalPages:tp, pageSize:pz } }} = await RecurringPaymentAPI.paginate(filters)            
         pageNumber.value = pn
         totalCount.value = tc
         totalPages.value = tp
         pageSize.value = pz
+
+        return items;
     }
 
     const getFrequencies = async () => {
@@ -101,6 +114,7 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
 
     return {
         userRecurringPayments,
+        userPendingMovements,
         frequencies,
         pageNumber,
         pageSize,
@@ -111,5 +125,6 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
         addRecurringPayment,
         deleteRecurringPayment,
         getRecurringPayments,
+        getPendingMovements,
     }
 })

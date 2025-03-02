@@ -137,7 +137,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
             const { data } = await MovementsAPI.CreatePendingMovement(pendingData)
             
             if(data.success){
-                toast.open({ message: 'Movement added', type: 'success' });
+                //toast.open({ message: 'Movement added', type: 'success' });
                 await getPendingMovements();
                 await getDashboard();
                 await getMovements();
