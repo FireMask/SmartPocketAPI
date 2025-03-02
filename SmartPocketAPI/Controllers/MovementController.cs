@@ -258,13 +258,29 @@ public class MovementController : Controller
         }
     }
 
+    [HttpGet("/PaymentMethodsProjection/{monthsAhead}")]
+    public async Task<IResult> PaymentMethodsProjection(int monthsAhead = 6)
+    {
+        try
+        {
+            Guid userId = HttpContext.GetUserId();
+            var result = await _movementService.GetSummaryPaymentMethodsPerPeriod(userId, monthsAhead);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
+        }
+    }
+
     [HttpGet("/test")]
     public async Task<IResult> Test()
     {
         try
         {
             Guid userId = HttpContext.GetUserId();
-            var result = await _movementService.GetSummaryPaymentMethods(userId);
+            var result = await _movementService.GetSummaryPaymentMethodsPerPeriod(userId, 6);
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
