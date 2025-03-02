@@ -333,7 +333,7 @@ public class MovementService : IMovementService
     {
         var cards = await _context.PaymentMethods
             .AsNoTracking()
-            .Where(x => x.UserId == userId)
+            .Where(x => x.UserId == userId && x.IsCreditCard)
             .Include(x => x.Movements)
             .Include(x => x.RecurringPayments)
             .ToListAsync();
