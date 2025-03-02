@@ -22,6 +22,8 @@ public class User
     public ICollection<RecurringPayment> RecurringPayments { get; set; }
     [JsonIgnore]
     public ICollection<Movement> Movements { get; set; }
+    [JsonIgnore]
+    public ICollection<Configuration> Configurations { get; set; }
 
     public SimpleUserDto DtoModel()
     {

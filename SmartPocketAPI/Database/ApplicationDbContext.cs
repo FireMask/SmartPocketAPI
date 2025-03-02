@@ -17,6 +17,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
     public DbSet<RecurringPayment> RecurringPayments { get; set; }
     public DbSet<Movement> Movements { get; set; }
+    public DbSet<Configuration> UserConfigurations { get; set; }
+
 
     public ConfigurationOptions _options { get; }
 
@@ -199,6 +201,22 @@ public class ApplicationDbContext : DbContext
                 .HasOne(c => c.CreditCardPayment)
                 .WithMany(u => u.Payments)
                 .HasForeignKey(m => m.CreditCardPaymentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+        #endregion
+
+        #region Configuration
+
+        //modelBuilder.Entity<Configuration>()
+        //    .Ignore("User");
+
+        modelBuilder.Entity<Configuration>()
+            .ToTable("Configuration");
+
+        modelBuilder.Entity<Configuration>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.Configurations)
+                .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
         #endregion
