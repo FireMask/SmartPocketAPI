@@ -2,6 +2,7 @@
 	import { ref } from "vue";
 	import { useUserStore } from '../stores/user'
 	import { IpBill } from 'vue-icons-plus/Ip';
+	import { AiFillPieChart } from "vue-icons-plus/ai";
 
 	const user = useUserStore()
 
@@ -52,6 +53,14 @@
 									<IpBill/>
 								</div> 
 								<span v-show="isOpen">Payments</span>
+							</RouterLink>
+						</li>
+						<li class="rounded-sm hover:bg-gray-100">
+							<RouterLink :to="{ name: 'charts' }" class="flex items-center p-2 space-x-3 rounded-md">
+								<div class="w-5 h-5 fill-current dark:text-gray-600 items-center ">
+									<AiFillPieChart/>
+								</div> 
+								<span v-show="isOpen">Charts</span>
 							</RouterLink>
 						</li>
 						<li class="rounded-sm hover:bg-gray-100">

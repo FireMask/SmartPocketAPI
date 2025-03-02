@@ -7,7 +7,7 @@ import DashboardLayout from '../views/reports/Dashboard.vue'
 import NewMovementLayout from '../views/movements/NewMovementLayout.vue'
 import NewRecurringPayment from '../views/movements/NewRecurringPayment.vue'
 import NewCardLayout from '../views/cards/NewCardLayout.vue'
-import MyMovementsLayout from '../views/movements/MyMovementsLayout.vue'
+import ChartLayout from '@/views/charts/ChartLayout.vue'
 import PaymentsLayout from '@/views/payments/PaymentsLayout.vue'
 import RecurringPaymentsLayout from '@/views/payments/RecurringPaymentsLayout.vue'
 import PendingLayout from '@/views/payments/PendingLayout.vue'
@@ -30,6 +30,12 @@ const router = createRouter({
           path: '/movements',
           name: 'movements',
           component: MovementsLayout,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/charts',
+          name: 'charts',
+          component: ChartLayout,
           meta: { requiresAuth: true },
         },
         {
