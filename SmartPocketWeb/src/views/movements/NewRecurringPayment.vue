@@ -9,6 +9,7 @@
     import { useRouter } from 'vue-router';
     import VueTailwindDatepicker from 'vue-tailwind-datepicker'
     import NewCategoyModal from '../../components/NewCategoyModal.vue';
+    import PageHeader from '@/components/PageHeader.vue';
 
     const router = useRouter()
     const store = useRecurringPaymentsStore();
@@ -16,6 +17,13 @@
     const cardsStore = useCardsStore();
     const today = new Date();
     const openNewCategory = ref(false)
+
+    const headerButtons = [
+        { name: 'recurring-payments', text: 'Payments' },
+        { name: 'movements', text: 'Movements' },
+        { name: 'dashboard', text: 'Dashboard' },
+    ]
+
     const formattedDate = new Intl.DateTimeFormat('en-GB', {
         day: '2-digit',
         month: '2-digit',
@@ -43,26 +51,7 @@
 </script>
 
 <template>
-    <header class="flex sticky justify-between mb-4 flex-col lg:flex-row">
-        <h3 class="text-3xl font-medium text-gray-700">
-            New recurring payment
-        </h3>
-        <div class="w-auto text-lg lg:text-xl mt-3 lg:mt-0">
-        <p class="font-medium text-gray-700">
-            {{ formatShowDate(today) }}
-        </p>
-        <p>
-            <RouterLink :to="{ name: 'dashboard' }" class="text-indigo-600 hover:text-indigo-900 font-medium">
-            Dashboard
-            </RouterLink>
-        </p>
-        <p>
-            <RouterLink :to="{ name: 'new-movement' }" class="text-indigo-600 hover:text-indigo-900 font-medium">
-            New Movement
-            </RouterLink>
-        </p>
-        </div>
-    </header >
+    <PageHeader title="New recurring payment" :buttons="headerButtons"/>
 
     <div class="mt-4">
         <NewCategoyModal v-model:open="openNewCategory" />

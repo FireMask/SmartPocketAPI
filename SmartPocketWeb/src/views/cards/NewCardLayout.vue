@@ -1,16 +1,17 @@
 <script setup>
     import { ref, watch } from 'vue';
+    import { useRouter } from 'vue-router';
     import { reset } from '@formkit/vue';
     import { useCardsStore } from '../../stores/cards';
-    import { RouterLink, useRouter } from 'vue-router'
     import { FormKitSchema } from '@formkit/vue';
-    import { formatShowDate } from '../../helpers';
+    import PageHeader from '@/components/PageHeader.vue';
 
     const store = useCardsStore();
-    const isCreditCard = ref(false);
-    const selectedCardType = ref({});
     const router = useRouter()
-    const today = new Date();
+
+    const headerButtons = [
+        { name: 'cards', text: 'Cards' },
+    ]
 
     const schema = [
         {
@@ -114,18 +115,7 @@
 </script>
 
 <template>
-    <header class="flex sticky justify-between mb-4 flex-col lg:flex-row">
-        <h3 class="text-3xl font-medium text-gray-700">
-            New card
-        </h3>
-        <div class="w-auto text-lg lg:text-xl mt-3 lg:mt-0">
-            <p>
-                <RouterLink :to="{ name: 'cards' }" class="text-indigo-600 hover:text-indigo-900 font-medium">
-                    Cards
-                </RouterLink>
-            </p>
-        </div>
-    </header>
+    <PageHeader title="New card" :buttons="headerButtons"/>
 
     <div class="mt-4">
         <div class="p-6 bg-white rounded-md shadow-md max-w-md">

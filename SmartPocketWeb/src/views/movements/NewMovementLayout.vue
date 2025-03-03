@@ -1,13 +1,13 @@
 <script setup>
-    import { watch, ref, onMounted, reactive, computed } from 'vue';
+    import { ref, onMounted, computed } from 'vue';
     import { reset, FormKitSchema } from '@formkit/vue';
     import { useRouter, useRoute } from 'vue-router';
     import { useMovementsStore } from '../../stores/movements';
     import { useCardsStore } from '../../stores/cards';
     import { useRecurringPaymentsStore } from '@/stores/recurringPayments';
-    import { formatAPIDate, formatMoney, formatterDate } from '../../helpers';
     import NewCategoyModal from '../../components/NewCategoyModal.vue';
     import TicketLayout from '@/components/TicketLayout.vue';
+    import PageHeader from '@/components/PageHeader.vue';
 
     const router = useRouter()
     const route = useRoute()
@@ -17,6 +17,11 @@
     const openNewCategory = ref(false)
     const today = new Date();
     const isEditing = ref(false);
+
+    const headerButtons = [
+        { name: 'movements', text: 'Movements' },
+        { name: 'dashboard', text: 'Dashboard' },
+    ]
 
     const cashId = 1
     
@@ -54,7 +59,6 @@
     });
 
     onMounted(async() => {
-        
         if (route.params?.id) {
             isEditing.value = true;
             const {recurringPaymentId, recurringPayment, ...movement} = store.movementToUpdate.value;
@@ -287,18 +291,7 @@
 </script>
 
 <template>
-        <header class="flex sticky justify-between mb-4 flex-col lg:flex-row">
-        <h3 class="text-3xl font-medium text-gray-700">
-            New Movement
-        </h3>
-        <div class="w-auto text-lg lg:text-xl mt-3 lg:mt-0">
-            <p>
-                <RouterLink :to="{ name: 'movements' }" class="text-indigo-600 hover:text-indigo-900 font-medium">
-                    Movements
-                </RouterLink>
-            </p>
-        </div>
-    </header>
+    <PageHeader title="New movement" :buttons="headerButtons"/>
 
     <div class="mt-4 flex flex-wrap space-x-0 md:space-x-14 space-y-14 items-start">
         <div class="p-6 bg-white rounded-md shadow-md w-full max-w-md flex-shrink-0">

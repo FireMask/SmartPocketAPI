@@ -78,8 +78,10 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
         try {
             const { data } = await RecurringPaymentAPI.create(paymentData)
             
-            if(data.success)
+            if(data.success){
                 await getRecurringPayments();
+                await getPendingMovements();
+            }
             else 
                 toast.open({ message: message, type: 'error' });
             return data;

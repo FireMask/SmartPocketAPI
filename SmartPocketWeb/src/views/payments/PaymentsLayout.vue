@@ -1,52 +1,39 @@
 <script setup>
     import { ref, watch } from 'vue';
-    import { formatShowDate, formatMoney } from '../../helpers';
-    import { RouterLink, RouterView, useRoute } from 'vue-router'
+    import { RouterView, useRoute, useRouter } from 'vue-router'
+    import PageHeader from '@/components/PageHeader.vue';
 
-    const today = new Date();
     const route = useRoute()
-    const recurringPage = ref(route.name == "recurring-payments");
+    const router = useRouter();
     
-    watch(route, (newRoute) => {
-        if(newRoute?.name)
-            recurringPage.value = route.name == "recurring-payments";
+    const headerButtons = [
+        { name: 'new-recurring-payment', text: 'New Recurring payment' },
+    ]
+
+    const headerTabs = [
+        { name: 'recurring-payments', text: 'Recurring Payments', key:'1' },
+        { name: 'pending', text: 'Pending Movements', key:'2' },
+    ];
+    
+    const activeTabKey = ref(headerTabs.find(tab => tab.name === route.name).key);
+
+    watch(activeTabKey, (newKey) => {
+        const routeName = headerTabs.find(tab => tab.key === newKey).name
+        if(routeName !== route.name)
+            router.push({name: routeName});
     });
+
+    watch(route, (newRoute) => {
+        const routeKey = headerTabs.find(tab => tab.name === newRoute.name).key
+        if(routeKey !== activeTabKey.value)
+            activeTabKey.value = routeKey
+    });
+
 </script>
 
 <template>
-    <header class="flex sticky justify-between mb-4 flex-col lg:flex-row">
-        <h3 class="text-3xl font-medium text-gray-700">
-            Payments
-        </h3>
-        <div class="w-auto text-lg lg:text-xl mt-3 lg:mt-0">
-            <p class="font-medium text-gray-700">
-                {{ formatShowDate(today) }}
-            </p>
-            <p>
-                <RouterLink :to="{ name: 'new-recurring-payment' }"
-                    class="text-indigo-600 hover:text-indigo-900 font-medium">
-                    New Recurring payment
-                </RouterLink>
-            </p>
-        </div>
-    </header>
-    <div class="">
-        <div class="border-b border-gray-200">
-            <nav class="-mb-px flex gap-6" aria-label="Tabs">
-                <RouterLink :to="{ name: 'recurring-payments' }" aria-current="page"
-                    :class="recurringPage? 'text-sky-600 border-gray-300' : 'text-gray-500 hover:border-gray-300 hover:text-gray-700'"
-                    class="shrink-0 border-b-2 border-transparent px-1 pb-4 text-xl font-medium ">
-                    Recurring Payments
-                </RouterLink>
+    <PageHeader title="Payments" :buttons="headerButtons" :tabs="headerTabs" v-model:activeKey="activeTabKey"/>
 
-                <RouterLink :to="{ name: 'pending' }"
-                    :class="recurringPage? 'text-gray-500 hover:border-gray-300 hover:text-gray-700' : 'text-sky-600 border-gray-300'"
-                    class="shrink-0 border-b-2 border-transparent px-1 pb-4 text-xl font-medium ">
-                    Pending Movements
-                </RouterLink>
-            </nav>
-        </div>
-    </div>
     <div class="w-full mb-10">
         <RouterView />
     </div>
