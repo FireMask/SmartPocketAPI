@@ -11,6 +11,8 @@ import ChartLayout from '@/views/charts/ChartLayout.vue'
 import PaymentsLayout from '@/views/payments/PaymentsLayout.vue'
 import RecurringPaymentsLayout from '@/views/payments/RecurringPaymentsLayout.vue'
 import PendingLayout from '@/views/payments/PendingLayout.vue'
+import ReportsLayout from '@/views/reports/ReportsLayout.vue'
+import PaymentsProjectionReportLayout from '@/views/reports/PaymentsProjectionReportLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -79,6 +81,18 @@ const router = createRouter({
           path: 'card/new',
           name: 'new-card',
           component: NewCardLayout
+        },
+        {
+          path: '/reports',
+          name: 'reports',
+          component: ReportsLayout,
+          children: [
+            {
+              path: 'projection/payments',
+              name: 'payments-projection',
+              component: PaymentsProjectionReportLayout
+            },
+          ]
         },
       ]
     },
