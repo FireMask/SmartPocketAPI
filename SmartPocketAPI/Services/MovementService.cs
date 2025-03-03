@@ -394,6 +394,7 @@ public class MovementService : IMovementService
             .Where(x => x.UserId == userId)
             .Where(x => x.IsCreditCard)
             .Include(x => x.Movements)
+                .ThenInclude(m => m.Category)
             .Include(x => x.RecurringPayments)
             .ToListAsync();
 
@@ -406,13 +407,13 @@ public class MovementService : IMovementService
                 Periods = Enumerable.Range(0, monthsCount)
                     .Select(i =>
                     {
-                        var startDate = GetPeriodDate(card.TransactionDate, i).AddDays(-1);
+                        var startDate = GetPeriodDate(card.TransactionDate, i).AddDays(1);
                         var endDate = GetPeriodDate(card.TransactionDate, i + 1);
 
                         List<MovementRecord> movements = new List<MovementRecord>();
 
                         movements.AddRange(card.Movements
-                            .Where(x => x.MovementDate > startDate && x.MovementDate <= endDate)
+                            .Where(x => x.MovementDate >= startDate && x.MovementDate <= endDate)
                             .Select(m => new MovementRecord(
                                 m.Description,
                                 false,
@@ -424,7 +425,7 @@ public class MovementService : IMovementService
                         );
 
                         movements.AddRange(pendingMovements
-                            .Where(x => x.MovementDate > startDate && x.MovementDate <= endDate)
+                            .Where(x => x.MovementDate >= startDate && x.MovementDate <= endDate)
                             .Where(x => x.PaymentMethodId == card.Id)
                             .Select(pm => new MovementRecord(
                                 pm.Description,
