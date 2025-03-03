@@ -15,12 +15,23 @@ export const useReportsStore = defineStore( 'reports', () => {
     })
 
     const getProjections = async (months) => {
-            const {data} = await ReportsAPI.paymentMethodsProjection(months);
-            paymentMethodsProjection.value = data.data;
-        }
+        const {data} = await ReportsAPI.paymentMethodsProjection(months);
+        paymentMethodsProjection.value = data.data;
+    }
+
+    const resetProjectionsCheck = () => {
+        paymentMethodsProjection.value = paymentMethodsProjection.value.map(
+            paymentMethod => {
+             return {...paymentMethod, periods: paymentMethod.periods.map(
+                projection => {return {...projection, checked: false}} 
+            )} 
+        }); 
+    }
+
 
     return {
         paymentMethodsProjection,
-        getProjections
+        getProjections,
+        resetProjectionsCheck
     }
 })

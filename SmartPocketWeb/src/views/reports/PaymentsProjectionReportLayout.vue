@@ -1,36 +1,13 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { formatShowDate, formatMoney } from '../../helpers';
-import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
 import { useReportsStore } from '@/stores/reports';
 
 const store = useReportsStore()
 const monts = ref(6);
-const filteredInfo = ref({});
+const selected = ref([]);
 const loading = ref(false);
 
-const columns = computed(() => {
-	return [
-		{
-			title: 'Start Date',
-			key: 'startDate',
-			name: 'startDate',
-			dataIndex: 'startDate',
-		},
-		{
-			title: 'End Date',
-			key: 'endDate',
-			name: 'endDate',
-			dataIndex: 'endDate',
-		},
-		{
-			title: 'amount',
-			key: 'amount',
-			name: 'amount',
-			dataIndex: 'amount',
-		},
-	]
-});
 
 const handleMonthsChange = async () => {
 	loading.value = true;
@@ -38,14 +15,35 @@ const handleMonthsChange = async () => {
 	loading.value = false;
 };
 
+const handleCheckedChange = (projection) => {
+	if (projection.checked)
+		selected.value.push(projection)
+	else
+		selected.value.pop(projection)
+};
+
+const resetSelection = () => {
+	selected.value = []
+	store.resetProjectionsCheck();
+}
+
+const selectedSum = computed(() => {
+	return selected.value ? selected.value?.reduce((sum, projection) => sum + projection.amount, 0) : '0'
+});
+
 </script>
 
 <template>
 	<div class="overflow-auto h-fit">
-		<a-form-item class="w-fit mb-4 ps-2 mt-1" label="Number of months to project" name="dates">
-			<a-input-number v-model:value="monts" :min="1" :max="12" @change="handleMonthsChange" />
-		</a-form-item>
-
+		<div class="flex justify-between">
+			<a-form-item class="w-fit mb-4 ps-2 mt-1" label="Number of months to project" name="dates">
+				<a-input-number v-model:value="monts" :min="1" :max="12" @change="handleMonthsChange" />
+			</a-form-item>
+			<div class="flex flex-col">
+				<span>Sum selected: {{ formatMoney(selectedSum) }}</span>
+				<a-button type="link" class="p-0" @click='resetSelection'>Reset selection</a-button>
+			</div>
+		</div>
 		<div v-for="paymentMethod in store.paymentMethodsProjection" v-if="false">
 			<p class="font-semibold text-xl my-1">{{ paymentMethod.name }}</p>
 			<div class="flex mb-4">
@@ -75,16 +73,20 @@ const handleMonthsChange = async () => {
 						<div class="border-t border-gray-300 pt-2 text-gray-600 flex flex-col gap-1 text-center ">
 							<a-popover title="Movements">
 								<template #content>
-									<p :class="movement.pending ? 'text-neutral-400' : 'text-neutral-900'" v-for="movement in projection.movements">
-										{{ formatShowDate(movement.movementDate) }} - {{ movement.category }} {{ movement.description }} - 
+									<p :class="movement.pending ? 'text-neutral-400' : 'text-neutral-900'"
+										v-for="movement in projection.movements">
+										{{ formatShowDate(movement.movementDate) }} - {{ movement.category }} {{
+											movement.description }} -
 										<span class="font-semibold">{{ formatMoney(movement.amount) }}</span>
 									</p>
 								</template>
 								<div class="font-bold text-emerald-600">{{ formatMoney(projection.amount) }}</div>
 							</a-popover>
-							<div class="font-semibold text-sm">
-								Due Date:
-								<span class="font-normal">{{ formatShowDate(projection.dueDate) }}</span>
+							<div class="font-semibold text-sm flex justify-between">
+								<a-checkbox v-model:checked="projection.checked"
+									@change="handleCheckedChange(projection)"></a-checkbox>
+								<span>Due Date: <span class="font-normal">{{ formatShowDate(projection.dueDate,
+									paymentMethod.name) }}</span></span>
 							</div>
 
 						</div>
