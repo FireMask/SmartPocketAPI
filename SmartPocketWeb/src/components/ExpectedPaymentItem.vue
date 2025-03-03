@@ -15,7 +15,16 @@
         <!-- Top Section -->
         <div class="flex justify-between items-center">
             <div class="font-bold text-black text-lg">{{ payment.cardName}}</div>
-            <div class="text-xl font-bold text-emerald-600">{{ formatMoney(payment.totalSum) }}</div>
+            <a-popover placement="leftBottom">
+                <template #title>
+                    <p class="text-lg font-bold">{{formatMoney(payment.totalSum)}} <span class="text-xs text-cyan-800"> Total</span></p>
+                </template>
+                <template #content>
+                    <p class="text-cyan-600 text-lg font-semibold">{{formatMoney(payment.thisPeriodAmount)}} <span class="text-xs text-cyan-900"> Registered</span></p>
+                    <p class="text-yellow-600 text-lg font-semibold">{{formatMoney(payment.pendingMovementsAmount)}} <span class="text-xs text-cyan-900"> Pending</span></p>
+                </template>
+                <div class="text-xl font-bold text-emerald-600">{{ formatMoney(payment.totalSum) }}</div>
+            </a-popover>
         </div>
 
         <!-- Bottom Section -->
