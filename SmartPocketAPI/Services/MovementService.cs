@@ -406,16 +406,17 @@ public class MovementService : IMovementService
                 Periods = Enumerable.Range(0, monthsCount)
                     .Select(i =>
                     {
-                        var startDate = GetPeriodDate(card.TransactionDate, i);
+                        var startDate = GetPeriodDate(card.TransactionDate, i).AddDays(-1);
                         var endDate = GetPeriodDate(card.TransactionDate, i + 1);
 
                         List<MovementRecord> movements = new List<MovementRecord>();
 
                         movements.AddRange(card.Movements
-                            .Where(x => x.MovementDate >= startDate && x.MovementDate < endDate)
+                            .Where(x => x.MovementDate > startDate && x.MovementDate <= endDate)
                             .Select(m => new MovementRecord(
                                 m.Description,
                                 false,
+                                m.Category.Name,
                                 m.Amount,
                                 m.MovementDate
                             ))
@@ -423,11 +424,12 @@ public class MovementService : IMovementService
                         );
 
                         movements.AddRange(pendingMovements
-                            .Where(x => x.MovementDate >= startDate && x.MovementDate < endDate)
+                            .Where(x => x.MovementDate > startDate && x.MovementDate <= endDate)
                             .Where(x => x.PaymentMethodId == card.Id)
                             .Select(pm => new MovementRecord(
                                 pm.Description,
                                 true,
+                                pm.CategoryName,
                                 pm.Amount,
                                 pm.MovementDate
                             ))
@@ -438,10 +440,72 @@ public class MovementService : IMovementService
                         {
                             StartDate = startDate,
                             EndDate = endDate,
+                            DueDate = card.DueDate,
                             Movements = movements,
                             Amount = movements.Sum(x => x.Amount)
                         };
                     }).ToList()
+            }).ToList();
+
+        return cardSummaries;
+    }
+
+    public async Task<object> GetSummaryMovementsPerMonth(Guid userId, DateOnly startMonth, DateOnly endMonth)
+    {
+        var cards = await _context.PaymentMethods
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
+            .Where(x => x.IsCreditCard)
+            .Include(x => x.Movements)
+            .Include(x => x.RecurringPayments)
+            .ToListAsync();
+
+        var pendingMovements = await GetPendingMovementsFromRecurringPayments(userId, null, endMonth);
+
+        var cardSummaries = cards
+            .Select(card =>
+            {
+                List<MovementRecord> movements = new List<MovementRecord>();
+
+                movements.AddRange(card.Movements
+                    .Select(m => new MovementRecord(
+                        m.Description,
+                        false,
+                        m.Category.Name,
+                        m.Amount,
+                        m.MovementDate
+                    ))
+                    .ToList()
+                );
+
+                movements.AddRange(pendingMovements
+                    .Where(x => x.PaymentMethodId == card.Id)
+                    .Select(pm => new MovementRecord(
+                        pm.Description,
+                        true,
+                        pm.CategoryName,
+                        pm.Amount,
+                        pm.MovementDate
+                    ))
+                    .ToList()
+                );
+
+                var movementsPerMonth = movements
+                    .GroupBy(m => new { m.MovementDate.Year, m.MovementDate.Month })
+                    .Select(m => new
+                    {
+                        Date = new DateOnly(m.Key.Year, m.Key.Month, 1),
+                        Amount = m.Sum(x => x.Amount),
+                        Movements = m.ToList(),
+                    })
+                    .OrderBy(x => x.Date)
+                    .ToList();
+
+                return new
+                {
+                    Card = card.Name,
+                    Movements = movementsPerMonth
+                };
             }).ToList();
 
         return cardSummaries;
@@ -512,4 +576,4 @@ public class MovementService : IMovementService
     }
 }
 
-internal record MovementRecord(string Description, bool Pending, decimal Amount, DateOnly MovementDate);
+internal record MovementRecord(string Description, bool Pending, string Category, decimal Amount, DateOnly MovementDate);
