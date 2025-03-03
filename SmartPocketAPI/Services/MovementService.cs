@@ -410,6 +410,10 @@ public class MovementService : IMovementService
                         var startDate = GetPeriodDate(card.TransactionDate, i).AddDays(1);
                         var endDate = GetPeriodDate(card.TransactionDate, i + 1);
 
+                        DateOnly dueDate = new DateOnly(endDate.Year, endDate.Month, card.DueDate);
+                        if (card.DueDate < card.TransactionDate)
+                            dueDate = dueDate.AddMonths(1);
+
                         List<MovementRecord> movements = new List<MovementRecord>();
 
                         movements.AddRange(card.Movements
@@ -441,8 +445,8 @@ public class MovementService : IMovementService
                         {
                             StartDate = startDate,
                             EndDate = endDate,
-                            DueDate = card.DueDate,
-                            Movements = movements,
+                            DueDate = dueDate,
+                            Movements = movements.OrderByDescending(x => x.MovementDate),
                             Amount = movements.Sum(x => x.Amount)
                         };
                     }).ToList()
