@@ -29,7 +29,7 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(_options.ConnectionString);
+        optionsBuilder.UseNpgsql(_options.ConnectionString);
     }
 
     private void SetTimeStamp()
