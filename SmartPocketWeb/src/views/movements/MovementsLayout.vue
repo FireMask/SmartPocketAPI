@@ -3,7 +3,7 @@
     import { useRouter } from 'vue-router';
     import { useMovementsStore } from '../../stores/movements';
     import { formatShowDate, formatMoney } from '../../helpers';
-    import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
+    import { GrEdit, GrTrash } from 'vue-icons-plus/gr';
     import { AiOutlineMinusCircle, AiOutlinePlusCircle } from 'vue-icons-plus/ai';
     import { SearchOutlined, DeleteOutlined } from '@ant-design/icons-vue';
     import PageHeader from '@/components/PageHeader.vue';

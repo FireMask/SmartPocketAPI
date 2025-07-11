@@ -1,6 +1,6 @@
 <script setup>
     import { useCardsStore } from '../stores/cards';
-    import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
+    import { GrEdit, GrTrash } from 'vue-icons-plus/gr';
     const store = useCardsStore();
 
     defineProps({
