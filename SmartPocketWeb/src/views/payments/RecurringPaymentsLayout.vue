@@ -2,7 +2,7 @@
     import { ref, computed, onMounted } from 'vue';
     import { formatShowDate, formatMoney } from '../../helpers';
     import { useRecurringPaymentsStore } from '../../stores/recurringPayments';
-    import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
+    import { GrEdit, GrTrash } from 'vue-icons-plus/gr';
 
     const store = useRecurringPaymentsStore()
     const dateFilter = ref();
