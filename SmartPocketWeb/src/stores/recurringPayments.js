@@ -33,6 +33,7 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
     const filterCatalogs = ref({})
 
     onMounted(async () => {
+        reload();
     })
 
     const reload = async () => {

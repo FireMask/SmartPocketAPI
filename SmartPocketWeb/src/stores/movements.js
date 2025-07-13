@@ -42,9 +42,10 @@ export const useMovementsStore = defineStore( 'movements', () => {
     const totalCount = ref(0)
     const totalPages = ref(0)
     const movementToUpdate = ref({});
+    const filterCatalogs = ref({})
 
     onMounted(async () => {
-
+        reload();
     })
 
     const reload = async () => {
@@ -219,11 +220,6 @@ export const useMovementsStore = defineStore( 'movements', () => {
             toast.open({ message: error.response.data.message, type: 'error' })
         }
     }
-
-    const filterCatalogs = computed( () => {
-        return recurringPaymentsStore.filterCatalogs
-    }
-)
 
     return {
         filterCatalogs,
