@@ -12,6 +12,13 @@ export const formatShowDate = dateString =>
     return newDate.toLocaleDateString("en-US", options)
 }
 
+export const formatShowMothYear = date => {
+    if(!date)
+        return "";
+    var options = { year: 'numeric', month: 'long'};
+    return date.toLocaleDateString("en-US", options)
+}
+
 export const formatMoney = amount => {
     if (amount == null) {
     return '$0.00'; 
