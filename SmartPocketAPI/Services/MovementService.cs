@@ -27,6 +27,7 @@ public class MovementService : IMovementService
     {
         var query = _context.Movements
             .Where(x => x.UserId == id)
+            .Where(x => x.Amount > 0)
             .AsNoTracking()
             .Include(x => x.Category)
             .Include(x => x.PaymentMethod)
@@ -396,7 +397,7 @@ public class MovementService : IMovementService
         return cardsMonthSummary;
     }
 
-    public async Task<object> GetSummaryPaymentMethodsPerPeriod(Guid userId, int monthsCount)
+    public async Task<object> GetSummaryPaymentMethodsPerPeriod(Guid userId, PaymentMethodsProjectionRequest request)
     {
         var cards = await _context.PaymentMethods
             .AsNoTracking()
@@ -413,7 +414,7 @@ public class MovementService : IMovementService
             .Select(card => new
             {
                 card.Name,
-                Periods = Enumerable.Range(0, monthsCount)
+                Periods = Enumerable.Range(request.MonthsBefore, request.MonthsAhead - request.MonthsBefore)
                     .Select(i =>
                     {
                         var startDate = GetPeriodDate(card.TransactionDate, i).AddDays(1);

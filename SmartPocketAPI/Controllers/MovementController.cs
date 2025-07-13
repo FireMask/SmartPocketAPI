@@ -258,13 +258,16 @@ public class MovementController : Controller
         }
     }
 
-    [HttpGet("/PaymentMethodsProjection/{monthsAhead}")]
-    public async Task<IResult> PaymentMethodsProjection(int monthsAhead = 6)
+    [HttpGet("/PaymentMethodsProjection")]
+    public async Task<IResult> PaymentMethodsProjection([FromQuery] PaymentMethodsProjectionRequest request)
     {
         try
         {
             Guid userId = HttpContext.GetUserId();
-            var result = await _movementService.GetSummaryPaymentMethodsPerPeriod(userId, monthsAhead);
+            if (request.MonthsAhead < request.MonthsBefore)
+                return "MonthsAhead must be greater than MonthsBefore".ToApiError(Constants.FETCH_ERROR);
+
+            var result = await _movementService.GetSummaryPaymentMethodsPerPeriod(userId, request);
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
@@ -280,7 +283,7 @@ public class MovementController : Controller
         try
         {
             Guid userId = HttpContext.GetUserId();
-            var result = await _movementService.GetSummaryPaymentMethodsPerPeriod(userId, 6);
+            var result = await _movementService.GetSummaryPaymentMethodsPerPeriod(userId, new PaymentMethodsProjectionRequest());
             return result.ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
