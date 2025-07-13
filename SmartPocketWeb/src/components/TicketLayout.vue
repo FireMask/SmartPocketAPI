@@ -29,7 +29,7 @@ defineProps({
 
     <div class="text-center mb-4">
       <h2 class="text-xl font-semibold">Movement</h2>
-      <p class="text-gray-600">{{ formatShowDate(parseFloat(data.movementDate)) }}</p>
+      <p class="text-gray-600">{{ formatShowDate(data.movementDate) }}</p>
     </div>
 
     <div class="mb-4">

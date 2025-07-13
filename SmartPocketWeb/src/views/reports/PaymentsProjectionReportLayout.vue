@@ -18,8 +18,12 @@ const handleMonthsChange = async () => {
 const handleCheckedChange = (projection) => {
 	if (projection.checked)
 		selected.value.push(projection)
-	else
-		selected.value.pop(projection)
+	else{
+		var index = selected.value.indexOf(projection);
+		if (index > -1) {
+			selected.value.splice(index, 1);
+		}
+	}
 };
 
 const resetSelection = () => {
@@ -70,15 +74,17 @@ const selectedSum = computed(() => {
 						</div>
 
 						<!-- Bottom Section -->
-						<div class="border-t border-gray-300 pt-2 text-gray-600 flex flex-col gap-1 text-center ">
-							<a-popover title="Movements">
-								<template #content>
-									<p :class="movement.pending ? 'text-neutral-400' : 'text-neutral-900'"
-										v-for="movement in projection.movements">
-										{{ formatShowDate(movement.movementDate) }} - {{ movement.category }} {{
-											movement.description }} -
-										<span class="font-semibold">{{ formatMoney(movement.amount) }}</span>
-									</p>
+						<div class="border-t border-gray-300 pt-2 text-gray-600 flex flex-col gap-1 text-center">
+							<a-popover title="Movements" trigger="click">
+								<template #content class="m-48">
+									<div class="pr-2 max-h-40 overflow-auto">
+										<p :class="movement.pending ? 'text-neutral-400' : 'text-neutral-900'"
+											v-for="movement in projection.movements">
+											{{ formatShowDate(movement.movementDate) }} - {{ movement.category }} {{
+												movement.description }} -
+											<span class="font-semibold">{{ formatMoney(movement.amount) }}</span>
+										</p>
+									</div>
 								</template>
 								<div class="font-bold text-emerald-600">{{ formatMoney(projection.amount) }}</div>
 							</a-popover>

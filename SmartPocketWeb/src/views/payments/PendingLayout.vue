@@ -49,6 +49,7 @@ const columns = computed(() => {
 			title: 'Description',
 			dataIndex: 'description',
 			key: 'description',
+			width: 180,
 		},
 		{
 			title: 'Frequency',
@@ -166,6 +167,7 @@ const pagination = computed(() => ({
 	current: store.pageNumber,
 	size: "middle",
 	pageSize: store.pageSize,
+	showSizeChanger: true,
 	position: ['topRight']
 }));
 

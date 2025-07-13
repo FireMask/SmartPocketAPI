@@ -78,14 +78,6 @@ export default {
             }
         });
     },
-    pendingMovements(){
-        const token = localStorage.getItem('AUTH_TOKEN')
-        return api.get('/pendingMovements',{
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-    },
     CreatePendingMovement(movementData){
         const token = localStorage.getItem('AUTH_TOKEN')
         return api.post('/createNewMovementFromRecurringPayment', movementData, {

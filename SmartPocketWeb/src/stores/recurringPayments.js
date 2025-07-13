@@ -33,6 +33,9 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
     const filterCatalogs = ref({})
 
     onMounted(async () => {
+    })
+
+    const reload = async () => {
         try {
             await getRecurringPayments();
             await getPendingMovements();
@@ -41,7 +44,7 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
         } catch (error) {
             console.log(error);
         }
-    })
+    }
 
     const getRecurringPayments = async () => {
         userRecurringPayments.value = await getData({...filters.value, hasPendingMovements: null});
@@ -128,5 +131,6 @@ export const useRecurringPaymentsStore = defineStore( 'recurringPayments', () =>
         deleteRecurringPayment,
         getRecurringPayments,
         getPendingMovements,
+        reload,
     }
 })
