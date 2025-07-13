@@ -40,6 +40,7 @@
                 title: 'Description',
                 dataIndex: 'description',
                 key: 'description',
+                width: 180,
             },
             {
                 title: 'Frequency',
@@ -144,6 +145,7 @@
         current: store.pageNumber,
         size: "middle",
         pageSize: store.pageSize,
+        showSizeChanger: true,
         position: ['topRight']
     }));
 

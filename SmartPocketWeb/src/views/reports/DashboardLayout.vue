@@ -17,7 +17,6 @@
 	const router = useRouter()
 
 	const store = useMovementsStore();
-	store.reload();
 </script>
 
 <template>
@@ -103,6 +102,7 @@
 										{{ store.pendingRecurringMovementsCount }}
 									</h4>
 									<RouterLink :to="{ name: 'pending' }"
+										v-if="store.pendingRecurringMovementsCount > 0"
 										class="flex border p-1 px-3 rounded-2xl border-amber-400">
 										<div class="w-5 h-5 rounded-full text-white bg-amber-400 flex items-center">
 											<HiOutlineCursorClick />
