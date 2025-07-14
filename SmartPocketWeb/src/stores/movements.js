@@ -10,6 +10,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
     const recurringPaymentsStore = useRecurringPaymentsStore();
     
     const categories = ref([]);
+    const topCategories = ref([]);
     const types = ref([]);
     const paymentTypeId = 1;
     const incomeTypeId = 2;
@@ -51,6 +52,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
     const reload = async () => {
         try {
             await getCategories();
+            await getTopCategories();
             await getTypes();
             await getFilters();
             await reloadMovements();
@@ -118,6 +120,11 @@ export const useMovementsStore = defineStore( 'movements', () => {
                 var nameB = b.label.toUpperCase();
                 return (nameA < nameB) ? -1 : (nameA > nameB) ? 1 : 0;
             });
+    }
+
+    const getTopCategories = async () => {
+        const {data} = await MovementsAPI.getTopCategories();
+        topCategories.value = data.data.map(category => { return { label: category.categoryName, id: category.categoryId}})
     }
 
     const getTypes = async () => {
@@ -236,6 +243,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
         monthMovementsCount,
         monthSpent,
         categories,
+        topCategories,
         types,
         paymentTypeId,
         incomeTypeId,
