@@ -9,4 +9,5 @@ public interface ICategoryService
     Task<Category> CreateCategoryAsync(CategoryViewModel categoryViewModel);
     Task<bool> DeleteCategoryAsync(Guid userid, int id);
     Task<Category?> GetCategoryByIdAsync(Guid userid, int id);
+    Task<object> GetTopCategories(Guid userid);
 }
