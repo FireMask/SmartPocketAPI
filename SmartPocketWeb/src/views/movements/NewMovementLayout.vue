@@ -99,6 +99,33 @@
             }
         },
         {
+            $el: 'div',
+            if: "store.topCategories",
+            children: [
+                {
+                    $el: 'label',
+                    attrs: { class: 'block mb-2 font-semibold' },
+                    children: 'Quick select top categories:'
+                },
+                {
+                    $el: 'div',
+                    attrs: { class: 'flex gap-2 mb-4' },
+                    children: store.topCategories.map(category => ({
+                        $el: 'button',
+                        attrs: {
+                            type: 'button',
+                            class: 'w-full px-10 py-4 text-lg bg-gray-400 rounded hover:bg-gray-300',
+                            style: 'flex: 1 1 0;',
+                            onClick: () => {
+                                data.value.categoryId = category.id;
+                            }
+                        },
+                        children: category.label
+                    }))
+                }
+            ]
+        },
+        {
             $formkit: "select",
             name: "categoryId",
             label: "Category",

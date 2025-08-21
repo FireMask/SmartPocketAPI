@@ -27,6 +27,7 @@ public class MovementService : IMovementService
     {
         var query = _context.Movements
             .Where(x => x.UserId == id)
+            .Where(x => x.Amount > 0)
             .AsNoTracking()
             .Include(x => x.Category)
             .Include(x => x.PaymentMethod)
@@ -201,7 +202,6 @@ public class MovementService : IMovementService
     {
         var query = _context.RecurringPayments
             .Where(x => x.UserId == userId)
-            .Where(x => request.PaymentMethodId != null ? x.PaymentMethodId == request.PaymentMethodId : true)
             .Include(x => x.Movements)
             .Include(x => x.Category)
             .Include(x => x.PaymentMethod)
@@ -210,6 +210,10 @@ public class MovementService : IMovementService
             .Include(x => x.Frequency)
             .AsQueryable();
 
+        if (request.PaymentMethodId != null && request.PaymentMethodId.Any())
+        {
+            query = query.Where(x => request.PaymentMethodId.Contains(x.PaymentMethodId));
+        }
         if (request.CategoryId.HasValue)
         {
             query = query.Where(x => x.CategoryId == request.CategoryId);
@@ -265,18 +269,24 @@ public class MovementService : IMovementService
         return recurringPayments.ToPagedListAsync(request.PageNumber, request.PageSize);
     }
 
-    public async Task<List<MovementFromRecurringPaymentsViewModel>> GetPendingMovementsFromRecurringPayments(Guid userId, int? paymentMethodId = null, DateOnly? untilDate = null)
+    public async Task<List<MovementFromRecurringPaymentsViewModel>> GetPendingMovementsFromRecurringPayments(Guid userId, int[]? _paymentMethodId = null, DateOnly? untilDate = null)
     {
-        List<RecurringPayment> recurringPayments = await _context.RecurringPayments
+        var query = _context.RecurringPayments
             .Where(x => x.UserId == userId)
-            .Where(x => paymentMethodId != null ? x.PaymentMethodId == paymentMethodId : true)
             .Include(x => x.Movements)
             .Include(x => x.Category)
             .Include(x => x.PaymentMethod)
             .Include(x => x.MovementType)
             .Include(x => x.CreditCardPayment)
             .Include(x => x.Frequency)
-            .ToListAsync();
+            .AsQueryable();
+        
+        if (_paymentMethodId != null && _paymentMethodId.Any())
+        {
+            query = query.Where(x => _paymentMethodId.Contains(x.PaymentMethodId));
+        }
+
+        List<RecurringPayment> recurringPayments = await query.ToListAsync();
 
         if (untilDate == null)
             untilDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
@@ -360,7 +370,7 @@ public class MovementService : IMovementService
                 .Where(x => x.MovementDate > startTransactionDate && x.MovementDate <= endTransactionDate)
                 .ToList();
 
-            var pendingMovements = await GetPendingMovementsFromRecurringPayments(userId, card.Id, endTransactionDate);
+            var pendingMovements = await GetPendingMovementsFromRecurringPayments(userId, [card.Id], endTransactionDate);
 
             //PendingMovements
             var pendingMovementsRange = pendingMovements
@@ -387,7 +397,7 @@ public class MovementService : IMovementService
         return cardsMonthSummary;
     }
 
-    public async Task<object> GetSummaryPaymentMethodsPerPeriod(Guid userId, int monthsCount)
+    public async Task<object> GetSummaryPaymentMethodsPerPeriod(Guid userId, PaymentMethodsProjectionRequest request)
     {
         var cards = await _context.PaymentMethods
             .AsNoTracking()
@@ -404,13 +414,15 @@ public class MovementService : IMovementService
             .Select(card => new
             {
                 card.Name,
-                Periods = Enumerable.Range(0, monthsCount)
+                Periods = Enumerable.Range(request.MonthsBefore, request.MonthsAhead - request.MonthsBefore)
                     .Select(i =>
                     {
                         var startDate = GetPeriodDate(card.TransactionDate, i).AddDays(1);
                         var endDate = GetPeriodDate(card.TransactionDate, i + 1);
 
-                        DateOnly dueDate = new DateOnly(endDate.Year, endDate.Month, card.DueDate);
+                        int lastDayOfMonth = DateTime.DaysInMonth(endDate.Year, endDate.Month);
+                        int tempDueDate = card.DueDate < lastDayOfMonth ? card.DueDate : lastDayOfMonth;
+                        DateOnly dueDate = new DateOnly(endDate.Year, endDate.Month, tempDueDate);
                         if (card.DueDate < card.TransactionDate)
                             dueDate = dueDate.AddMonths(1);
 

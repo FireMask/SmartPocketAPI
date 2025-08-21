@@ -3,7 +3,7 @@
     import { useRouter } from 'vue-router';
     import { useMovementsStore } from '../../stores/movements';
     import { formatShowDate, formatMoney } from '../../helpers';
-    import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
+    import { GrEdit, GrTrash } from 'vue-icons-plus/gr';
     import { AiOutlineMinusCircle, AiOutlinePlusCircle } from 'vue-icons-plus/ai';
     import { SearchOutlined, DeleteOutlined } from '@ant-design/icons-vue';
     import PageHeader from '@/components/PageHeader.vue';
@@ -27,7 +27,7 @@
                 title: 'Date',
                 key: 'date',
                 dataIndex: 'movementDate',
-                width: 150,
+                width: 100,
             },
             {
                 title: 'Type',
@@ -36,7 +36,7 @@
                 filteredValue: filtered.type || null,
                 filters: store.filterCatalogs?.movementTypes,
                 filterMultiple: true,
-                width: 155,
+                width: 145,
                 ellipsis: true,
             },
             {
@@ -53,6 +53,7 @@
                 title: 'Description',
                 dataIndex: 'description',
                 key: 'description',
+                width: 200,
                 filteredValue: filtered.description || null,
                 customFilterDropdown: true,
                 onFilterDropdownOpenChange: visible => {
@@ -78,7 +79,7 @@
                 title: 'Amount',
                 dataIndex: 'amount',
                 key: 'amount',
-                width: 100,
+                width: 90,
             },
             {
                 title: '',
@@ -164,6 +165,7 @@
         current: store.pageNumber,
         size: "middle",
         pageSize: store.pageSize,
+        showSizeChanger: true,
         position: ['topRight']
     }));
 
@@ -187,8 +189,8 @@
             label="Filter movements by dates"
             name="dates">
             <a-range-picker v-model:value="dateFilter" @change="filterByDates"/>
-        </a-form-item>
-
+        </a-form-item>   
+        
         <a-table 
             :columns="columns" 
             :data-source="store.userMovements" 

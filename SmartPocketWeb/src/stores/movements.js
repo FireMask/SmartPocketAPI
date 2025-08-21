@@ -2,13 +2,16 @@ import { ref, onMounted, inject, computed } from 'vue';
 import { defineStore } from 'pinia';
 import MovementsAPI from '../api/MovementsAPI';
 import CatalogsAPI from '@/api/CatalogsAPI';
+import { useRecurringPaymentsStore } from './recurringPayments';
 
 export const useMovementsStore = defineStore( 'movements', () => {
     const toast = inject('toast')
+
+    const recurringPaymentsStore = useRecurringPaymentsStore();
     
     const categories = ref([]);
+    const topCategories = ref([]);
     const types = ref([]);
-    const userPendingMovements = ref([]);
     const paymentTypeId = 1;
     const incomeTypeId = 2;
     const purchaseTypeId = 3;
@@ -39,29 +42,28 @@ export const useMovementsStore = defineStore( 'movements', () => {
     const pageSize = ref(10)
     const totalCount = ref(0)
     const totalPages = ref(0)
-    const filterCatalogs = ref({
-        categories: []
-    })
-
     const movementToUpdate = ref({});
+    const filterCatalogs = ref({})
 
     onMounted(async () => {
-        try {
-            await getDashboard();
-            await getCategories();
-            await getTypes();
-            await getPendingMovements();
-            await getMovements();
-            await getFilters();
-        } catch (error) {
-            console.log(error);
-        }
+        reload();
     })
 
     const reload = async () => {
         try {
-            await getDashboard();
             await getCategories();
+            await getTopCategories();
+            await getTypes();
+            await getFilters();
+            await reloadMovements();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const reloadMovements = async () => {
+        try {
+            await getDashboard();
             await getPendingMovements();
             await getMovements();
         } catch (error) {
@@ -111,7 +113,18 @@ export const useMovementsStore = defineStore( 'movements', () => {
 
     const getCategories = async () => {
         const {data} = await MovementsAPI.categories();
-        categories.value = data.data.map(category => { return {label: category.name, text: category.name, value: category.id, id: category.id}})
+        categories.value = data.data
+            .map(category => { return {label: category.name, text: category.name, value: category.id, id: category.id}})
+            .sort(function(a, b) {
+                var nameA = a.label.toUpperCase();
+                var nameB = b.label.toUpperCase();
+                return (nameA < nameB) ? -1 : (nameA > nameB) ? 1 : 0;
+            });
+    }
+
+    const getTopCategories = async () => {
+        const {data} = await MovementsAPI.getTopCategories();
+        topCategories.value = data.data.map(category => { return { label: category.categoryName, id: category.categoryId}})
     }
 
     const getTypes = async () => {
@@ -128,8 +141,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
     }
 
     const getPendingMovements = async () => {
-        const {data} = await MovementsAPI.pendingMovements();
-        userPendingMovements.value = data.data;
+        recurringPaymentsStore.reload();
     }
 
     const AddPendingMovement = async(pendingData) => {
@@ -137,10 +149,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
             const { data } = await MovementsAPI.CreatePendingMovement(pendingData)
             
             if(data.success){
-                //toast.open({ message: 'Movement added', type: 'success' });
-                await getPendingMovements();
-                await getDashboard();
-                await getMovements();
+                await reloadMovements();
             }
             else 
                 toast.open({ message: message, type: 'error' });
@@ -174,8 +183,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
             const { data } = await MovementsAPI.create(movementData)
             
             if(data.success){
-                await getDashboard();
-                await getMovements();
+                await reloadMovements();
             } else 
                 toast.open({ message: message, type: 'error' });
             return data;
@@ -195,8 +203,7 @@ export const useMovementsStore = defineStore( 'movements', () => {
                     type: 'success'
                 })
 
-                await getDashboard();
-                await getMovements();
+                await reloadMovements();
             } catch (error)
             {
                 console.log(error);
@@ -208,11 +215,9 @@ export const useMovementsStore = defineStore( 'movements', () => {
     async function updateMovement(movementData) {
         try {
             const { data } = await MovementsAPI.update(movementData)
-            console.log("movement data response", data);
             
             if(data.success) {
-                await getDashboard();
-                await getMovements();
+                await reloadMovements();
             } else 
                 toast.open({ message: message, type: 'error' });
             return data;
@@ -232,13 +237,13 @@ export const useMovementsStore = defineStore( 'movements', () => {
         totalPages,
         filters,
         topMovements,
-        userPendingMovements,
         pendingRecurringMovementsCount,
         summaryByPaymentMethods,
         monthIncome,
         monthMovementsCount,
         monthSpent,
         categories,
+        topCategories,
         types,
         paymentTypeId,
         incomeTypeId,

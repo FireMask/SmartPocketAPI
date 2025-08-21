@@ -53,6 +53,22 @@ public class CategoryController : Controller
         }
     }
 
+    [HttpGet("TopCategories")]
+    public async Task<IResult> GetTopMovementsType()
+    {
+        try
+        {
+            Guid userId = HttpContext.GetUserId();
+            var result = await _categoryService.GetTopCategories(userId);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
+        }
+    }
+
     [HttpPost]
     public async Task<IResult> CreateCategory(CategoryViewModel categoryViewModel)
     {

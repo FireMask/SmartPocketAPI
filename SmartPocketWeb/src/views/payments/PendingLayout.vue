@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { formatMoney, formatShowDate } from '../../helpers';
 import { useRecurringPaymentsStore } from '../../stores/recurringPayments';
 import { useMovementsStore } from '@/stores/movements';
-import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
+import { GrEdit, GrTrash } from 'vue-icons-plus/gr';
 import { RiStickyNoteAddLine } from 'vue-icons-plus/ri';
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
@@ -49,6 +49,7 @@ const columns = computed(() => {
 			title: 'Description',
 			dataIndex: 'description',
 			key: 'description',
+			width: 180,
 		},
 		{
 			title: 'Frequency',
@@ -166,6 +167,7 @@ const pagination = computed(() => ({
 	current: store.pageNumber,
 	size: "middle",
 	pageSize: store.pageSize,
+	showSizeChanger: true,
 	position: ['topRight']
 }));
 

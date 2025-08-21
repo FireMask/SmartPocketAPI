@@ -6,7 +6,7 @@ public class RecurringPaymentsRequest : RequestQuery
     public bool? IsActive { get; set; }
     public DateOnly? StartDate { get; set; }
     public DateOnly? EndDate { get; set; }
-    public int? PaymentMethodId { get; set; }
+    public int[]? PaymentMethodId { get; set; }
     public DateOnly? UntilDate { get; set; }
     public bool HasPendingMovements { get; set; } = false;
 }

@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
         {
             var dbOptions = serviceProvider.GetRequiredService<IOptions<ConfigurationOptions>>().Value;
-            options.UseSqlServer(dbOptions.ConnectionString, sqlOptions =>
+            options.UseNpgsql(dbOptions.ConnectionString, sqlOptions =>
             {
                 sqlOptions.CommandTimeout(dbOptions.CommandTimeOut);
             });

@@ -1,7 +1,7 @@
 <script setup>
 	import { ref } from "vue";
 	import { useUserStore } from '../stores/user'
-	import { IpBill } from 'vue-icons-plus/Ip';
+	import { IpBill } from 'vue-icons-plus/ip';
 	import { AiFillPieChart } from "vue-icons-plus/ai";
 	import { TbTableShare, TbReportMoney } from "vue-icons-plus/tb";
 

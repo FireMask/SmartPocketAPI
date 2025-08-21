@@ -24,7 +24,7 @@ public class CategoryService : ICategoryService
         return result;
     }
 
-    
+
     public async Task<Category> CreateCategoryAsync(CategoryViewModel categoryvm)
     {
         if (_context.Categories.Any(cat => cat.Name == categoryvm.Name && cat.UserId == categoryvm.UserId))
@@ -68,6 +68,28 @@ public class CategoryService : ICategoryService
     {
         Category? category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userid);
         return category;
+    }
+    
+    public async Task<object> GetTopCategories(Guid userid)
+    {
+        int maxCategories = 3;
+
+        var categories = await (
+            from m in _context.Movements
+            join c in _context.Categories on m.CategoryId equals c.Id
+            where m.UserId == userid && (c.UserId == userid || c.IsDefault)
+            group m by new { m.CategoryId, c.Name } into g
+            select new
+            {
+                CategoryId = g.Key.CategoryId,
+                CategoryName = g.Key.Name,
+                Count = g.Count()
+            })
+            .OrderByDescending(x => x.Count)
+            .Take(maxCategories)
+            .ToListAsync();
+
+        return categories;
     }
 
 }

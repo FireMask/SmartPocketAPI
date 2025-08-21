@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SmartPocketAPI.Database;
 
 #nullable disable
@@ -12,8 +12,8 @@ using SmartPocketAPI.Database;
 namespace SmartPocketAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250209233133_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250703065821_InitialPostgresMigration")]
+    partial class InitialPostgresMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,39 +21,39 @@ namespace SmartPocketAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.1")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("SmartPocketAPI.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("DescriptionSpanish")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("NameSpanish")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -111,24 +111,60 @@ namespace SmartPocketAPI.Migrations
                             Name = "Bank",
                             NameSpanish = "Bancarios",
                             UserId = new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c")
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Description = "",
+                            DescriptionSpanish = "",
+                            IsDefault = true,
+                            Name = "Others",
+                            NameSpanish = "Otros",
+                            UserId = new Guid("95eb5d5b-dd03-4c31-8a59-80d59b73df7c")
                         });
+                });
+
+            modelBuilder.Entity("SmartPocketAPI.Models.Configuration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Configuration", (string)null);
                 });
 
             modelBuilder.Entity("SmartPocketAPI.Models.Frequency", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("NameSpanish")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -177,41 +213,50 @@ namespace SmartPocketAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric");
 
-                    b.Property<int>("CategoriId")
-                        .HasColumnType("int");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("CreditCardPaymentId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
-                    b.Property<DateTime>("MovementDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int?>("InstallmentNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("MovementDate")
+                        .HasColumnType("date");
 
                     b.Property<int>("MovementTypeId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("PaymentMethodId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("RecurringPaymentId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoriId");
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("CreditCardPaymentId");
 
@@ -230,17 +275,17 @@ namespace SmartPocketAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("NameSpanish")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -268,7 +313,7 @@ namespace SmartPocketAPI.Migrations
                         new
                         {
                             Id = 4,
-                            Name = "CreditCard Payment",
+                            Name = "Credit Card Payment",
                             NameSpanish = "Pago a Tarjeta de Credito"
                         });
                 });
@@ -277,38 +322,41 @@ namespace SmartPocketAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Bank")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<decimal>("DefaultInterestRate")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric");
 
                     b.Property<int>("DueDate")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsCreditCard")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("PaymentMethodTypeId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TransactionDate")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -325,6 +373,7 @@ namespace SmartPocketAPI.Migrations
                             Bank = "",
                             DefaultInterestRate = 0m,
                             DueDate = 4,
+                            IsActive = true,
                             IsCreditCard = false,
                             IsDefault = true,
                             Name = "Cash",
@@ -338,17 +387,17 @@ namespace SmartPocketAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("NameSpanish")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -379,67 +428,112 @@ namespace SmartPocketAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
 
-                    b.Property<int>("FrecuencyId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("CreditCardPaymentId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("FrequencyId")
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("InstallmentAmount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("InstallmentAmountPerPeriod")
+                        .HasColumnType("numeric");
 
                     b.Property<int>("InstallmentCount")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsInterestFreePayment")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("LastInstallmentDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("MovementTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NextInstallmentCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("NextInstallmentDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("PaymentMethodId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FrecuencyId");
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("CreditCardPaymentId");
+
+                    b.HasIndex("FrequencyId");
+
+                    b.HasIndex("MovementTypeId");
+
+                    b.HasIndex("PaymentMethodId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RecurringPayments");
+                    b.ToTable("RecurringPayment", (string)null);
                 });
 
             modelBuilder.Entity("SmartPocketAPI.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsPremium")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("VerifyCode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -469,11 +563,22 @@ namespace SmartPocketAPI.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SmartPocketAPI.Models.Configuration", b =>
+                {
+                    b.HasOne("SmartPocketAPI.Models.User", "User")
+                        .WithMany("Configurations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SmartPocketAPI.Models.Movement", b =>
                 {
                     b.HasOne("SmartPocketAPI.Models.Category", "Category")
                         .WithMany("Movements")
-                        .HasForeignKey("CategoriId")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -539,10 +644,33 @@ namespace SmartPocketAPI.Migrations
 
             modelBuilder.Entity("SmartPocketAPI.Models.RecurringPayment", b =>
                 {
+                    b.HasOne("SmartPocketAPI.Models.Category", "Category")
+                        .WithMany("RecurringPayments")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SmartPocketAPI.Models.PaymentMethod", "CreditCardPayment")
+                        .WithMany("RecurringPaymentCredits")
+                        .HasForeignKey("CreditCardPaymentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("SmartPocketAPI.Models.Frequency", "Frequency")
                         .WithMany("RecurringPayments")
-                        .HasForeignKey("FrecuencyId")
+                        .HasForeignKey("FrequencyId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartPocketAPI.Models.MovementType", "MovementType")
+                        .WithMany("RecurringPayments")
+                        .HasForeignKey("MovementTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SmartPocketAPI.Models.PaymentMethod", "PaymentMethod")
+                        .WithMany("RecurringPayments")
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SmartPocketAPI.Models.User", "User")
@@ -551,7 +679,15 @@ namespace SmartPocketAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Category");
+
+                    b.Navigation("CreditCardPayment");
+
                     b.Navigation("Frequency");
+
+                    b.Navigation("MovementType");
+
+                    b.Navigation("PaymentMethod");
 
                     b.Navigation("User");
                 });
@@ -559,6 +695,8 @@ namespace SmartPocketAPI.Migrations
             modelBuilder.Entity("SmartPocketAPI.Models.Category", b =>
                 {
                     b.Navigation("Movements");
+
+                    b.Navigation("RecurringPayments");
                 });
 
             modelBuilder.Entity("SmartPocketAPI.Models.Frequency", b =>
@@ -569,6 +707,8 @@ namespace SmartPocketAPI.Migrations
             modelBuilder.Entity("SmartPocketAPI.Models.MovementType", b =>
                 {
                     b.Navigation("Movements");
+
+                    b.Navigation("RecurringPayments");
                 });
 
             modelBuilder.Entity("SmartPocketAPI.Models.PaymentMethod", b =>
@@ -576,6 +716,10 @@ namespace SmartPocketAPI.Migrations
                     b.Navigation("Movements");
 
                     b.Navigation("Payments");
+
+                    b.Navigation("RecurringPaymentCredits");
+
+                    b.Navigation("RecurringPayments");
                 });
 
             modelBuilder.Entity("SmartPocketAPI.Models.PaymentMethodType", b =>
@@ -591,6 +735,8 @@ namespace SmartPocketAPI.Migrations
             modelBuilder.Entity("SmartPocketAPI.Models.User", b =>
                 {
                     b.Navigation("Categories");
+
+                    b.Navigation("Configurations");
 
                     b.Navigation("Movements");
 

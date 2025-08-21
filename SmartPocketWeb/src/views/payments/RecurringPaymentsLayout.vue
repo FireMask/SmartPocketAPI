@@ -2,7 +2,7 @@
     import { ref, computed, onMounted } from 'vue';
     import { formatShowDate, formatMoney } from '../../helpers';
     import { useRecurringPaymentsStore } from '../../stores/recurringPayments';
-    import { GrEdit, GrTrash } from 'vue-icons-plus/Gr';
+    import { GrEdit, GrTrash } from 'vue-icons-plus/gr';
 
     const store = useRecurringPaymentsStore()
     const dateFilter = ref();
@@ -40,6 +40,7 @@
                 title: 'Description',
                 dataIndex: 'description',
                 key: 'description',
+                width: 180,
             },
             {
                 title: 'Frequency',
@@ -144,6 +145,7 @@
         current: store.pageNumber,
         size: "middle",
         pageSize: store.pageSize,
+        showSizeChanger: true,
         position: ['topRight']
     }));
 

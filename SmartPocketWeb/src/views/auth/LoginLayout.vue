@@ -3,11 +3,13 @@
     import { reset } from '@formkit/vue';
     import { useRouter } from 'vue-router';
     import AuthAPI from '../../api/AuthAPI'
+    import { useMovementsStore } from '@/stores/movements';
 
     const toast = inject('toast')
     const router = useRouter()
     const email = ref('')
     const password = ref('')
+    const movementsStore = useMovementsStore();
 
     const handleSubmit = async (formData) => {
         try {
@@ -17,6 +19,7 @@
             {
                 reset('loginForm')
                 localStorage.setItem('AUTH_TOKEN', token)
+                movementsStore.reload();
                 router.push({name:'dashboard'});
             }
             else 
