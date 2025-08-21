@@ -30,3 +30,6 @@ public class Movement : ITimestampedEntity
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
+
+internal record MovementRecord(string Description, bool Pending, string Category, decimal Amount, DateOnly MovementDate);
+public record MovementDocument(string Card, DateOnly Date, string Concept, decimal Amount);

@@ -8,8 +8,6 @@ using SmartPocketAPI.Models;
 using SmartPocketAPI.Services.Interfaces;
 using SmartPocketAPI.ViewModels;
 using SmartPocketAPI.ViewModels.RequestModels;
-using System.Collections.Generic;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SmartPocketAPI.Services;
 
@@ -95,22 +93,22 @@ public class MovementService : IMovementService
         if (movement == null)
             throw new Exception("Movement does not exists");
 
-        if(updateMovement.MovementDate.HasValue)
+        if (updateMovement.MovementDate.HasValue)
             movement.MovementDate = updateMovement.MovementDate.Value;
 
-        if(updateMovement.Description != null)
+        if (updateMovement.Description != null)
             movement.Description = updateMovement.Description;
 
-        if(updateMovement.Amount.HasValue)
+        if (updateMovement.Amount.HasValue)
             movement.Amount = updateMovement.Amount.Value;
 
-        if(updateMovement.CategoryId.HasValue)
+        if (updateMovement.CategoryId.HasValue)
             movement.CategoryId = updateMovement.CategoryId.Value;
 
-        if(updateMovement.PaymentMethodId.HasValue)
+        if (updateMovement.PaymentMethodId.HasValue)
             movement.PaymentMethodId = updateMovement.PaymentMethodId.Value;
 
-        if(updateMovement.MovementTypeId.HasValue)
+        if (updateMovement.MovementTypeId.HasValue)
             movement.MovementTypeId = updateMovement.MovementTypeId.Value;
 
         _context.Movements.Update(movement);
@@ -280,7 +278,7 @@ public class MovementService : IMovementService
             .Include(x => x.CreditCardPayment)
             .Include(x => x.Frequency)
             .AsQueryable();
-        
+
         if (_paymentMethodId != null && _paymentMethodId.Any())
         {
             query = query.Where(x => _paymentMethodId.Contains(x.PaymentMethodId));
@@ -330,7 +328,7 @@ public class MovementService : IMovementService
                     FrequencyId = rPayment.FrequencyId,
                     FrequencyName = rPayment.Frequency.Name
                 });
-                nextDate = RecurringPaymentHelper.GetNextDate(nextDate, rPayment.FrequencyId);            
+                nextDate = RecurringPaymentHelper.GetNextDate(nextDate, rPayment.FrequencyId);
             }
         }
 
@@ -548,7 +546,8 @@ public class MovementService : IMovementService
     {
         var categories = await _context.Categories
             .Where(x => x.UserId == userId || x.IsDefault)
-            .Select(o => new {
+            .Select(o => new
+            {
                 o.Id,
                 o.Name
             })
@@ -591,6 +590,56 @@ public class MovementService : IMovementService
             { "movementTypes", movementTypes }
         }; ;
     }
-}
 
-internal record MovementRecord(string Description, bool Pending, string Category, decimal Amount, DateOnly MovementDate);
+    public async Task<List<Movement>> LoadMovmentsFromFileAsync(Guid userId, IFormFile fileInfo)
+    {
+        using var ms = new MemoryStream();
+        await fileInfo.CopyToAsync(ms);
+        ms.Position = 0;
+
+        List<MovementDocument> movements = DocumentHelper.LoadFromXLSFile(ms);
+
+        if (movements == null || !movements.Any())
+            throw new Exception("No movements found in the file");
+
+        List<Movement> movementList = new List<Movement>();
+        
+        List<PaymentMethod> paymentMethods = await _context.PaymentMethods
+            .Where(x => x.UserId == userId)
+            .ToListAsync();
+
+        List<Movement> existingMovements = await _context.Movements
+            .Where(x => x.UserId == userId)
+            .ToListAsync();
+
+        foreach (var doc in movements)
+        {
+            PaymentMethod? pm = paymentMethods.FirstOrDefault(x => x.Name == doc.Card && x.UserId == userId && x.IsActive);
+            // If the payment method does not exist, skip this document
+            if (pm == null)
+                continue;
+            
+            // If a movement with the same date, description, and amount already exists, skip this document
+            if (existingMovements.Any(x => x.UserId == userId && x.MovementDate == doc.Date && x.Description == doc.Concept && x.Amount == doc.Amount))
+                continue;
+
+            movementList.Add(new Movement
+            {
+                MovementDate = doc.Date,
+                Description = doc.Concept,
+                Amount = doc.Amount,
+                UserId = userId,
+                CategoryId = 6, //Others
+                PaymentMethodId = pm.Id,
+                MovementTypeId = 3, // Purchase
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
+
+        _context.Movements.AddRange(movementList);
+        await _context.SaveChangesAsync();
+
+        return movementList;
+    }
+}

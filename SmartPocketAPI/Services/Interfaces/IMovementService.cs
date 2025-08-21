@@ -18,4 +18,5 @@ public interface IMovementService
     Task<object> GetSummaryPaymentMethods(Guid userId);
     Task<object> GetSummaryPaymentMethodsPerPeriod(Guid userId, PaymentMethodsProjectionRequest request);
     Task<object> GetCatalogs(Guid userId);
+    Task<List<Movement>>LoadMovmentsFromFileAsync(Guid userId, IFormFile fileInfo);
 }

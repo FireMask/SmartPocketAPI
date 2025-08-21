@@ -277,14 +277,35 @@ public class MovementController : Controller
         }
     }
 
+    [HttpPost("/LoadMovementsFromFile")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(50 * 1024 * 1024)] // 50 MB, adjust as needed
+    public async Task<IResult> LoadMovementsFromFile(IFormFile file)
+    {
+        try
+        {
+            Guid userId = HttpContext.GetUserId();
+            if (file == null || file.Length == 0)
+                return "File is empty".ToApiError(Constants.FETCH_ERROR);
+
+            var result = await _movementService.LoadMovmentsFromFileAsync(userId, file);
+            return result.ToApiResponse(Constants.FETCH_SUCCESS);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return ex.Message.ToApiError(Constants.FETCH_ERROR);
+        }
+    }
+
     [HttpGet("/test")]
     public async Task<IResult> Test()
     {
         try
         {
             Guid userId = HttpContext.GetUserId();
-            var result = await _movementService.GetSummaryPaymentMethodsPerPeriod(userId, new PaymentMethodsProjectionRequest());
-            return result.ToApiResponse(Constants.FETCH_SUCCESS);
+            await Task.Delay(1000); // Simulate some processing delay
+            return "result".ToApiResponse(Constants.FETCH_SUCCESS);
         }
         catch (Exception ex)
         {
