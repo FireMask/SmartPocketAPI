@@ -1,0 +1,22 @@
+<nav *ngIf="isLoggedIn()"
+    class="fixed top-0 left-0 w-full bg-white/30 backdrop-blur-md shadow-lg py-4 px-8 flex items-center justify-between rounded-b-2xl border-b border-white/20 mb-8 z-50">
+    <div class="text-2xl font-bold text-gray-900 drop-shadow-glow">{{ title() }}</div>
+    <ul class="flex space-x-6">
+        <li><a href="/" class="text-gray-900 font-medium hover:text-pink-600 transition">Dashboard</a></li>
+        <li><a href="/movements" class="text-gray-900 font-medium hover:text-pink-600 transition">Movements</a></li>
+        <li><a href="/cards" class="text-gray-900 font-medium hover:text-pink-600 transition">Cards</a></li>
+    </ul>
+    <button
+        class="ml-6 bg-gray-300 text-gray-600 px-5 py-2 rounded-lg shadow font-semibold hover:bg-gray-400 transition-all border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
+        aria-label="Cerrar sesión"
+        (click)="logOut()"
+    >
+        Log out
+    </button>
+</nav>
+
+<app-login *ngIf="!isLoggedIn()"></app-login>
+
+<div *ngIf="isLoggedIn()" class="container mx-auto mt-20">
+    <router-outlet></router-outlet>
+</div>
