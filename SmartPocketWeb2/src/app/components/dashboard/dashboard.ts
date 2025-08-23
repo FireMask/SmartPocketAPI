@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { MovementService } from '../../services/movements';
 import { Card } from './card/card';
 import { DashboardData } from '../../models/movements/dashboard';
+import { HomeStore } from '../../stores/HomeStore';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,6 +15,7 @@ import { DashboardData } from '../../models/movements/dashboard';
 export class Dashboard {
 
   movementService = inject(MovementService);
+  homeStore = inject(HomeStore);
 
   dashboardData: DashboardData | null = null;
 

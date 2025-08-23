@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Login } from '../login/login';
+import { HomeStore } from '../../stores/HomeStore';
 
 @Component({
   selector: 'home-root',
@@ -15,6 +16,8 @@ import { Login } from '../login/login';
 export class Home {
   protected readonly title = signal('SmartPocket');
 
+  homeStore = inject(HomeStore);
+  
   isLoading = false;
 
   isLoggedIn(): boolean {

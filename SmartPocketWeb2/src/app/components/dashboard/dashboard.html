@@ -32,4 +32,9 @@
             [isMoney]="false"
         />
     </div>
+
+    <div class="flex justify-center space-x-4">
+        <button class="bg-blue-500 text-white px-4 py-2 rounded" (click)="homeStore.inc()">Increment</button>
+        <button class="bg-red-500 text-white px-4 py-2 rounded" (click)="homeStore.dec()">Decrement</button>
+    </div>
 </div>
