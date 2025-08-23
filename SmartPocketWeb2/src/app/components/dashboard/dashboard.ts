@@ -3,11 +3,13 @@ import { MovementService } from '../../services/movements';
 import { Card } from './card/card';
 import { DashboardData } from '../../models/movements/dashboard';
 import { HomeStore } from '../../stores/HomeStore';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
   imports: [
-    Card
+    Card,
+    CurrencyPipe
   ],
   templateUrl: './dashboard.html',
   styles: ``

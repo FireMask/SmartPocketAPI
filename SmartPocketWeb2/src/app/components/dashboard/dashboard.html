@@ -2,18 +2,16 @@
     <div class="flex flex-wrap justify-center items-center mb-4">
         <card-component
             title="This month income"
-            content="{{ dashboardData?.thisMonthIncome }}"
+            content="{{ dashboardData?.thisMonthIncome | currency}}"
             icon="fa-solid fa-wallet"
             icon_color="text-indigo-500"
-            [isMoney]="true"
         />
 
         <card-component
             title="This month spent"
-            content="{{ dashboardData?.thisMonthSpent }}"
+            content="{{ dashboardData?.thisMonthSpent | currency }}"
             icon="fa-solid fa-cart-shopping"
             icon_color="text-cyan-500"
-            [isMoney]="true"
         />
 
         <card-component
@@ -21,7 +19,6 @@
             content="{{ dashboardData?.thisMonthMovementsCount }}"
             icon="fa-solid fa-receipt"
             icon_color="text-rose-500"
-            [isMoney]="false"
         />
 
         <card-component
@@ -29,7 +26,6 @@
             content="{{ dashboardData?.pendingMovementsRecurring }}"
             icon="fa-solid fa-clipboard-list"
             icon_color="text-yellow-500"
-            [isMoney]="false"
         />
     </div>
 </div>
