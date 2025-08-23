@@ -15,6 +15,8 @@ import { Login } from '../login/login';
 export class Home {
   protected readonly title = signal('SmartPocket');
 
+  isLoading = false;
+
   isLoggedIn(): boolean {
     const token = localStorage.getItem('auth_token');
     if (token) {

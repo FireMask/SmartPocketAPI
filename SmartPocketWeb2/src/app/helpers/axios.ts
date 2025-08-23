@@ -3,11 +3,11 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { environment } from '../environments/environment';
-import { ApiResponse } from '../models/auth';
+import { ApiResponse } from '../models/auth/auth';
 
 const authConfig = (): AxiosRequestConfig => ({
     headers: {
-        Authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`
     }
 });
 

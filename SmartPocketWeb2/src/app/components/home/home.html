@@ -7,13 +7,28 @@
         <li><a href="/cards" class="text-gray-900 font-medium hover:text-pink-600 transition">Cards</a></li>
     </ul>
     <button
-        class="ml-6 bg-gray-300 text-gray-600 px-5 py-2 rounded-lg shadow font-semibold hover:bg-gray-400 transition-all border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
+        class="ml-6 text-gray-600 px-5 py-2 rounded-lg shadow font-semibold hover:bg-amber-200 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
         aria-label="Cerrar sesión"
         (click)="logOut()"
     >
-        Log out
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
     </button>
 </nav>
+
+<div *ngIf="isLoading" class="w-full h-1 bg-transparent absolute top-[4.5rem] left-0 z-50 overflow-hidden">
+  <div class="h-full w-11/12 bg-gradient-to-r from-pink-500 via-amber-400 to-pink-500 animate-loading-bar"></div>
+</div>
+
+<style>
+    @keyframes loading-bar {
+        0%   { transform: translateX(-100%); }
+        100% { transform: translateX(150%); } /* move way past container so it loops smoothly */
+    }
+
+    .animate-loading-bar {
+        animation: loading-bar 2s linear infinite;
+    }
+</style>
 
 <app-login *ngIf="!isLoggedIn()"></app-login>
 

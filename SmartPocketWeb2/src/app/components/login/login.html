@@ -4,72 +4,99 @@
             <span class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-500">SmartPocket</span>
         </div>
         <!-- Login Form -->
-        <form *ngIf="!showRegister" (ngSubmit)="login()">
+        <form *ngIf="!showRegister" [formGroup]="loginForm" (ngSubmit)="login()">
             <div class="mb-4">
                 <label class="block text-gray-700 font-semibold mb-2">Email</label>
                 <input
-                    [(ngModel)]="user.email"
+                    formControlName="email"
                     name="email"
                     type="email"
                     class="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none bg-white bg-opacity-70 shadow-inner"
                     placeholder="you@email.com" />
+                <div *ngIf="f['email'].touched && f['email'].invalid" class="alert alert-danger">
+                    <div *ngIf="f['email'].errors && f['email'].errors['required']"> 
+                        Email is required.
+                    </div>
+                </div>
             </div>
             <div class="mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Password</label>
                 <input
-                    [(ngModel)]="user.password"
+                    formControlName="password"
                     name="password"
                     type="password"
                     class="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none bg-white bg-opacity-70 shadow-inner"
                     placeholder="••••••••" />
+                <div *ngIf="f['password'].touched && f['password'].invalid" class="alert alert-danger">
+                    <div *ngIf="f['password'].errors && f['password'].errors['required']"> 
+                        Password is required.
+                    </div>
+                </div>
             </div>
             <button
+                [disabled]="loginForm.invalid"
                 type="submit"
-                class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold shadow-lg hover:from-blue-600 hover:to-purple-600 transition"
+                class="w-full py-3 rounded-xl bg-gradient-to-r bg-gray-200 transition-all duration-400 ease-linear"
+                [ngClass]="{
+                    'from-blue-500 to-purple-500 text-white font-bold shadow-lg hover:from-blue-600 hover:to-purple-600': !loginForm.invalid,
+                    'opacity-60 cursor-not-allowed': loginForm.invalid
+                }"
                 (click)="login()"
             >Sign In</button>
         </form>
+
         <!-- Register Form -->
-        <form *ngIf="showRegister" (ngSubmit)="register()">
+        <form *ngIf="showRegister" [formGroup]="registerForm" (ngSubmit)="register()">
             <div class="mb-4">
                 <label class="block text-gray-700 font-semibold mb-2">Name</label>
                 <input
-                    [(ngModel)]="registerUser.name"
+                    formControlName="name"
                     name="name"
                     type="text"
                     class="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none bg-white bg-opacity-70 shadow-inner"
                     placeholder="Your Name" />
+                <div *ngIf="f2['name'].touched && f2['name'].invalid" class="alert alert-danger">
+                    <div *ngIf="f2['name'].errors && f2['name'].errors['required']"> 
+                        Name is required.
+                    </div>
+                </div>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 font-semibold mb-2">Email</label>
                 <input
-                    [(ngModel)]="registerUser.email"
+                    formControlName="email"
                     name="registerEmail"
                     type="email"
                     class="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none bg-white bg-opacity-70 shadow-inner"
                     placeholder="you@email.com" />
+                <div *ngIf="f2['email'].touched && f2['email'].invalid" class="alert alert-danger">
+                    <div *ngIf="f2['email'].errors && f2['email'].errors['required']"> 
+                        Email is required.
+                    </div>
+                </div>
             </div>
             <div class="mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Password</label>
                 <input
-                    [(ngModel)]="registerUser.password"
+                    formControlName="password"
                     name="registerPassword"
                     type="password"
                     class="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none bg-white bg-opacity-70 shadow-inner"
                     placeholder="••••••••" />
-            </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 font-semibold mb-2">Confirm Password</label>
-                <input
-                    [(ngModel)]="registerUser.password"
-                    name="registerPassword"
-                    type="password"
-                    class="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none bg-white bg-opacity-70 shadow-inner"
-                    placeholder="••••••••" />
+                <div *ngIf="f2['password'].touched && f2['password'].invalid" class="alert alert-danger">
+                    <div *ngIf="f2['password'].errors && f2['password'].errors['required']"> 
+                        Password is required.
+                    </div>
+                </div>
             </div>
             <button
+                [disabled]="registerForm.invalid"
                 type="submit"
-                class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold shadow-lg hover:from-blue-600 hover:to-purple-600 transition"
+                class="w-full py-3 rounded-xl bg-gradient-to-r bg-gray-200 transition-all duration-400 ease-linear"
+                [ngClass]="{
+                    'from-blue-500 to-purple-500 text-white font-bold shadow-lg hover:from-blue-600 hover:to-purple-600': !registerForm.invalid,
+                    'opacity-60 cursor-not-allowed': registerForm.invalid
+                }"
                 (click)="register()"
             >Register</button>
         </form>

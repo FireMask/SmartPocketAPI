@@ -1,14 +1,15 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AxiosService } from '../helpers/axios';
-import { AuthToken, User } from '../models/user';
-import { ApiResponse } from '../models/auth';
+import { AuthToken, User } from '../models/auth/user';
+import { ApiResponse } from '../models/auth/auth';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    constructor(private axiosInstance: AxiosService) {}
+
+    axiosInstance: AxiosService = inject(AxiosService);
 
     getUser(): Observable<ApiResponse<User>> {
         return this.axiosInstance.get<User>("/user");
@@ -18,7 +19,7 @@ export class AuthService {
         return this.axiosInstance.post<AuthToken>('/auth/login', user);
     }
 
-    register(newUser: User): Observable<ApiResponse<User>> {
+    register(newUser: Partial<User>): Observable<ApiResponse<User>> {
         return this.axiosInstance.post<User>('/auth/create', newUser);
     }
 }
