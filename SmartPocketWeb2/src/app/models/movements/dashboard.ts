@@ -10,11 +10,11 @@ export interface DashboardData {
 }
 
 export interface CardMonthSummaryViewModel {
-    CardName: string;
-    TotalSum: number;
-    ThisPeriodAmount: number;
-    PendingMovementsAmount: number;
-    TransactionStartDate: Date;
-    TransactionEndDate: Date;
-    DueDate: Date;
+    cardName: string;
+    totalSum: number;
+    thisPeriodAmount: number;
+    pendingMovementsAmount: number;
+    transactionStartDate: Date;
+    transactionEndDate: Date;
+    dueDate: Date;
 }

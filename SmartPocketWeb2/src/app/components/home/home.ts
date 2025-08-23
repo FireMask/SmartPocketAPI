@@ -17,8 +17,6 @@ export class Home {
   protected readonly title = signal('SmartPocket');
 
   homeStore = inject(HomeStore);
-  
-  isLoading = false;
 
   isLoggedIn(): boolean {
     const token = localStorage.getItem('auth_token');

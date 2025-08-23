@@ -1,21 +1,13 @@
 // app/store/ui-store.service.ts
-import { Injectable, signal, computed, effect } from '@angular/core';
-
-export type Theme = 'light' | 'dark';
+import { Injectable, signal, computed } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class HomeStore {
-    // state
-    private _count = signal(0);
+    private _isLoading = signal(false);
 
-    // selectors
-    count = computed(() => this._count());
+    isLoading = computed(() => this._isLoading());
 
-    // updaters
-    inc(){
-        this._count.update(c => c + 1);
-    }
-    dec(){
-        this._count.update(c => c - 1);
+    setLoading(isLoading: boolean) {
+        this._isLoading.set(isLoading);
     }
 }
