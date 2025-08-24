@@ -38,7 +38,10 @@ public class AuthController
 
             var token = _authService.GenerateJwtToken(user);
 
-            return (new { Token = token }).ToApiResponse(Constants.AUTH_SUCCESS);
+            return (new {
+                User = user,
+                Token = token
+            }).ToApiResponse(Constants.AUTH_SUCCESS);
         }
         catch (ArgumentNullException ex)
         {
