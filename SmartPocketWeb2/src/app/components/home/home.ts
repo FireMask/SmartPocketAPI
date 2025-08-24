@@ -3,13 +3,15 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Login } from '../login/login';
 import { HomeStore } from '../../stores/HomeStore';
-import { NewMovementStore } from '../../stores/NewMovementStore';
 import { NewMovement } from '../movements/new-movement/new-movement';
+import { Toast } from '../toast/toast';
+import { AuthStore } from '../../stores/AuthStore';
 
 @Component({
   selector: 'home-root',
   imports: [
     RouterOutlet,
+    Toast,
     CommonModule,
     Login,
     NewMovement
@@ -20,17 +22,11 @@ export class Home {
   protected readonly title = signal('SmartPocket');
 
   homeStore = inject(HomeStore);
-  newMovementStore = inject(NewMovementStore);
+  authStore = inject(AuthStore);
 
-  isLoggedIn(): boolean {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      return true;
-    }
-    return false;
-  }
+  isLoggedIn = this.authStore.select.isLoggedIn;
 
   logOut() {
-    localStorage.removeItem('auth_token');
+
   }
 }

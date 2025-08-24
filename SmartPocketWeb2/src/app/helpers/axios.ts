@@ -5,12 +5,8 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { environment } from '../environments/environment';
 import { ApiResponse } from '../models/auth/auth';
 import { HomeStore } from '../stores/HomeStore';
+import { AuthTokenStore } from '../stores/AuthTokenStore';
 
-const authConfig = (): AxiosRequestConfig => ({
-    headers: {
-        Authorization: `Bearer ${localStorage.getItem('auth_token')}`
-    }
-});
 
 @Injectable({
     providedIn: 'root'
@@ -18,6 +14,13 @@ const authConfig = (): AxiosRequestConfig => ({
 export class AxiosService {
 
     homeStore = inject(HomeStore);
+    authTokenRef = inject(AuthTokenStore);
+
+    authConfig = (): AxiosRequestConfig => ({
+        headers: {
+            Authorization: `Bearer ${ this.authTokenRef.token() }`
+        }
+    });
 
     private baseUrl = environment.apiUrl;
 
@@ -29,7 +32,7 @@ export class AxiosService {
     }
 
     private mergeConfig(config?: AxiosRequestConfig): AxiosRequestConfig {
-        return { ...authConfig(), ...config };
+        return { ...this.authConfig(), ...config };
     }
 
     private toApiResponse<T>(response: AxiosResponse<T>): ApiResponse<T> {

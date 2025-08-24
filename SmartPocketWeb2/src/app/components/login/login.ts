@@ -3,6 +3,7 @@ import { AuthService } from '../../services/auth';
 import { User } from '../../models/auth/user';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import { AuthStore } from '../../stores/AuthStore';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,8 @@ import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModu
   styles: ``
 })
 export class Login {
+
+  authStore = inject(AuthStore);
 
   showRegister: boolean = false;
 
@@ -41,22 +44,12 @@ export class Login {
     return this.registerForm.controls;
   }
 
-  private authService = inject(AuthService);
-
   login() {
     const user: Partial<User> = {
       email: this.loginForm.value.email || '',
       password: this.loginForm.value.password || ''
     };
-    this.authService.login(user).subscribe({
-      next: (response) => {
-        localStorage.setItem('auth_token', response.data.token);
-        console.log('Login successful:', response);
-      },
-      error: (error) => {
-        console.error('Login failed:', error);
-      }
-    });
+    this.authStore.login(user);
   }
 
   register() {
@@ -65,14 +58,7 @@ export class Login {
       password: this.registerForm.value.password || '',
       name: this.registerForm.value.name || ''
     };
-    this.authService.register(user).subscribe({
-      next: (response) => {
-        console.log('Registration successful:', response);
-      },
-      error: (error) => {
-        console.error('Registration failed:', error);
-      }
-    });
+    this.authStore.register(user);
   }
   
 }

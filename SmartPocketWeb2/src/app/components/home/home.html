@@ -8,27 +8,34 @@
     </ul>
     <div>
         <button
-            class="ml-6 text-gray-600 px-5 py-2 rounded-lg shadow font-semibold hover:bg-amber-200 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
+            class="ml-4 text-gray-600 px-5 py-2 rounded-lg shadow font-semibold hover:bg-amber-200 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
             aria-label="Cerrar sesión"
-            (click)="newMovementStore.open()"
+            (click)="homeStore.openNewMovementModal()"
         >
             <i class="fa-solid fa-plus"></i>
         </button>
         <button
-            class="ml-6 text-gray-600 px-5 py-2 rounded-lg shadow font-semibold hover:bg-amber-200 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
+            class="ml-4 text-gray-600 px-5 py-2 rounded-lg shadow font-semibold hover:bg-amber-200 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
+            aria-label="Perfil de usuario"
+        >
+            <i class="fa-solid fa-user"></i>
+            <span class="ml-2">{{ authStore.select.user()?.name }}</span>
+        </button>
+        <button
+            class="ml-4 text-gray-600 px-5 py-2 rounded-lg shadow font-semibold hover:bg-amber-200 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
             aria-label="Cerrar sesión"
-            (click)="logOut()"
+            (click)="this.authStore.logOut()"
         >
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
         </button>
     </div>
 </nav>
 
-<div *ngIf="newMovementStore.isNewMovementModalOpen()">
+<div *ngIf="homeStore.select.isNewMovementModalOpen()">
     <app-new-movement/>
 </div>
 
-<div *ngIf="homeStore.isLoading()" class="w-full h-1 bg-transparent absolute top-[4.5rem] left-0 z-50 overflow-hidden">
+<div *ngIf="homeStore.select.isLoading()" class="w-full h-1 bg-transparent absolute top-[4.5rem] left-0 z-50 overflow-hidden">
   <div class="h-full w-11/12 bg-gradient-to-r from-pink-500 via-amber-400 to-pink-500 animate-loading-bar"></div>
 </div>
 
@@ -44,6 +51,8 @@
 </style>
 
 <app-login *ngIf="!isLoggedIn()"></app-login>
+
+<app-toast></app-toast>
 
 <div *ngIf="isLoggedIn()" class="container mx-auto mt-20">
     <router-outlet></router-outlet>

@@ -9,6 +9,7 @@ export interface User {
 }
 
 export interface AuthToken {
+    user: Partial<User>;
     token: string;
     expiresIn: number;
 }

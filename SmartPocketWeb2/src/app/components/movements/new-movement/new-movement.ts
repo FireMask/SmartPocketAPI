@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { NewMovementStore } from '../../../stores/NewMovementStore';
+import { MovementStore } from '../../../stores/MovementStore';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MovementViewModel } from '../../../models/movements/movementViewModel';
 import { CommonModule } from '@angular/common';
+import { HomeStore } from '../../../stores/HomeStore';
 
 @Component({
   selector: 'app-new-movement',
@@ -15,7 +16,8 @@ import { CommonModule } from '@angular/common';
   styles: ``
 })
 export class NewMovement {
-  newMovementStore = inject(NewMovementStore)
+  movementStore = inject(MovementStore)
+  homeStore = inject(HomeStore)
 
   newMovementForm = new FormGroup({
       movementDate: new FormControl(new Date(), [Validators.required]),
@@ -41,6 +43,7 @@ export class NewMovement {
         installmentNumber: this.newMovementForm.value.installmentNumber || null,
         creditCardPaymentId: this.newMovementForm.value.creditCardPaymentId || null,
     };
-    this.newMovementStore.save(movementModel);
+    this.movementStore.createNewMovement(movementModel);
+    this.homeStore.closeNewMovementModal();
   }
 }
