@@ -2,12 +2,12 @@ import { User } from "../auth/User";
 
 
 export interface Category {
-    Id: number;
-    Name: string;
-    NameSpanish: string;
-    Description: string;
-    DescriptionSpanish: string;
-    IsDefault: boolean;
-    UserId: string;
-    User: User;
+    id: number;
+    name: string;
+    nameSpanish: string;
+    description: string;
+    descriptionSpanish: string;
+    isDefault: boolean;
+    userId: string;
+    user: User;
 }

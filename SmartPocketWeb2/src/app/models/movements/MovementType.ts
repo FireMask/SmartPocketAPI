@@ -1,6 +1,6 @@
 
 export interface MovementType {
-    Id: number;
-    Name: string;
-    NameSpanish: string;
+    id: number;
+    name: string;
+    nameSpanish: string;
 }

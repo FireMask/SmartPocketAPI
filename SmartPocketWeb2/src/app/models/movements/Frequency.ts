@@ -1,6 +1,6 @@
 
 export interface Frequency {
-    Id: number;
-    Name: string;
-    NameSpanish: string;
+    id: number;
+    name: string;
+    nameSpanish: string;
 }

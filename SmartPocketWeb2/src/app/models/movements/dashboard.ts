@@ -1,3 +1,4 @@
+import { CardMonthSummaryViewModel } from "./CardMonthSummaryViewModel";
 import { Movement } from "./Movement";
 
 export interface DashboardData {
@@ -7,14 +8,4 @@ export interface DashboardData {
     thisMonthIncome: number;
     pendingMovementsRecurring: number;
     summaryPaymentMethods: CardMonthSummaryViewModel[];
-}
-
-export interface CardMonthSummaryViewModel {
-    cardName: string;
-    totalSum: number;
-    thisPeriodAmount: number;
-    pendingMovementsAmount: number;
-    transactionStartDate: Date;
-    transactionEndDate: Date;
-    dueDate: Date;
 }

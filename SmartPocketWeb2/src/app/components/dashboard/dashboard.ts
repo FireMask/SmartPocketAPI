@@ -3,11 +3,16 @@ import { Card } from './card/card';
 import { HomeStore } from '../../stores/HomeStore';
 import { CurrencyPipe } from '@angular/common';
 import { MovementStore } from '../../stores/MovementStore';
+import { CardSummary } from './card-summary/card-summary';
+import { TopMovements } from './top-movements/top-movements';
+import { Movement } from '../../models/movements/Movement';
 
 @Component({
   selector: 'app-dashboard',
   imports: [
     Card,
+    CardSummary,
+    TopMovements,
     CurrencyPipe
   ],
   templateUrl: './dashboard.html',

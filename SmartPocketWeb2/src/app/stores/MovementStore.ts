@@ -10,7 +10,7 @@ export class MovementStore {
     private notify = inject(NotificationsStore);
     private movementService = inject(MovementService);
     
-    private _dashboardData = signal<DashboardData | null>(null);
+    private _dashboardData = signal<DashboardData>({} as DashboardData);
 
     readonly select = {
         dashboardData: this._dashboardData.asReadonly(),
@@ -20,6 +20,8 @@ export class MovementStore {
         this.movementService.getDashboardData().subscribe({
             next: (response) => {
                 this._dashboardData.set(response.data);
+                console.log(response.data);
+                
             },
             error: (error) => {
                 this.notify.error('Failed to load dashboard data. Please try again. ' + parseApiError(error));
