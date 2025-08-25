@@ -81,11 +81,9 @@ public class CategoryService : ICategoryService
             group m by new { m.CategoryId, c.Name } into g
             select new
             {
-                CategoryId = g.Key.CategoryId,
-                CategoryName = g.Key.Name,
-                Count = g.Count()
+                Id = g.Key.CategoryId,
+                Name = g.Key.Name,
             })
-            .OrderByDescending(x => x.Count)
             .Take(maxCategories)
             .ToListAsync();
 
