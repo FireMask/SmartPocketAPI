@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AxiosService } from '../helpers/axios';
-import { AuthToken, User } from '../models/auth/user';
-import { ApiResponse } from '../models/auth/auth';
+import { User } from "../models/auth/User";
+import { AuthToken } from "../models/auth/AuthToken";
+import { ApiResponse } from '../models/auth/ApiResponse';
 
 @Injectable({
     providedIn: 'root'

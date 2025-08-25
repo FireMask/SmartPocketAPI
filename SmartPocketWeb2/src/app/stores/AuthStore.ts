@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { User } from '../models/auth/user';
+import { User } from "../models/auth/User";
 import { AuthService } from '../services/auth';
 import { NotificationsStore } from './NotificationStore';
 import { parseApiError } from '../helpers/error';

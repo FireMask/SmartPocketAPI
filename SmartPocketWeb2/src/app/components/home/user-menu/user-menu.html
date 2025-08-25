@@ -13,8 +13,9 @@
     <!-- Dropdown Menu -->
     <div id="userMenuDropdown"
         class="hidden absolute right-0 mt-2 min-w-30 rounded-xl shadow-2xl bg-white/80 backdrop-blur border border-white/40 ring-1 ring-black/10"
-        [ngClass]="{ 'hidden': !showMenu }">
-        <div class="py-2 z-10 flex flex-col space-y-1">
+        [ngClass]="{ 'hidden': !showMenu }"
+        (document:click)="onOutsideClick($event)">
+        <div class="py-2 z-10 flex flex-col space-y-1" (click)="$event.stopPropagation()">
             <div class="hover:bg-gray-100 flex flex-row-reverse">
                 <a href="#" class="flex items-center px-4 py-2 rounded-lg transition font-medium text-indigo-600">
                     Profile <i class="fa-solid fa-user ml-2"></i>

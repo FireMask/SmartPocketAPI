@@ -3,7 +3,7 @@ import { from, Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { environment } from '../environments/environment';
-import { ApiResponse } from '../models/auth/auth';
+import { ApiResponse } from '../models/auth/ApiResponse';
 import { HomeStore } from '../stores/HomeStore';
 import { AuthTokenStore } from '../stores/AuthTokenStore';
 

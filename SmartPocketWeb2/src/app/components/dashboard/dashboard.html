@@ -1,31 +1,43 @@
-<div class="container mx-auto p-4">
-    <div class="flex flex-wrap justify-center items-center mb-4">
-        <card-component
-            title="This month income"
-            content="{{ dashboardData$()?.thisMonthIncome | currency}}"
-            icon="fa-solid fa-wallet"
-            icon_color="text-indigo-500"
-        />
+<div class="flex flex-col gap-4 m-5">
+    <section class="w-full">
+        <div class="flex flex-wrap justify-center items-center mb-4">
+            <card-component
+                title="This month income"
+                content="{{ dashboardData$()?.thisMonthIncome | currency}}"
+                icon="fa-solid fa-wallet"
+                icon_color="text-indigo-500"
+            />
 
-        <card-component
-            title="This month spent"
-            content="{{ dashboardData$()?.thisMonthSpent | currency }}"
-            icon="fa-solid fa-cart-shopping"
-            icon_color="text-cyan-500"
-        />
+            <card-component
+                title="This month spent"
+                content="{{ dashboardData$()?.thisMonthSpent | currency }}"
+                icon="fa-solid fa-cart-shopping"
+                icon_color="text-cyan-500"
+            />
 
-        <card-component
-            title="Movements count"
-            content="{{ dashboardData$()?.thisMonthMovementsCount }}"
-            icon="fa-solid fa-receipt"
-            icon_color="text-rose-500"
-        />
+            <card-component
+                title="Movements count"
+                content="{{ dashboardData$()?.thisMonthMovementsCount }}"
+                icon="fa-solid fa-receipt"
+                icon_color="text-rose-500"
+            />
 
-        <card-component
-            title="Pending movements"
-            content="{{ dashboardData$()?.pendingMovementsRecurring }}"
-            icon="fa-solid fa-clipboard-list"
-            icon_color="text-yellow-500"
-        />
+            <card-component
+                title="Pending movements"
+                content="{{ dashboardData$()?.pendingMovementsRecurring }}"
+                icon="fa-solid fa-clipboard-list"
+                icon_color="text-yellow-500"
+            />
+        </div>
+    </section>
+    <div class="flex flex-col md:flex-row gap-4">
+        <section class="flex-3">
+            <h2 class="text-lg font-semibold mb-2">Left Section</h2>
+            <p>Add your content here.</p>
+        </section>
+        <section class="flex-1">
+            <h2 class="text-lg font-semibold mb-2">Right Section</h2>
+            <p>Add your content here.</p>
+        </section>
     </div>
 </div>

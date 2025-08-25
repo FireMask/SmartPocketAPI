@@ -1,4 +1,4 @@
-import { Movement } from "./movement";
+import { Movement } from "./Movement";
 
 export interface DashboardData {
     top20Movements: Movement[];

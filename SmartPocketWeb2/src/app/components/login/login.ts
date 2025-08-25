@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../services/auth';
-import { User } from '../../models/auth/user';
+import { User } from "../../models/auth/User";
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { AuthStore } from '../../stores/AuthStore';

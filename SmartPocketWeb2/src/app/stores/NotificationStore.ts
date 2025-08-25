@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, DestroyRef, inject } from '@angular/core';
-import { Toast } from '../models/notifications/notifications';
+import { Toast } from '../models/notifications/Toast';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationsStore {

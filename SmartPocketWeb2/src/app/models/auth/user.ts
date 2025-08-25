@@ -7,9 +7,3 @@ export interface User {
     isPremium: boolean;
     isAdmin: boolean;
 }
-
-export interface AuthToken {
-    user: Partial<User>;
-    token: string;
-    expiresIn: number;
-}

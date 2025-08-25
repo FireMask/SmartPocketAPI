@@ -1,10 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AxiosService } from '../helpers/axios';
-import { ApiResponse } from '../models/auth/auth';
-import { Movement } from '../models/movements/movement';
-import { DashboardData } from '../models/movements/dashboard';
-import { MovementViewModel } from '../models/movements/movementViewModel';
+import { ApiResponse } from '../models/auth/ApiResponse';
+import { Movement } from '../models/movements/Movement';
+import { DashboardData } from '../models/movements/Dashboard';
+import { MovementViewModel } from '../models/movements/MovementViewModel';
 
 @Injectable({
     providedIn: 'root'

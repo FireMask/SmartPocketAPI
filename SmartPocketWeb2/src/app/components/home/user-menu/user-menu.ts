@@ -14,4 +14,16 @@ export class UserMenu {
 
   showMenu: boolean = false;
 
+  onOutsideClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const userMenuDropdown = document.getElementById('userMenuDropdown');
+    const userMenuButton = document.getElementById('userMenuButton');
+
+    if (userMenuDropdown && userMenuButton) {
+      if (!userMenuDropdown.contains(target) && !userMenuButton.contains(target)) {
+        this.showMenu = false;
+      }
+    }
+  }
+
 }

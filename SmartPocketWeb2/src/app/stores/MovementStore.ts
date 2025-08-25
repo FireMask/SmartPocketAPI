@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { MovementService } from '../services/movements';
-import { MovementViewModel } from '../models/movements/movementViewModel';
-import { DashboardData } from '../models/movements/dashboard';
+import { MovementViewModel } from '../models/movements/MovementViewModel';
+import { DashboardData } from '../models/movements/Dashboard';
 import { NotificationsStore } from './NotificationStore';
 import { parseApiError } from '../helpers/error';
 
