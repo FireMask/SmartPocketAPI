@@ -4,6 +4,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MovementViewModel } from '../../../models/movements/MovementViewModel';
 import { CommonModule } from '@angular/common';
 import { HomeStore } from '../../../stores/HomeStore';
+import { CatalogStore } from '../../../stores/CatalogStore';
 
 @Component({
   selector: 'app-new-movement',
@@ -18,6 +19,7 @@ import { HomeStore } from '../../../stores/HomeStore';
 export class NewMovement {
   movementStore = inject(MovementStore)
   homeStore = inject(HomeStore)
+  catalogStore = inject(CatalogStore)
 
   newMovementForm = new FormGroup({
       movementDate: new FormControl(new Date(), [Validators.required]),
@@ -29,6 +31,9 @@ export class NewMovement {
       movementTypeId: new FormControl(0, [Validators.required, Validators.min(1)]),
       installmentNumber: new FormControl(null),
       creditCardPaymentId: new FormControl(null),
+      isInstallment: new FormControl(false),
+      frequencyId: new FormControl(null),
+      installmentCount: new FormControl(null),
   });
 
   save() {
