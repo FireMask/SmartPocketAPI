@@ -1,80 +1,68 @@
-<app-toast></app-toast>
+<div [attr.data-theme]="configStore.isDarkMode ? 'dark' : 'light'">
 
-@if(isLoggedIn){
-    <nav
-        [ngClass]="configStore.isDarkMode ? 
-            'dark:bg-gray-800 dark:shadow-lg dark:border-b-gray-700' : 
-            'bg-white/30 shadow-lg border-b border-white/20'"
-        class="fixed top-0 left-0 w-full backdrop-blur-md py-4 px-8 flex items-center justify-between rounded-b-2xl mb-8 z-50"
-    >
-        <div class="text-2xl font-bold drop-shadow-glow  "
-            [ngClass]="configStore.isDarkMode ? 'dark:text-white' : 'text-gray-900'">
-            <a href="/">{{ title() }}</a>
+    <app-toast></app-toast>
+
+    @if(isLoggedIn){
+        <nav
+            class="bg-white/30 shadow-lg border-b border-white/20 dark:bg-gray-800 dark:shadow-lg dark:border-b-gray-700 fixed top-0 left-0 w-full backdrop-blur-md py-4 px-8 flex items-center justify-between rounded-b-2xl mb-8 z-50"
+        >
+            <div class="text-2xl font-bold drop-shadow-glow dark:text-white text-gray-900">
+                <a href="/">{{ title() }}</a>
+            </div>
+            <ul class="flex space-x-6">
+                <li>
+                    <a href="/" class="text-gray-900 dark:text-white font-medium transition hover:dark:text-amber-400 hover:text-pink-600">
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="/Movements" class="text-gray-900 dark:text-white font-medium transition hover:dark:text-amber-400 hover:text-pink-600">
+                        Movements
+                    </a>
+                </li>
+                <li>
+                    <a href="/Cards" class="text-gray-900 dark:text-white font-medium transition hover:dark:text-amber-400 hover:text-pink-600">
+                        Cards
+                    </a>
+                </li>
+            </ul>
+            <div>
+                <button
+                    class="ml-4 px-5 py-2 rounded-lg shadow font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer text-gray-600 dark:text-gray-200 hover:bg-amber-200 dark:hover:bg-gray-700"
+                    aria-label="Cerrar sesión"
+                    (click)="homeStore.openNewMovementModal()"
+                >
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+                <app-user-menu></app-user-menu>
+            </div>
+        </nav>
+
+        <div class="container mx-auto mt-20">
+            <router-outlet></router-outlet>
         </div>
-        <ul class="flex space-x-6">
-            <li>
-                <a href="/" class="font-medium transition  "
-                    [ngClass]="[
-                        configStore.isDarkMode ? 'dark:text-white' : 'text-gray-900',
-                        configStore.isDarkMode ? 'hover:text-amber-400' : 'hover:text-pink-600'
-                    ]">
-                    Dashboard
-                </a>
-            </li>
-            <li>
-                <a href="/" class="font-medium transition  "
-                    [ngClass]="[
-                        configStore.isDarkMode ? 'dark:text-white' : 'text-gray-900',
-                        configStore.isDarkMode ? 'hover:text-amber-400' : 'hover:text-pink-600'
-                    ]">
-                    Movements
-                </a>
-            </li>
-            <li>
-                <a href="/" class="font-medium transition  "
-                    [ngClass]="[
-                        configStore.isDarkMode ? 'dark:text-white' : 'text-gray-900',
-                        configStore.isDarkMode ? 'hover:text-amber-400' : 'hover:text-pink-600'
-                    ]">
-                    Cards
-                </a>
-            </li>
-        </ul>
-        <div>
-            <button
-                class="ml-4 px-5 py-2 rounded-lg shadow font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer text-gray-600 dark:text-gray-200 hover:bg-amber-200 dark:hover:bg-gray-700"
-                aria-label="Cerrar sesión"
-                (click)="homeStore.openNewMovementModal()"
-            >
-                <i class="fa-solid fa-plus"></i>
-            </button>
-            <app-user-menu></app-user-menu>
+    }@else{
+        <app-login/>
+    }
+
+    @if(homeStore.select.isNewMovementModalOpen()){
+        <app-new-movement/>
+    }
+
+    @if(homeStore.select.isLoading()){
+        <div class="w-full h-1 bg-transparent absolute top-[4.5rem] left-0 z-50 overflow-hidden">
+        <div class="h-full w-11/12 bg-gradient-to-r from-pink-500 via-amber-400 to-pink-500 animate-loading-bar"></div>
         </div>
-    </nav>
+        <style>
+            @keyframes loading-bar {
+                0%   { transform: translateX(-100%); }
+                100% { transform: translateX(150%); } /* move way past container so it loops smoothly */
+            }
+        
+            .animate-loading-bar {
+                animation: loading-bar 2s linear infinite;
+            }
+        </style>
+    }
 
-    <div class="container mx-auto mt-20">
-        <router-outlet></router-outlet>
-    </div>
-}@else{
-    <app-login/>
-}
-
-@if(homeStore.select.isNewMovementModalOpen()){
-    <app-new-movement/>
-}
-
-@if(homeStore.select.isLoading()){
-    <div class="w-full h-1 bg-transparent absolute top-[4.5rem] left-0 z-50 overflow-hidden">
-      <div class="h-full w-11/12 bg-gradient-to-r from-pink-500 via-amber-400 to-pink-500 animate-loading-bar"></div>
-    </div>
-    <style>
-        @keyframes loading-bar {
-            0%   { transform: translateX(-100%); }
-            100% { transform: translateX(150%); } /* move way past container so it loops smoothly */
-        }
-    
-        .animate-loading-bar {
-            animation: loading-bar 2s linear infinite;
-        }
-    </style>
-}
+</div>

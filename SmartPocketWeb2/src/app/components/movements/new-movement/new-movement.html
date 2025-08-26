@@ -1,28 +1,28 @@
-<div class="fixed inset-0 flex items-center justify-center z-50 bg-gray-400/50 ">
+<div class="fixed inset-0 flex items-center justify-center z-50 bg-gray-400/50 dark:bg-gray-900/80">
     <div class="absolute inset-0" (click)="homeStore.closeNewMovementModal()" style="z-index:1"></div>
-    <div class="bg-white/80 rounded-2xl shadow-xl border border-slate-200/70 border-t-white/80 border-b-blue-200/80 border-l-white/60 border-r-blue-100/60 
+    <div class="bg-white/80 dark:bg-gray-800/90 rounded-2xl shadow-xl border border-slate-200/70 dark:border-slate-700/70 border-t-white/80 dark:border-t-gray-700/80 border-b-blue-200/80 dark:border-b-blue-900/80 border-l-white/60 dark:border-l-gray-700/60 border-r-blue-100/60 dark:border-r-blue-900/60 
         w-full max-w-3xl max-h-full m-4 backdrop-blur-0 z-10 overflow-auto ">
-        <div class="px-6 py-3 rounded-t-2xl bg-gradient-to-r from-white/80 to-blue-100/80 border-b border-white/20 flex-row flex justify-between items-center">
+        <div class="px-6 py-3 rounded-t-2xl bg-gradient-to-r from-white/80 to-blue-100/80 dark:from-gray-900/80 dark:to-blue-950/80 border-b border-white/20 dark:border-gray-700/20 flex-row flex justify-between items-center">
             <div>
-                <h2 class="text-xl font-semibold text-gray-800 pt-2">New Movement</h2>
-                <span class="text-xs text-gray-600">Fields marked with <span class="text-red-500">*</span> are required.</span>
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 pt-2">New Movement</h2>
+                <span class="text-xs text-gray-600 dark:text-gray-400">Fields marked with <span class="text-red-500">*</span> are required.</span>
             </div>
-            <button class="cursor-pointer px-5 py-2 rounded-lg bg-gray-200/80 hover:bg-gray-300/90 text-gray-700 font-semibold shadow transition"
+            <button class="btn btn-error"
                 (click)="homeStore.closeNewMovementModal()"
             ><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="max-h-full overflow-auto [scrollbar-gutter:stable]">
-            <form class="px-6 py-4 space-y-3 bg-white/70 rounded-xl shadow-inner backdrop-blur-md overflow-auto scroll-auto" 
+            <form class="px-6 py-4 space-y-3 bg-white/70 dark:bg-gray-900/70 rounded-xl shadow-inner backdrop-blur-md overflow-auto scroll-auto" 
                 [formGroup]="newMovementForm" 
             >
                 <!-- Payment Method -->
                 <div class="flex items-start gap-4">
-                    <label class="block text-gray-700 font-semibold mb-2 w-1/4 pt-2 text-right">
+                    <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2 w-1/4 pt-2 text-right">
                         Payment method <span class="text-red-500">*</span>
                     </label>
                     <div class="w-11/12">
                         <select formControlName="paymentMethodId"
-                            class="w-full rounded-lg px-2 py-1 bg-white/70 border border-blue-200 focus:ring-2 focus:ring-blue-400 shadow-inner transition appearance-none"
+                            class="w-full rounded-lg px-2 py-1 bg-white/70 dark:bg-gray-800/80 border border-blue-200 dark:border-blue-900 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-900 shadow-inner transition appearance-none text-gray-800 dark:text-gray-100"
                             required>
                             <option value="" disabled selected>Select a payment method</option>
                             @for (paymentMethod of catalogStore.select.paymentMethods(); track paymentMethod) {
@@ -42,11 +42,11 @@
                 <!-- Category -->
                 <div>
                     <div class="flex items-start gap-4">
-                        <label class="block text-gray-700 font-semibold mb-2 w-1/4 pt-2 text-right">Category <span class="text-red-500">*</span></label>
+                        <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2 w-1/4 pt-2 text-right">Category <span class="text-red-500">*</span></label>
                         <div class="w-11/12">
                             <div class="flex flex-row gap-2">
                                 <select formControlName="categoryId"
-                                    class="w-full rounded-lg px-2 py-1 bg-white/70 border border-blue-200 focus:ring-2 focus:ring-blue-400 shadow-inner transition appearance-none "
+                                    class="w-full rounded-lg px-2 py-1 bg-white/70 dark:bg-gray-800/80 border border-blue-200 dark:border-blue-900 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-900 shadow-inner transition appearance-none text-gray-800 dark:text-gray-100"
                                     required>
                                     <option value="" disabled selected>Select a category</option>
                                     @for (category of catalogStore.select.categories(); track category) {
@@ -59,10 +59,8 @@
                                     @for (category of catalogStore.select.topCategories(); track category) {
                                         <button
                                             type="button"
-                                            class="px-3 py-1 rounded-lg shadow transition"
-                                            [ngClass]="newMovementForm.get('categoryId')?.value == category?.id 
-                                                ? 'bg-blue-100/90 hover:bg-blue-300/80 text-blue-700 font-semibold' 
-                                                : 'bg-gray-100/80 hover:bg-gray-300/90 text-gray-700 font-medium'"
+                                            class="btn"
+                                            [ngClass]="{ 'btn-active': newMovementForm.get('categoryId')?.value == category?.id }"
                                             (click)="newMovementForm.controls['categoryId'].setValue(category?.id??0)"
                                             >
                                             {{ category.name }}
@@ -82,27 +80,26 @@
                 <!-- Transaction Date -->
                 <div>
                     <div class="flex items-start gap-4">
-                        <label class="block text-gray-700 font-semibold mb-2 w-1/4 pt-2 text-right">Transaction date <span class="text-red-500">*</span></label>
+                        <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2 w-1/4 pt-2 text-right">Transaction date <span class="text-red-500">*</span></label>
                         <div class="w-11/12">
                             <div class="flex gap-2 items-center">
                                 <input type="date" formControlName="movementDate"
-                                    class="flex-1 rounded-lg px-2 py-1 bg-white/70 border border-blue-200 focus:ring-2 focus:ring-blue-400 shadow-inner transition "
+                                    class="flex-1 rounded-lg px-2 py-1 bg-white/70 dark:bg-gray-800/80 border border-blue-200 dark:border-blue-900 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-900 shadow-inner transition text-gray-800 dark:text-gray-100"
+                                    [value]="newMovementForm.get('movementDate')?.value | date:'yyyy-MM-dd'"
+                                    (change)="newMovementForm.controls['movementDate'].setValue($event.target.valueAsDate)"
                                     required>
                                 <button type="button"
-                                    class="px-3 py-1 rounded-lg shadow transition"
-                                    [ngClass]="false
-                                                ? 'bg-blue-100/90 hover:bg-blue-300/80 text-blue-700 font-semibold' 
-                                                : 'bg-gray-100/80 hover:bg-gray-300/90 text-gray-700 font-medium'"
+                                    class="btn"
+                                    [ngClass]="{ 'btn-active': (newMovementForm.get('movementDate')?.value | date:'yyyy-MM-dd') === (today | date:'yyyy-MM-dd') }"
+                                    (click)="newMovementForm.controls['movementDate'].setValue(today)"
                                     >
                                     Today
                                 </button>
                                 <button type="button"
-                                    class="px-3 py-1 rounded-lg shadow transition"
-                                    [ngClass]="false
-                                                ? 'bg-blue-100/90 hover:bg-blue-300/80 text-blue-700 font-semibold' 
-                                                : 'bg-gray-100/80 hover:bg-gray-300/90 text-gray-700 font-medium'"
+                                    class="btn"
+                                    [ngClass]="{ 'btn-active': (newMovementForm.get('movementDate')?.value | date:'yyyy-MM-dd') === (yesterday | date:'yyyy-MM-dd') }"
+                                    (click)="newMovementForm.controls['movementDate'].setValue(yesterday)"
                                     >
-                                    <!-- (click)="setYesterday()" -->
                                     Yesterday
                                 </button>
                                 
@@ -119,12 +116,12 @@
                 <!-- Amount -->
                 <div>
                     <div class="flex items-start gap-4">
-                        <label class="block text-gray-700 font-semibold mb-2 w-1/4 pt-2 text-right">Amount <span class="text-red-500">*</span></label>
+                        <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2 w-1/4 pt-2 text-right">Amount <span class="text-red-500">*</span></label>
                         <div class="w-11/12">
                             <div class="relative">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">$</span>
                                 <input type="number" min="0" step="0.01" formControlName="amount"
-                                    class="w-full rounded-lg pl-8 pr-2 py-1 bg-white/70 border border-blue-200 focus:ring-2 focus:ring-blue-400 shadow-inner transition "
+                                    class="w-full rounded-lg pl-8 pr-2 py-1 bg-white/70 dark:bg-gray-800/80 border border-blue-200 dark:border-blue-900 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-900 shadow-inner transition text-gray-800 dark:text-gray-100"
                                     placeholder="0.00" required>
                             </div>
                             @if(newMovementForm.get('amount')?.invalid && newMovementForm.get('amount')?.touched){
@@ -139,10 +136,10 @@
                 <!-- Description -->
                 <div>
                     <div class="flex items-start gap-4">
-                        <label class="block text-gray-700 font-semibold mb-2 w-1/4 pt-2 text-right">Description</label>
+                        <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2 w-1/4 pt-2 text-right">Description</label>
                         <div class="w-11/12">
                             <input type="text" formControlName="description"
-                                class="w-full rounded-lg px-2 py-1 bg-white/70 border border-blue-200 focus:ring-2 focus:ring-blue-400 shadow-inner transition placeholder-gray-500"
+                                class="w-full rounded-lg px-2 py-1 bg-white/70 dark:bg-gray-800/80 border border-blue-200 dark:border-blue-900 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-900 shadow-inner transition placeholder-gray-500 dark:placeholder-gray-400 text-gray-800 dark:text-gray-100"
                                 placeholder="Description (optional)">
                         </div>
                     </div>
@@ -151,12 +148,12 @@
                 <!-- Is Installment? -->
                 <div>
                     <div class="flex items-start gap-4">
-                        <div class="flex flex-row-reverse text-gray-700 font-semibold mb-2 mt-1 w-1/4 text-right items-end">
+                        <div class="flex flex-row-reverse text-gray-700 dark:text-gray-200 font-semibold mb-2 mt-1 w-1/4 text-right items-end">
                             <label class="flex flex-row-reverse items-center gap-2 cursor-pointer text-right w-full">
                                 <input type="checkbox" formControlName="isInstallment" id="isInstallment"
-                                    class="rounded border border-blue-200 bg-white/70 focus:ring-2 focus:ring-blue-400 transition shadow-inner h-5 w-5" 
+                                    class="rounded border border-blue-200 dark:border-blue-900 bg-white/70 dark:bg-gray-800/80 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-900 transition shadow-inner h-5 w-5" 
                                 />
-                                <span class="text-gray-700 font-semibold select-none">Is installment?</span>
+                                <span class="text-gray-700 dark:text-gray-200 font-semibold select-none">Is installment?</span>
                             </label>
                         </div>
                         <div class="w-11/12 flex flex-row gap-2">
@@ -165,11 +162,10 @@
                                 <div class="gap-4 grid grid-flow-col justify-items-center w-full">
                                     @for (monthNumber of installmentQuickSelecction; track monthNumber) {
                                         <button type="button"
-                                            class="px-2 py-1 rounded-lg shadow transition"
-                                            [ngClass]="newMovementForm.get('frequencyId')?.value == monthlyFrequencyId
-                                                 && newMovementForm.get('installmentCount')?.value == monthNumber
-                                                ? 'bg-blue-100/90 hover:bg-blue-300/80 text-blue-700 font-semibold' 
-                                                : 'bg-gray-100/80 hover:bg-gray-300/90 text-gray-700 font-medium'"
+                                            class="btn"
+                                            [ngClass]="{ 'btn-active' : 
+                                                newMovementForm.get('frequencyId')?.value == monthlyFrequencyId
+                                                && newMovementForm.get('installmentCount')?.value == monthNumber }"
                                             (click)="newMovementForm.controls['frequencyId'].setValue(monthlyFrequencyId); 
                                                 newMovementForm.controls['installmentCount'].setValue(monthNumber);"
                                         >
@@ -186,15 +182,13 @@
                 @if(newMovementForm.get('isInstallment')?.value){
                     <div>
                         <div class="flex items-start gap-4">
-                            <label class="block text-gray-700 font-semibold mb-2 w-1/4 pt-2 text-right">Frequency</label>
+                            <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2 w-1/4 pt-2 text-right">Frequency</label>
                             <div class="w-11/12 gap-2  grid grid-flow-col justify-items-center">
                                 @for (frequency of catalogStore.select.frequencies(); track frequency) {
                                     <button
                                         type="button"
-                                        class="px-3 py-1 rounded-lg shadow transition"
-                                        [ngClass]="newMovementForm.get('frequencyId')?.value == frequency?.id 
-                                            ? 'bg-blue-100/90 hover:bg-blue-300/80 text-blue-700 font-semibold' 
-                                            : 'bg-gray-100/80 hover:bg-gray-300/90 text-gray-700 font-medium'"
+                                        class="btn"
+                                        [ngClass]="{ 'btn-active' : newMovementForm.get('frequencyId')?.value == frequency?.id }"
                                         (click)="newMovementForm.controls['frequencyId'].setValue(frequency?.id??null)"
                                         >
                                         {{ frequency.name }}
@@ -208,10 +202,10 @@
                     <!-- Installment Count (visible if isInstallment) -->
                     <div>
                         <div class="flex items-start gap-4">
-                            <label class="block text-gray-700 font-semibold mb-2 w-1/4 pt-2 text-right">Installment count</label>
+                            <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2 w-1/4 pt-2 text-right">Installment count</label>
                             <div class="w-11/12">
                                 <input type="number" min="1" formControlName="installmentCount"
-                                    class="w-full rounded-lg px-2 py-1 bg-white/70 border border-blue-200 focus:ring-2 focus:ring-blue-400 shadow-inner transition "
+                                    class="w-full rounded-lg px-2 py-1 bg-white/70 dark:bg-gray-800/80 border border-blue-200 dark:border-blue-900 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-900 shadow-inner transition text-gray-800 dark:text-gray-100"
                                     placeholder="Number of installments">
                             </div>
                         </div>
@@ -220,9 +214,9 @@
             </form>
         </div>
         <!-- Footer -->
-        <div class="flex justify-between gap-3 h-24 px-6 py-4 rounded-b-2xl bg-gradient-to-r from-white/80 to-blue-100/80 border-t border-white/20 flex-row">   
+        <div class="flex justify-between gap-3 h-24 px-6 py-4 rounded-b-2xl bg-gradient-to-r from-white/80 to-blue-100/80 dark:from-gray-900/80 dark:to-blue-950/80 border-t border-white/20 dark:border-gray-700/20 flex-row">   
             <div class="flex items-center gap-3">
-                <div class="flex flex-col text-gray-600 h-max content-start w-28 overflow-hidden">
+                <div class="flex flex-col text-gray-600 dark:text-gray-300 h-max content-start w-28 overflow-hidden">
                     <span class="h-6">
                         @if(newMovementForm.get('movementDate')?.value) {
                             {{ newMovementForm.get('movementDate')?.value | date:'MMM d, y' }}
@@ -230,7 +224,7 @@
                     </span>
                     <span class="h-6">{{ selectedCategoryName }}</span>
                 </div>
-                <div class="flex flex-col text-gray-600 h-max content-start w-28 overflow-hidden">
+                <div class="flex flex-col text-gray-600 dark:text-gray-300 h-max content-start w-28 overflow-hidden">
                     <span class="h-6"> 
                         @if(isCardPayment){ <i class="fa-solid fa-credit-card"></i> }
                         @if(isCashPayment){ <i class="fa-solid fa-coins"></i> }
@@ -242,7 +236,7 @@
                         }
                     </span>
                 </div>
-                <div class="flex flex-col text-gray-600 h-max content-start w-56 overflow-hidden">
+                <div class="flex flex-col text-gray-600 dark:text-gray-300 h-max content-start w-56 overflow-hidden">
                     <span class="h-6"> 
                         @if(newMovementForm.get('isInstallment')?.value){ 
                             Installment {{ selectedFrequencyName }}
@@ -256,10 +250,8 @@
                     </span>
                 </div>
             </div>
-            <button class="px-5 py-2 rounded-lg  font-semibold shadow transition self-center"
-                [ngClass]="newMovementForm.invalid
-                    ? 'opacity-60 cursor-not-allowed' 
-                    : 'cursor-pointer bg-gradient-to-b from-blue-500/70 to-purple-500/80 text-white font-bold shadow-lg hover:from-blue-600 hover:to-purple-600'"
+            <button class="btn btn-save"
+                [ngClass]="{ 'btn-disabled' : newMovementForm.invalid }"
                 [disabled]="newMovementForm.invalid"
                 type="submit"
                 (click)="save()"

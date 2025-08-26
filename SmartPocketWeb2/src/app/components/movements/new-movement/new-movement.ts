@@ -24,6 +24,8 @@ export class NewMovement {
   installmentQuickSelecction: number[] = [3, 6, 9, 12, 18];
   monthlyFrequencyId = 3;
   cashId = 1;
+  today = new Date();
+  yesterday = new Date(new Date().setDate(this.today.getDate() - 1));
 
   newMovementForm = new FormGroup({
       movementDate: new FormControl(new Date(), [Validators.required]),

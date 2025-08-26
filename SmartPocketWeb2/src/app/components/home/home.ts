@@ -30,7 +30,6 @@ export class Home {
   configStore = inject(ConfigurationStore);
 
   constructor(){
-    console.log(this.isDarkMode);
     console.log(this.configStore.select.configurations().find(c => c.key === ConfigEnum.DarkMode)?.value === 'true');
   }
 
