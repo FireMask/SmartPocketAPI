@@ -4,6 +4,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MovementViewModel } from '../../../models/movements/MovementViewModel';
 import { CommonModule } from '@angular/common';
 import { HomeStore } from '../../../stores/HomeStore';
+import { ConfigurationStore } from '../../../stores/ConfigurationStore';
 import { CatalogStore } from '../../../stores/CatalogStore';
 
 @Component({

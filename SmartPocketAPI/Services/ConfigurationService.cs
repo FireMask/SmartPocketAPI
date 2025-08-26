@@ -15,82 +15,74 @@ public class ConfigurationService : IConfigurationService
         _context = context;
     }
 
-    public async Task<Configuration> GetConfigurationAsync(Guid userId, string key)
+    public async Task<ConfigurationKeyValue> GetConfigurationAsync(Guid userId, string key)
     {
+        var configs = await _context.Configurations.ToListAsync();
         var userConfig = await _context.UserConfigurations
-            .FirstOrDefaultAsync(uc => uc.UserId == userId && uc.Key == key);
+            .Include(uc => uc.Configuration)
+            .FirstOrDefaultAsync(uc => uc.UserId == userId);
 
         if (userConfig != null)
         {
-            return userConfig;
+            return userConfig.toKeyValue();
         }
 
-        if (!DefaultConfigurationsUser.KeyValues.ContainsKey(key))
-            return null;
+        Dictionary<string, string> DefaultConfigurationsUser = configs.ToDictionary(c => c.Key, c => c.DefaultValue);
+
+        if (!DefaultConfigurationsUser.ContainsKey(key))
+            throw new Exception("Configuration key does not exists");
         
-        return new Configuration
-        {
-            UserId = userId,
-            Key = key,
-            Value = DefaultConfigurationsUser.KeyValues[key]
-        };
+        return new ConfigurationKeyValue(key, DefaultConfigurationsUser[key]);
     }
 
-    public async Task<IEnumerable<UserConfig>> GetAllConfigurationsAsync(Guid userId)
+    public async Task<IEnumerable<ConfigurationKeyValue>> GetAllConfigurationsAsync(Guid userId)
     {
+        var configs = await _context.Configurations.ToListAsync();
         var userConfigs = await _context.UserConfigurations
             .Where(uc => uc.UserId == userId)
+            .Include(uc => uc.Configuration)
             .ToListAsync();
 
-        var userConfigDict = userConfigs.ToDictionary(uc => uc.Key, uc => uc.Value);
+        Dictionary<string, string> DefaultConfigurationsUser = configs.ToDictionary(c => c.Key, c => c.DefaultValue);
+        Dictionary<string, string> UserConfigurations = userConfigs.ToDictionary(uc => uc.Configuration.Key, uc => uc.Value);
 
-        // Merge with default values
-        var allConfigs = DefaultConfigurationsUser.KeyValues.Select(defaultConfig =>
-            new Configuration
+        var allConfigs = DefaultConfigurationsUser
+            .Select(dc => new ConfigurationKeyValue
             {
-                UserId = userId,
-                Key = defaultConfig.Key,
-                Value = userConfigDict.ContainsKey(defaultConfig.Key)
-                    ? userConfigDict[defaultConfig.Key]  // Use user's value if exists
-                    : defaultConfig.Value               // Otherwise, use default
+                Key = dc.Key,
+                Value = UserConfigurations.ContainsKey(dc.Key) ? UserConfigurations[dc.Key] : dc.Value
             })
-            .Select(x => x.ToDto())
             .ToList();
 
         return allConfigs;
     }
 
-    public async Task<Configuration> AddOrUpdateConfigurationAsync(Guid userId, string key, string value)
+    public async Task<ConfigurationKeyValue> AddOrUpdateConfigurationAsync(Guid userId, string key, string value)
     {
-        var config = await GetConfigurationAsync(userId, key);
+        var config = await _context.Configurations.FirstOrDefaultAsync(c => c.Key == key);
+        if (config == null)
+            throw new Exception("Configuration key does not exists");
 
-        if (config == null || config.Id == 0)
+        var userConfig = await _context.UserConfigurations
+            .FirstOrDefaultAsync(uc => uc.UserId == userId && uc.ConfigurationId == config.Id);
+
+        if (userConfig == null)
         {
-            config = new Configuration { UserId = userId, Key = key, Value = value };
-            _context.UserConfigurations.Add(config);
+            userConfig = new UserConfiguration
+            {
+                UserId = userId,
+                ConfigurationId = config.Id,
+                Value = value
+            };
+            _context.UserConfigurations.Add(userConfig);
         }
         else
         {
-            config.Value = value;
-            _context.UserConfigurations.Update(config);
+            userConfig.Value = value;
+            _context.UserConfigurations.Update(userConfig);
         }
 
         await _context.SaveChangesAsync();
-
-        return config;
-    }
-
-    public async Task<bool> DeleteConfigurationAsync(Guid userId, string key)
-    {
-        var config = await GetConfigurationAsync(userId, key);
-
-        if (config == null || config.Id == 0)
-            throw new Exception("Configuration does not exists");
-
-        _context.UserConfigurations.Remove(config);
-        
-        await _context.SaveChangesAsync();
-
-        return true;
+        return userConfig.toKeyValue();
     }
 }

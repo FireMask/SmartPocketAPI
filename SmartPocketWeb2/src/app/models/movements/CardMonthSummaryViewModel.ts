@@ -1,4 +1,3 @@
-
 export interface CardMonthSummaryViewModel {
     cardName: string;
     totalSum: number;

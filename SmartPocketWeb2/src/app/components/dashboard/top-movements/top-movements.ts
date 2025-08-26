@@ -15,7 +15,7 @@ export class TopMovements {
   @Input() Movements: Movement[] = [];
 
   get sortedMovements(): Movement[] {
-    return [...this.Movements].sort((a, b) => b.amount - a.amount);
+    return [...(this.Movements ?? [])].sort((a, b) => b.amount - a.amount);
   }
 
 }

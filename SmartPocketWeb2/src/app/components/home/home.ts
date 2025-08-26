@@ -6,6 +6,9 @@ import { NewMovement } from '../movements/new-movement/new-movement';
 import { Toast } from '../toast/toast';
 import { AuthStore } from '../../stores/AuthStore';
 import { UserMenu } from './user-menu/user-menu';
+import { ConfigurationStore } from '../../stores/ConfigurationStore';
+import { ConfigEnum } from '../../helpers/enums/config';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'home-root',
@@ -14,8 +17,9 @@ import { UserMenu } from './user-menu/user-menu';
     UserMenu,
     Toast,
     Login,
-    NewMovement
-  ],
+    NewMovement,
+    CommonModule
+],
   templateUrl: './home.html'
 })
 export class Home {
@@ -23,6 +27,18 @@ export class Home {
 
   homeStore = inject(HomeStore);
   authStore = inject(AuthStore);
+  configStore = inject(ConfigurationStore);
 
-  isLoggedIn = this.authStore.select.isLoggedIn;
+  constructor(){
+    console.log(this.isDarkMode);
+    console.log(this.configStore.select.configurations().find(c => c.key === ConfigEnum.DarkMode)?.value === 'true');
+  }
+
+  get isLoggedIn() {
+    return this.authStore.select.isLoggedIn();
+  }
+
+  get isDarkMode() {
+    return this.configStore.select.configurations().find(c => c.key === ConfigEnum.DarkMode)?.value === 'true';
+  }
 }

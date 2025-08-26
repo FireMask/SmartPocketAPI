@@ -1,7 +1,8 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class HomeStore {
+
     private _isLoading = signal(false);
     private _isNewMovementModalOpen = signal(false);
 

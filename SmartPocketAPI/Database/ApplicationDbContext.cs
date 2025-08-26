@@ -17,7 +17,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
     public DbSet<RecurringPayment> RecurringPayments { get; set; }
     public DbSet<Movement> Movements { get; set; }
-    public DbSet<Configuration> UserConfigurations { get; set; }
+    public DbSet<Configuration> Configurations { get; set; }
+    public DbSet<UserConfiguration> UserConfigurations { get; set; }
 
 
     public ConfigurationOptions _options { get; }
@@ -207,17 +208,27 @@ public class ApplicationDbContext : DbContext
 
         #region Configuration
 
-        //modelBuilder.Entity<Configuration>()
-        //    .Ignore("User");
-
         modelBuilder.Entity<Configuration>()
             .ToTable("Configuration");
 
-        modelBuilder.Entity<Configuration>()
-                .HasOne(c => c.User)
-                .WithMany(u => u.Configurations)
-                .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
+        #endregion
+
+        #region UserConfiguration
+
+        modelBuilder.Entity<UserConfiguration>()
+            .ToTable("UserConfiguration");
+
+        modelBuilder.Entity<UserConfiguration>()
+            .HasOne(uc => uc.User)
+            .WithMany(u => u.UserConfigurations)
+            .HasForeignKey(uc => uc.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<UserConfiguration>()
+            .HasOne(uc => uc.Configuration)
+            .WithMany(c => c.UserConfigurations)
+            .HasForeignKey(uc => uc.ConfigurationId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         #endregion
 

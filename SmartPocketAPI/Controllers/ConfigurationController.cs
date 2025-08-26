@@ -46,7 +46,7 @@ public class ConfigurationController : Controller
         {
             Guid userId = HttpContext.GetUserId();
             var config = await _userConfigurationService.GetConfigurationAsync(userId, key);
-            return config.ToDto().ToApiResponse(Constants.FETCH_SUCCESS);
+            return config.ToApiResponse(Constants.FETCH_SUCCESS);
 
         }
         catch (Exception ex)
@@ -70,23 +70,6 @@ public class ConfigurationController : Controller
         {
             _logger.LogError(ex.ToString());
             return ex.Message.ToApiError(Constants.UPDATE_ERROR);
-        }
-    }
-
-    [HttpDelete("{key}")]
-    public async Task<IResult> DeleteConfiguration(string key)
-    {
-        try
-        {
-            Guid userId = HttpContext.GetUserId();
-            var result = await _userConfigurationService.DeleteConfigurationAsync(userId, key);
-            return result.ToApiResponse(Constants.DELETE_SUCCESS);
-
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.ToString());
-            return ex.Message.ToApiError(Constants.DELETE_ERROR);
         }
     }
 }

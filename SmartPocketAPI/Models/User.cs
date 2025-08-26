@@ -24,10 +24,13 @@ public class User
     public ICollection<Movement> Movements { get; set; }
     [JsonIgnore]
     public ICollection<Configuration> Configurations { get; set; }
+    [JsonIgnore]
+    public ICollection<UserConfiguration> UserConfigurations { get; set; }
 
     public SimpleUserDto DtoModel()
     {
-        return new SimpleUserDto() {
+        return new SimpleUserDto()
+        {
             Email = this.Name,
             Name = this.Email
         };

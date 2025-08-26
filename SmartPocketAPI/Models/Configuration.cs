@@ -1,18 +1,30 @@
-﻿namespace SmartPocketAPI.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace SmartPocketAPI.Models;
 
 public class Configuration
 {
     public int Id { get; set; }
-    public string Key { get; set; }
-    public string Value { get; set; }
+    public string Key { get; set; } = string.Empty;
+    public string DefaultValue { get; set; } = string.Empty;
 
-    public Guid UserId { get; set; }
-    public User User { get; set; }
+    [JsonIgnore]
+    public ICollection<UserConfiguration> UserConfigurations { get; set; }
 
-    public UserConfig ToDto()
-    {
-        return new UserConfig(this.Key, this.Value);
-    }
 }
 
-public record UserConfig(string Key, string Value);
+public class UserConfiguration
+{
+    public int Id { get; set; }
+    public string Value { get; set; } = string.Empty;
+
+    public int ConfigurationId { get; set; }
+    public Configuration Configuration { get; set; } = null!;
+
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+
+    public ConfigurationKeyValue toKeyValue() => new(Configuration.Key, Value);
+}
+
+public record struct ConfigurationKeyValue(string Key, string Value);

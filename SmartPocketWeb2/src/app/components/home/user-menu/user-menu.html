@@ -1,35 +1,81 @@
 <!-- User Menu Button -->
 <div class="relative inline-block text-left">
     <button id="userMenuButton" type="button"
-        class="ml-4 text-gray-600 px-5 py-2 rounded-lg shadow font-semibold hover:bg-amber-200 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
+        class="ml-4 px-5 py-2 rounded-lg shadow font-semibold transition-all focus:outline-none focus:ring-2 cursor-pointer
+            text-gray-600 hover:bg-amber-200 focus:ring-gray-400
+            dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
         aria-label="Cerrar sesión"
-        (click)="showMenu = !showMenu">
+        (click)="showMenu = !showMenu"
+        [ngClass]="{
+            'bg-white': !configurationStore.isDarkMode,
+            'bg-gray-800': configurationStore.isDarkMode
+        }">
         <i class="fa-solid fa-user"></i>
         <span class="mx-2 font-bold">{{ authStore.select.user()?.name }}</span>
-        <span class="font-semibold text-gray-800"></span>
+        <span class="font-semibold text-gray-800 dark:text-gray-200"></span>
         <i class="fa-solid fa-caret-down"></i>
     </button>
 
     <!-- Dropdown Menu -->
     <div id="userMenuDropdown"
-        class="hidden absolute right-0 mt-2 min-w-30 rounded-xl shadow-2xl bg-white/80 backdrop-blur border border-white/40 ring-1 ring-black/10"
-        [ngClass]="{ 'hidden': !showMenu }"
+        class="absolute right-0 mt-2 min-w-45 rounded-xl shadow-2xl border ring-1 z-20"
+        [ngClass]="{
+            'hidden': !showMenu,
+            'bg-white/80 backdrop-blur border-white/40 ring-black/10': !configurationStore.isDarkMode,
+            'bg-gray-800/90 backdrop-blur border-gray-700 ring-white/10': configurationStore.isDarkMode
+        }"
         (document:click)="onOutsideClick($event)">
         <div class="py-2 z-10 flex flex-col space-y-1" (click)="$event.stopPropagation()">
-            <div class="hover:bg-gray-100 flex flex-row-reverse">
-                <a href="#" class="flex items-center px-4 py-2 rounded-lg transition font-medium text-indigo-600">
-                    Profile <i class="fa-solid fa-user ml-2"></i>
-                </a>
+            <div class="flex items-center justify-between px-4 py-2">
+            <label
+                for="darkModeToggle"
+                class="font-medium select-none
+                text-gray-700 dark:text-gray-200"
+                [ngClass]="configurationStore.isDarkMode ? 'text-gray-200' : 'text-gray-700'"
+            >Dark mode</label>
+            <button
+                id="darkModeToggle"
+                type="button"
+                role="switch"
+                [attr.aria-checked]="configurationStore.isDarkMode"
+                (click)="toggleDarkMode()"
+                [ngClass]="configurationStore.isDarkMode ? 'bg-indigo-600' : 'bg-gray-300'"
+                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+                <span
+                [ngClass]="configurationStore.isDarkMode ? 'translate-x-4' : 'translate-x-1'"
+                class="inline-block h-4 w-6 transform rounded-full bg-white transition-transform"
+                ></span>
+            </button>
             </div>
-            <div class="hover:bg-gray-100 flex flex-row-reverse">
-                <a href="#" class="flex items-center px-4 py-2 rounded-lg transition font-medium text-indigo-600">
-                    Config <i class="fa-solid fa-gear ml-2"></i>
-                </a>
+            <div class="flex justify-center">
+            <button
+                type="button"
+                class="flex items-center justify-center w-full px-4 py-2 rounded-lg transition font-medium
+                text-indigo-600 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer
+                dark:text-indigo-300 dark:hover:bg-gray-700 dark:focus:ring-indigo-600"
+                [ngClass]="configurationStore.isDarkMode
+                ? 'text-indigo-300 hover:bg-gray-700 focus:ring-indigo-600'
+                : 'text-indigo-600 hover:bg-indigo-50 focus:ring-indigo-400'"
+            >
+                <span>Profile</span>
+                <i class="fa-solid fa-user ml-2"></i>
+            </button>
             </div>
-            <div class="hover:bg-gray-100 flex flex-row-reverse" (click)="this.authStore.logOut()">
-                <a href="#" class="flex items-center px-4 py-2 rounded-lg transition font-medium text-red-600">
-                    Logout <i class="fa-solid fa-arrow-right-from-bracket ml-2"></i>
-                </a>
+            <div class="flex justify-center">
+            <button
+                type="button"
+                class="flex items-center justify-center w-full px-4 py-2 rounded-lg transition font-medium
+                text-red-600 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer
+                dark:text-red-400 dark:hover:bg-gray-700 dark:focus:ring-indigo-600"
+                (click)="this.authStore.logOut()"
+                [ngClass]="configurationStore.isDarkMode
+                ? 'text-red-400 hover:bg-gray-700 focus:ring-indigo-600'
+                : 'text-red-600 hover:bg-indigo-50 focus:ring-indigo-400'"
+            >
+                <span>Logout</span>
+                <i class="fa-solid fa-arrow-right-from-bracket ml-2"></i>
+            </button>
             </div>
         </div>
     </div>

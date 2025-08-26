@@ -56,5 +56,11 @@ public static class ModelBuilderExtensions
         modelBuilder.Entity<PaymentMethod>().HasData(
             new PaymentMethod { Id = 1, Name = "Cash", UserId = adminid, PaymentMethodTypeId = 1, DueDate = 4, TransactionDate = 15, IsDefault = true }
         );
+
+        modelBuilder.Entity<Configuration>().HasData(
+            new Configuration { Id = 1, Key = "DarkMode", DefaultValue = "false" },
+            new Configuration { Id = 2, Key = "ItemsPerPage" , DefaultValue = "10" },
+            new Configuration { Id = 3, Key = "DefaultPaymentMethod" , DefaultValue = "1" } //Cash
+        );
     }
 }

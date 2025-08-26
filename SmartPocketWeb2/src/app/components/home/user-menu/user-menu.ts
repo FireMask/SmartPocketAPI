@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { AuthStore } from '../../../stores/AuthStore';
+import { ConfigurationStore } from '../../../stores/ConfigurationStore';
+import { ConfigEnum } from '../../../helpers/enums/config';
 
 @Component({
   selector: 'app-user-menu',
@@ -11,8 +13,14 @@ import { AuthStore } from '../../../stores/AuthStore';
 export class UserMenu {
 
   authStore = inject(AuthStore);
+  configurationStore = inject(ConfigurationStore);
 
   showMenu: boolean = false;
+
+  toggleDarkMode() {
+    const newValue = !this.configurationStore.isDarkMode;
+    this.configurationStore.setConfiguration(ConfigEnum.DarkMode, newValue.toString());
+  }
 
   onOutsideClick(event: MouseEvent) {
     const target = event.target as HTMLElement;

@@ -59,6 +59,7 @@ export class AuthStore {
 
     logOut() {
         localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_user');
         this.setToken(null);
         this.setUser(null);
         this._isLoggedIn.set(false);
