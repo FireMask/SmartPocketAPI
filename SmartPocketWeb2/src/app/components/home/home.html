@@ -1,10 +1,10 @@
-<div [attr.data-theme]="configStore.isDarkMode ? 'dark' : 'light'">
+<div class="bg-default h-screen" [attr.data-theme]="configStore.isDarkMode ? 'dark' : 'light'">
 
     <app-toast></app-toast>
 
     @if(isLoggedIn){
         <nav
-            class="bg-white/30 shadow-lg border-b border-white/20 dark:bg-gray-800 dark:shadow-lg dark:border-b-gray-700 fixed top-0 left-0 w-full backdrop-blur-md py-4 px-8 flex items-center justify-between rounded-b-2xl mb-8 z-50"
+            class="bg-sky-200/60 dark:bg-gray-900 fixed top-0 left-0 w-full backdrop-blur-md py-4 px-8 flex items-center justify-between rounded-b-2xl mb-8 z-50"
         >
             <div class="text-2xl font-bold drop-shadow-glow dark:text-white text-gray-900">
                 <a href="/">{{ title() }}</a>
@@ -38,8 +38,8 @@
             </div>
         </nav>
 
-        <div class="container mx-auto mt-20">
-            <router-outlet></router-outlet>
+        <div class="bg-default container mx-auto pt-20">
+            <router-outlet/>
         </div>
     }@else{
         <app-login/>

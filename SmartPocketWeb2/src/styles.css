@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+.bg-default {
+    @apply bg-gray-50 text-gray-800;
+    @apply dark:bg-gray-800 dark:text-gray-100;
+}
+
 /* Button base styles */
 .btn {
     @apply px-3 py-1 rounded-lg shadow transition font-medium bg-gray-100/80 text-gray-700 hover:bg-gray-300/90 cursor-pointer;
