@@ -56,3 +56,20 @@
     @apply dark:appearance-none 
 }
 
+.link-default {
+    @apply font-medium transition;
+    @apply text-gray-900 hover:text-sky-500;
+    @apply dark:text-white hover:dark:text-gray-500;
+}
+
+.label-default {
+    @apply text-sm font-medium;
+    @apply text-gray-500;
+    @apply dark:text-gray-300;
+}
+
+.card-default {
+    @apply border bg-gradient-to-br;
+    @apply from-white via-gray-100 to-gray-200 border-gray-200;
+    @apply dark:from-cyan-200/20 dark:via-gray-800 dark:to-slate-900 dark:border-gray-700;
+}

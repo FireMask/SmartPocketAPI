@@ -11,24 +11,27 @@
             </div>
             <ul class="flex space-x-6">
                 <li>
-                    <a href="/" class="text-gray-900 dark:text-white font-medium transition hover:dark:text-amber-400 hover:text-pink-600">
+                    <a href="/" class="link-default">
                         Dashboard
                     </a>
                 </li>
                 <li>
-                    <a href="/Movements" class="text-gray-900 dark:text-white font-medium transition hover:dark:text-amber-400 hover:text-pink-600">
+                    <a href="/Movements" class="link-default">
                         Movements
                     </a>
                 </li>
                 <li>
-                    <a href="/Cards" class="text-gray-900 dark:text-white font-medium transition hover:dark:text-amber-400 hover:text-pink-600">
+                    <a href="/Cards" class="link-default">
                         Cards
                     </a>
                 </li>
             </ul>
             <div>
                 <button
-                    class="ml-4 px-5 py-2 rounded-lg shadow font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer text-gray-600 dark:text-gray-200 hover:bg-amber-200 dark:hover:bg-gray-700"
+                    class="ml-4 px-5 py-2 rounded-lg shadow font-semibold transition-all cursor-pointer
+                    text-gray-600 hover:bg-sky-300 focus:ring-gray-400
+                    dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600
+                    bg-sky-300/40 dark:bg-gray-800"
                     aria-label="Cerrar sesión"
                     (click)="homeStore.openNewMovementModal()"
                 >
@@ -38,7 +41,7 @@
             </div>
         </nav>
 
-        <div class="bg-default container mx-auto pt-20">
+        <div class="bg-default mx-auto pt-20">
             <router-outlet/>
         </div>
     }@else{
