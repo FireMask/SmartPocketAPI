@@ -9,6 +9,8 @@ import { UserMenu } from './user-menu/user-menu';
 import { ConfigurationStore } from '../../stores/ConfigurationStore';
 import { ConfigEnum } from '../../helpers/enums/config';
 import { CommonModule } from '@angular/common';
+import { GroupButton } from '../shared/group-button/group-button';
+import { GButton, GButtonSize } from '../../models/props/GButton';
 
 @Component({
   selector: 'home-root',
@@ -18,8 +20,9 @@ import { CommonModule } from '@angular/common';
     Toast,
     Login,
     NewMovement,
-    CommonModule
-],
+    CommonModule,
+    GroupButton
+  ],
   templateUrl: './home.html'
 })
 export class Home {
@@ -29,7 +32,7 @@ export class Home {
   authStore = inject(AuthStore);
   configStore = inject(ConfigurationStore);
 
-  constructor(){
+  constructor() {
     console.log(this.configStore.select.configurations().find(c => c.key === ConfigEnum.DarkMode)?.value === 'true');
   }
 
@@ -40,4 +43,25 @@ export class Home {
   get isDarkMode() {
     return this.configStore.select.configurations().find(c => c.key === ConfigEnum.DarkMode)?.value === 'true';
   }
+
+  buttonStyle = "border text-white font-semibold cursor-pointer border-none shadow-md"
+    + " bg-rose-300/40 hover:bg-rose-400 text-gray-800 "
+    + " dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200";
+
+  buttons: GButton[] = [
+    {
+      icon: 'fa-solid fa-plus',
+      style: this.buttonStyle,
+      buttonSize: GButtonSize.Large,
+      action: () => this.homeStore.openNewMovementModal()
+    },
+    {
+      icon: 'fa-solid fa-caret-down rotate0',
+      style: this.buttonStyle,
+      buttonSize: GButtonSize.Small,
+      action: () => {
+        console.log('Button 3 clicked');
+      }
+    }
+  ];
 }

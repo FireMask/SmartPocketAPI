@@ -4,44 +4,48 @@
 
     @if(isLoggedIn){
         <nav
-            class="bg-sky-200/60 dark:bg-gray-900/80 fixed top-0 left-0 w-full backdrop-blur-md py-4 px-8 flex items-center justify-between rounded-b-2xl mb-8 z-50"
+            class="bg-rose-700/60 dark:bg-gray-900/80 fixed top-0 left-0 w-full backdrop-blur-md py-4 px-8 flex items-center justify-between rounded-b-2xl mb-8 z-50"
         >
-            <div class="text-2xl font-bold drop-shadow-glow dark:text-white text-gray-900">
+            <div class="text-2xl font-bold drop-shadow-glow dark:text-white text-white">
                 <a href="/">{{ title() }}</a>
             </div>
             <ul class="flex space-x-6">
                 <li>
-                    <a href="/" class="link-default">
+                    <a href="/" class="font-medium text-white hover:text-gray-900 dark:hover:text-rose-300">
                         Dashboard
                     </a>
                 </li>
                 <li>
-                    <a href="/Movements" class="link-default">
+                    <a href="/Movements" class="font-medium text-white hover:text-gray-900 dark:hover:text-rose-300">
                         Movements
                     </a>
                 </li>
                 <li>
-                    <a href="/Cards" class="link-default">
+                    <a href="/Cards" class="font-medium text-white hover:text-gray-900 dark:hover:text-rose-300">
                         Cards
                     </a>
                 </li>
             </ul>
-            <div>
+            <div class="flex items-center">
+                <app-group-button [Buttons]="buttons"/>
+                <app-user-menu></app-user-menu>
+            </div>
+            <!-- <div>
                 <button
                     class="ml-4 px-5 py-2 rounded-lg shadow font-semibold transition-all cursor-pointer
-                    text-gray-600 hover:bg-sky-300 focus:ring-gray-400
+                    text-white hover:bg-rose-400 focus:ring-gray-400
                     dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600
-                    bg-sky-300/40 dark:bg-gray-800"
+                    bg-rose-300/40 dark:bg-gray-800"
                     aria-label="Cerrar sesión"
                     (click)="homeStore.openNewMovementModal()"
                 >
                     <i class="fa-solid fa-plus"></i>
                 </button>
-                <app-user-menu></app-user-menu>
-            </div>
+                
+            </div> -->
         </nav>
 
-        <div class="bg-default mx-auto pt-20">
+        <div class="mx-auto pt-20">
             <router-outlet/>
         </div>
     }@else{
