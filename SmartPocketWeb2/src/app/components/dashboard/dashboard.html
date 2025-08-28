@@ -36,7 +36,7 @@
         </section>
         <section class="flex-4">
             <div class="flex flex-col gap-4">
-                @for (summaryPaymentMethod of dashboardData$().summaryPaymentMethods; track summaryPaymentMethod) {
+                @for (summaryPaymentMethod of dashboardData$().summaryPaymentMethods; track summaryPaymentMethod.cardName) {
                     <app-card-summary [PaymentMethodSummary]="summaryPaymentMethod"/>
                 }
             </div>

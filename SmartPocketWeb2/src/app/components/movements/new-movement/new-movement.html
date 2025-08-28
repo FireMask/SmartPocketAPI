@@ -25,7 +25,7 @@
                             class="w-full rounded-lg px-2 py-1 select-default input-default border"
                             required>
                             <option value="0" disabled selected>Select a payment method</option>
-                            @for (paymentMethod of catalogStore.select.paymentMethods(); track paymentMethod) {
+                            @for (paymentMethod of catalogStore.select.paymentMethods(); track paymentMethod.id) {
                                 <option [value]="paymentMethod.id">
                                     {{ paymentMethod.name }}
                                 </option>
@@ -49,14 +49,14 @@
                                     class="w-full rounded-lg px-2 py-1 input-default border border-blue-200 dark:border-blue-900 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-900 shadow-inner transition appearance-none text-gray-800 dark:text-gray-100"
                                     required>
                                     <option value="0" disabled selected>Select a category</option>
-                                    @for (category of catalogStore.select.categories(); track category) {
+                                    @for (category of catalogStore.select.categories(); track category.id) {
                                         <option [value]="category.id">
                                             {{ category.name }}
                                         </option>
                                     }
                                 </select>
                                 <div class="flex gap-2 ">
-                                    @for (category of catalogStore.select.topCategories(); track category) {
+                                    @for (category of catalogStore.select.topCategories(); track category.id) {
                                         <button
                                             type="button"
                                             class="btn"
@@ -184,7 +184,7 @@
                         <div class="flex items-start gap-4">
                             <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2 w-1/4 pt-2 text-right">Frequency</label>
                             <div class="w-11/12 gap-2  grid grid-flow-col justify-items-center">
-                                @for (frequency of catalogStore.select.frequencies(); track frequency) {
+                                @for (frequency of catalogStore.select.frequencies(); track frequency.id) {
                                     <button
                                         type="button"
                                         class="btn"
