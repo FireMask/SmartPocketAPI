@@ -28,6 +28,7 @@
     "@angular/forms": "^20.2.0",
     "@angular/platform-browser": "^20.2.0",
     "@angular/router": "^20.2.0",
+    "@frxjs/ngx-timeline": "^20.0.8",
     "@tailwindcss/postcss": "^4.1.12",
     "axios": "^1.11.0",
     "postcss": "^8.5.6",

@@ -1,0 +1,104 @@
+<div class="flex justify-center bg-default overflow-auto">
+    <ngx-timeline
+        [events]="eventsFiltered"
+        langCode="en"
+        enableAnimations="false"
+        [orientation]="orientation"
+        [groupEvent]="groupEvent"
+        [centerIconCustomTemplate]="centerIconCustomTemplate"
+        [eventCustomTemplate]="eventCustomTemplate"
+        [dateInstantCustomTemplate]="dateInstantCustomTemplate"
+        [periodCustomTemplate]="periodCustomTemplate"
+        ></ngx-timeline>
+</div>
+
+
+<!-- interface NgxTimelineEvent {
+    timestamp: Date;
+    title?: string;
+    description?: string;
+    id?: unknown;
+    itemPosition?: NgxTimelineItemPosition;
+} -->
+
+<!-- template main event info-->
+<ng-template #eventCustomTemplate let-event=event let-colSidePosition=colSidePosition>
+    <div 
+        class="event"
+        (click)="handleClick(event)"
+        (mouseenter)="handleHover(event?.eventInfo?.id)"
+        (mouseleave)="handleHover(null)"
+    >
+        @if(event?.eventInfo?.itemPosition === 'ON_LEFT') {
+            <div class="relative mx-auto w-fit bg-white rounded-lg p-4 border-2 border-rose-300">
+                <div class="text-gray-800 text-lg text-center"
+                    [ngClass]="{
+                        'text-sm': event?.eventInfo?.description?.includes('DueDate'),
+                        'bg-red-200': hoveredEventId === event?.eventInfo?.id
+                    }"
+                >
+                    <div>
+                        {{ event?.eventInfo?.title }}
+                    </div>
+                    <div>
+                        {{ event?.eventInfo?.description }}
+                    </div>
+                    <div>
+                        @if(!event?.eventInfo?.description?.includes('DueDate')) {
+                            Transaction date
+                        }
+                        {{ event?.eventInfo?.timestamp | date:'d MMM y' }}
+                    </div>
+                </div>
+                <div class="absolute left-1/2 -bottom-0 transform -translate-x-1/2 w-0 h-0 
+                    border-x-8 border-x-transparent
+                    border-t-8 border-t-white 
+                    after:content-[''] after:absolute after:-left-2 after:top-0 after:w-0 after:h-0 
+                    after:border-x-8 after:border-x-transparent 
+                    after:border-t-8 after:border-t-rose-400">
+                </div>
+            </div>
+        }@else{
+            <div class="relative mx-auto w-fit bg-white rounded-lg p-4 border-2 border-emerald-300">
+                <div class="text-gray-800 text-lg">
+                {{ event?.eventInfo?.title }}
+                </div>
+                <div class="absolute left-1/2 -top-2 transform -translate-x-1/2 w-0 h-0 
+                    border-x-8 border-x-transparent
+                    border-b-8 border-t-white
+                    after:content-[''] after:absolute after:-left-2 after:top-0 after:w-0 after:h-0
+                    after:border-x-8 after:border-x-transparent
+                    after:border-b-8 after:border-b-emerald-400">
+                </div>
+            </div>
+        }
+        <!-- {{event | json}} -->
+    </div>
+</ng-template>
+
+<!-- template periods (months) -->
+<ng-template #periodCustomTemplate let-period=period let-index=index let-event=event>
+    <div [ngClass]="{'transparent first-line': !index}" class="line"></div>
+    <div class="period-container text-lg p-2 bg-rose-300 rounded-2xl">
+        {{ period?.firstDate | date:'MMM' }}
+    </div>
+    <div class="line"></div>
+</ng-template>
+
+<!-- template events (dots) -->
+<ng-template #centerIconCustomTemplate let-index=index let-event=event>
+    <div>
+        <i class="text-base fa-solid fa-circle text-rose-400"></i>
+    </div>
+</ng-template>
+
+<!-- template fecha (on the counterside) -->
+<ng-template #dateInstantCustomTemplate let-item=item>
+    <span>
+        <!-- @if(item?.itemPosition === 'ON_LEFT') {
+            {{ item?.timestamp | date:'d MMM' }}
+        }@else{
+            {{ item?.timestamp | date:'d MMM' }}
+        } -->
+    </span>
+</ng-template>

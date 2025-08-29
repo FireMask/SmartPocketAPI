@@ -6,6 +6,7 @@ import { MovementStore } from '../../stores/MovementStore';
 import { CardSummary } from './card-summary/card-summary';
 import { TopMovements } from './top-movements/top-movements';
 import { Movement } from '../../models/movements/Movement';
+import { Timeline } from '../graphs/timeline/timeline';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,7 +14,8 @@ import { Movement } from '../../models/movements/Movement';
     Card,
     CardSummary,
     TopMovements,
-    CurrencyPipe
+    CurrencyPipe,
+    Timeline
   ],
   templateUrl: './dashboard.html',
   styles: ``
