@@ -50,12 +50,14 @@ export class Home {
 
   buttons: GButton[] = [
     {
+      id: 1,
       icon: 'fa-solid fa-plus',
       style: this.buttonStyle,
       buttonSize: GButtonSize.Large,
       action: () => this.homeStore.openNewMovementModal()
     },
     {
+      id: 2,
       icon: 'fa-solid fa-caret-down rotate0',
       style: this.buttonStyle,
       buttonSize: GButtonSize.Small,

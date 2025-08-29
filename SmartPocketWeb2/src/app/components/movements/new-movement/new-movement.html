@@ -56,16 +56,7 @@
                                     }
                                 </select>
                                 <div class="flex gap-2 ">
-                                    @for (category of catalogStore.select.topCategories(); track category.id) {
-                                        <button
-                                            type="button"
-                                            class="btn"
-                                            [ngClass]="{ 'btn-active': newMovementForm.get('categoryId')?.value == category?.id }"
-                                            (click)="newMovementForm.controls['categoryId'].setValue(category?.id??0)"
-                                            >
-                                            {{ category.name }}
-                                        </button>
-                                    }
+                                    <app-group-button [Buttons]="getCategoryButtons"/>
                                 </div>
                             </div>
                             @if(newMovementForm.get('categoryId')?.invalid && newMovementForm.get('categoryId')?.touched){
@@ -88,21 +79,7 @@
                                     [value]="newMovementForm.get('movementDate')?.value | date:'yyyy-MM-dd'"
                                     (change)="newMovementForm.controls['movementDate'].setValue($event.target.valueAsDate)"
                                     required>
-                                <button type="button"
-                                    class="btn"
-                                    [ngClass]="{ 'btn-active': (newMovementForm.get('movementDate')?.value | date:'yyyy-MM-dd') === (today | date:'yyyy-MM-dd') }"
-                                    (click)="newMovementForm.controls['movementDate'].setValue(today)"
-                                    >
-                                    Today
-                                </button>
-                                <button type="button"
-                                    class="btn"
-                                    [ngClass]="{ 'btn-active': (newMovementForm.get('movementDate')?.value | date:'yyyy-MM-dd') === (yesterday | date:'yyyy-MM-dd') }"
-                                    (click)="newMovementForm.controls['movementDate'].setValue(yesterday)"
-                                    >
-                                    Yesterday
-                                </button>
-                                
+                                <app-group-button [Buttons]="getDefaultDateButtons"/>
                             </div>
                             @if(newMovementForm.get('movementDate')?.invalid && newMovementForm.get('movementDate')?.touched){
                                 <div class="text-red-500 text-xs mt-1">
@@ -159,20 +136,7 @@
                         <div class="w-11/12 flex flex-row gap-2">
                             <!-- Quick Selection Buttons for Installments -->
                             @if(newMovementForm.get('isInstallment')?.value){
-                                <div class="gap-4 grid grid-flow-col justify-items-center w-full">
-                                    @for (monthNumber of installmentQuickSelecction; track monthNumber) {
-                                        <button type="button"
-                                            class="btn"
-                                            [ngClass]="{ 'btn-active' : 
-                                                newMovementForm.get('frequencyId')?.value == monthlyFrequencyId
-                                                && newMovementForm.get('installmentCount')?.value == monthNumber }"
-                                            (click)="newMovementForm.controls['frequencyId'].setValue(monthlyFrequencyId); 
-                                                newMovementForm.controls['installmentCount'].setValue(monthNumber);"
-                                        >
-                                            {{monthNumber}} Months
-                                        </button>
-                                    }
-                                </div>
+                                <app-group-button [Buttons]="getInstallmentButtons"/>
                             }
                         </div>
                     </div>
@@ -183,18 +147,8 @@
                     <div>
                         <div class="flex items-start gap-4">
                             <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2 w-1/4 pt-2 text-right">Frequency</label>
-                            <div class="w-11/12 gap-2  grid grid-flow-col justify-items-center">
-                                @for (frequency of catalogStore.select.frequencies(); track frequency.id) {
-                                    <button
-                                        type="button"
-                                        class="btn"
-                                        [ngClass]="{ 'btn-active' : newMovementForm.get('frequencyId')?.value == frequency?.id }"
-                                        (click)="newMovementForm.controls['frequencyId'].setValue(frequency?.id??null)"
-                                        >
-                                        {{ frequency.name }}
-                                    </button>
-                                }
-                                
+                            <div class="w-11/12 gap-2  grid grid-flow-col">
+                                <app-group-button [Buttons]="getFrequencyButtons"/>
                             </div>
                         </div>
                     </div>

@@ -12,6 +12,11 @@
     @apply dark:bg-gray-800/80 dark:text-gray-100 dark:hover:bg-gray-700/90;
 }
 
+.btn-noround {
+    @apply shadow transition font-medium bg-gray-100/80 text-gray-700 hover:bg-gray-300/90 cursor-pointer;
+    @apply dark:bg-gray-800/80 dark:text-gray-100 dark:hover:bg-gray-700/90;
+}
+
 /* Active state */
 .btn-active {
     @apply bg-blue-100/90 text-blue-700 font-semibold hover:bg-blue-300/80;

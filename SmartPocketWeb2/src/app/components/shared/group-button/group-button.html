@@ -1,11 +1,15 @@
 <div class="flex">
-    @for(button of Buttons; track button; let idx = $index) {
+    @for(button of Buttons; track button.id; let idx = $index) {
         <button
             (click)="handleAction(button)"
             [class.rounded-l-md]="idx === 0"
             [class.rounded-r-md]="idx === Buttons.length - 1"
             class="py-3 justify-center focus:outline-none cursor-pointer transition duration-75 ease-in-out flex"
-            [ngClass]="button.style + ' ' + button.buttonSize"
+            [ngClass]="[
+                button.selected ? button.selectedStyle : '',
+                button.style,
+                button.buttonSize
+            ].join(' ')"
             type="button"
         >
         @if(button.label){

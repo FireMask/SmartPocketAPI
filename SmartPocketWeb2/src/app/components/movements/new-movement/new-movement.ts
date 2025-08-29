@@ -1,10 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MovementStore } from '../../../stores/MovementStore';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MovementViewModel } from '../../../models/movements/MovementViewModel';
 import { CommonModule } from '@angular/common';
 import { HomeStore } from '../../../stores/HomeStore';
 import { CatalogStore } from '../../../stores/CatalogStore';
+import { GroupButton } from '../../shared/group-button/group-button';
+import { GButton, GButtonSize } from '../../../models/props/GButton';
 
 @Component({
   selector: 'app-new-movement',
@@ -12,6 +14,7 @@ import { CatalogStore } from '../../../stores/CatalogStore';
     CommonModule,
     FormsModule, 
     ReactiveFormsModule,
+    GroupButton
   ],
   templateUrl: './new-movement.html',
   styles: ``
@@ -21,11 +24,15 @@ export class NewMovement {
   homeStore = inject(HomeStore)
   catalogStore = inject(CatalogStore)
 
-  installmentQuickSelecction: number[] = [3, 6, 9, 12, 18];
+  installmentQuickSelecction = [3, 6, 9, 12, 18];
+  today = new Date();
   monthlyFrequencyId = 3;
   cashId = 1;
-  today = new Date();
-  yesterday = new Date(new Date().setDate(this.today.getDate() - 1));
+
+  defaultDateQuickSelection = [
+    { id: 1, label: 'Today', date: this.today },
+    { id: 2, label: 'Yesterday', date: new Date(new Date().setDate(this.today.getDate() - 1)) }
+  ];
 
   newMovementForm = new FormGroup({
       movementDate: new FormControl(new Date(), [Validators.required]),
@@ -37,7 +44,7 @@ export class NewMovement {
       movementTypeId: new FormControl(1),
       isInstallment: new FormControl(false),
       frequencyId: new FormControl(this.monthlyFrequencyId),
-      installmentCount: new FormControl(+3),
+      installmentCount: new FormControl(3),
   });
 
   get selectedCategoryName(): string {
@@ -75,6 +82,63 @@ export class NewMovement {
   get isCardPayment(): boolean {
       const paymentMethodIdId = this.newMovementForm.get('paymentMethodId')?.value ?? 0;
       return paymentMethodIdId > this.cashId;
+  }
+
+  get getCategoryButtons(): GButton[] {
+    return this.catalogStore.select.topCategories().map(category => ({
+      id: category.id ?? 0,
+      label: category.name,
+      style: 'bg-default btn-noround',
+      selected: this.newMovementForm.get('categoryId')?.value == category?.id,
+      selectedStyle: 'btn-active',
+      buttonSize: GButtonSize.Small,
+      action: () => {
+        this.newMovementForm.controls['categoryId'].setValue(category?.id??0)
+      }
+    }));
+  }
+
+  get getDefaultDateButtons(): GButton[] {
+    return this.defaultDateQuickSelection.map(_date => ({
+      id: _date.id,
+      label: _date.label,
+      style: 'bg-default btn-noround',
+      selected: this.newMovementForm.get('movementDate')?.value === _date.date,
+      selectedStyle: 'btn-active',
+      buttonSize: GButtonSize.Small,
+      action: () => {
+        this.newMovementForm.controls['movementDate'].setValue(_date.date);
+      }
+    }));
+  }
+
+  get getInstallmentButtons(): GButton[] {
+    return this.installmentQuickSelecction.map(num => ({
+      id: num,
+      label: num.toString() + ' months',
+      style: 'bg-default btn-noround',
+      selected: this.newMovementForm.controls['installmentCount'].value === num,
+      selectedStyle: 'btn-active',
+      buttonSize: GButtonSize.Small,
+      action: () => {
+        this.newMovementForm.controls['frequencyId'].setValue(3); 
+        this.newMovementForm.controls['installmentCount'].setValue(num);
+      }
+    }));
+  }
+
+   get getFrequencyButtons(): GButton[] {
+    return this.catalogStore.select.frequencies().map(frequency => ({
+      id: frequency.id,
+      label: frequency.name,
+      style: 'bg-default btn-noround',
+      selected: this.newMovementForm.get('frequencyId')?.value == frequency?.id,
+      selectedStyle: 'btn-active',
+      buttonSize: GButtonSize.Small,
+      action: () => {
+        this.newMovementForm.controls['frequencyId'].setValue(frequency?.id??null)
+      }
+    }));
   }
 
   save() {

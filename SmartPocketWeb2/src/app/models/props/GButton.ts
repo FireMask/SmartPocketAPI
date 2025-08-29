@@ -6,9 +6,12 @@ export enum GButtonSize {
 }
 
 export interface GButton {
+  id: number;
   label?: string;
   icon?: string;
   buttonSize?: GButtonSize;
+  selected?: boolean;
+  selectedStyle?: string;
   style: string;
   action: () => void;
 }
