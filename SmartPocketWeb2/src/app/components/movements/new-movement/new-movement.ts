@@ -7,6 +7,7 @@ import { HomeStore } from '../../../stores/HomeStore';
 import { CatalogStore } from '../../../stores/CatalogStore';
 import { GroupButton } from '../../shared/group-button/group-button';
 import { GButton, GButtonSize } from '../../../models/props/GButton';
+import { dateToString } from '../../../helpers/utils';
 
 @Component({
   selector: 'app-new-movement',
@@ -35,12 +36,11 @@ export class NewMovement {
   ];
 
   newMovementForm = new FormGroup({
-      movementDate: new FormControl(new Date(), [Validators.required]),
+      movementDate: new FormControl(this.today, [Validators.required]),
       description: new FormControl(''),
       amount: new FormControl(0, [Validators.required, Validators.min(0.01)]),
       categoryId: new FormControl(0, [Validators.required, Validators.min(1)]),
       paymentMethodId: new FormControl(0, [Validators.required, Validators.min(1)]),
-      recurringPaymentId: new FormControl(null),
       movementTypeId: new FormControl(1),
       isInstallment: new FormControl(false),
       frequencyId: new FormControl(this.monthlyFrequencyId),
@@ -143,14 +143,15 @@ export class NewMovement {
 
   save() {
     const movementModel: Partial<MovementViewModel> = {
-        movementDate: this.newMovementForm.value.movementDate || new Date(),
-        description: this.newMovementForm.value.description || '',
-        amount: this.newMovementForm.value.amount || 0,
-        categoryId: this.newMovementForm.value.categoryId || 0,
-        paymentMethodId: this.newMovementForm.value.paymentMethodId || 0,
-        recurringPaymentId: this.newMovementForm.value.recurringPaymentId || null,
-        movementTypeId: this.newMovementForm.value.movementTypeId || 0,
-        installmentNumber: this.newMovementForm.value.installmentCount || null,
+      movementDate: dateToString(this.newMovementForm.value.movementDate ?? new Date()),
+      description: this.newMovementForm.value.description || '',
+      amount: this.newMovementForm.value.amount || 0,
+      categoryId: this.newMovementForm.value.categoryId || 0,
+      paymentMethodId: this.newMovementForm.value.paymentMethodId || 0,
+      movementTypeId: this.newMovementForm.value.movementTypeId || 0,
+      installmentCount: this.newMovementForm.value.installmentCount || null,
+      frequencyId: this.newMovementForm.value.frequencyId || null,
+      isInstallment: this.newMovementForm.value.isInstallment || false,
     };
     this.movementStore.createNewMovement(movementModel);
     this.homeStore.closeNewMovementModal();

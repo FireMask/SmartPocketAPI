@@ -20,8 +20,6 @@ export class MovementStore {
         this.movementService.getDashboardData().subscribe({
             next: (response) => {
                 this._dashboardData.set(response.data);
-                console.log(response.data);
-                
             },
             error: (error) => {
                 this.notify.error('Failed to load dashboard data. Please try again. ' + parseApiError(error));
@@ -32,7 +30,8 @@ export class MovementStore {
     createNewMovement(movementModel : Partial<MovementViewModel>) {
         this.movementService.createMovement(movementModel).subscribe({
             next: (response) => {   
-                
+                this.notify.success('Movement created');
+                this.getDashboardData();
             },
             error: (error) => {
                 this.notify.error('Failed to create movement. Please try again. ' + parseApiError(error));
