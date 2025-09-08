@@ -1,5 +1,5 @@
 import { Component, computed, Input, SimpleChanges, Signal } from '@angular/core';
-import { Movement } from '../../../models/movements/Movement';
+import { Movement } from '../../../models/movements/movement';
 import { CommonModule } from '@angular/common';
 
 @Component({

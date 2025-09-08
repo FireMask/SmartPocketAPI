@@ -5,7 +5,6 @@ import { CurrencyPipe } from '@angular/common';
 import { MovementStore } from '../../stores/MovementStore';
 import { CardSummary } from './card-summary/card-summary';
 import { TopMovements } from './top-movements/top-movements';
-import { Movement } from '../../models/movements/Movement';
 import { Timeline } from '../graphs/timeline/timeline';
 
 @Component({

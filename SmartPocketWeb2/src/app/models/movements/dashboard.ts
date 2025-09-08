@@ -1,5 +1,5 @@
 import { CardMonthSummaryViewModel } from "./CardMonthSummaryViewModel";
-import { Movement } from "./Movement";
+import { Movement } from "./movement";
 
 export interface DashboardData {
     top20Movements: Movement[];

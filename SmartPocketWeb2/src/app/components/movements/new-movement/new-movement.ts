@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { MovementStore } from '../../../stores/MovementStore';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MovementViewModel } from '../../../models/movements/MovementViewModel';
+import { MovementViewModel } from '../../../models/movements/movementViewModel';
 import { CommonModule } from '@angular/common';
 import { HomeStore } from '../../../stores/HomeStore';
 import { CatalogStore } from '../../../stores/CatalogStore';
