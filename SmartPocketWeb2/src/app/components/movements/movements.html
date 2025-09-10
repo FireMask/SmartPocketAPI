@@ -1,45 +1,68 @@
-<div class="overflow-x-auto p-5">
-
-    <table
-        class="table-default min-w-full divide-y divide-gray-200 rounded-xl overflow-hidden">
-        <thead>
-            <tr class="text-center">
-                <th class="px-4 py-3 text-xs font-bold uppercase tracking-wider drop-shadow">Type</th>
-                <th class="px-4 py-3 text-xs font-bold uppercase tracking-wider drop-shadow">Date</th>
-                <th class="px-4 py-3 text-xs font-bold uppercase tracking-wider drop-shadow">Description</th>
-                <th class="px-4 py-3 text-xs font-bold uppercase tracking-wider drop-shadow">Amount</th>
-                <th class="px-4 py-3 text-xs font-bold uppercase tracking-wider drop-shadow">Category</th>
-            </tr>
-        </thead>
-        <tbody>
-            @let movementsLocal = movementStore.select.movements();
-            @if (movementsLocal && movementsLocal.items && movementsLocal.items.length > 0) {
-                @for(movement of movementsLocal.items; track movement.id) {
-                <tr class="text-center">
-                    <td class="py-2">
-                        <app-movement-type-icon 
-                            [movementType]="movement.movementType"
-                        />
-                    </td>
-                    <td class="py-2">
-                        <div class="font-bold">{{ movement.movementDate | date:'fullDate' }}</div>
-                    </td>
-                    <td class="py-2">
-                        {{ movement.description}}
-                    </td>
-                    <td class="py-2">{{ movement.amount |
-                        currency}}</td>
-                    <td class="py-2">
-                        <span class="inline-block p-4 py-1 rounded-full font-medium shadow-sm
-                        bg-blue-100 text-blue-700
-                        dark:bg-blue-900/50 dark:text-blue-100">
-                            {{ movement.category.name }}
-                        </span>
-                    </td>
-                </tr>
-                }
+<div class="flex flex-col gap-4 m-5">
+    @let movementsLocal = movementStore.select.movements();
+    @let isLoading = movementStore.select.isLoading();
+    @if (movementsLocal && movementsLocal.items && movementsLocal.items.length > 0) {
+        <div class="h-max">
+            <p-table 
+                [value]="movementsLocal.items" 
+                stripedRows  
+                [tableStyle]="{ 'min-width': '10rem' }"
+                [size]="'small'"
+                [lazy]="true"
+                [paginator]="true"
+                [totalRecords]="movementsLocal.totalCount"
+                [rows]="10"
+                [rowsPerPageOptions]="[10, 25, 50]"
+                (onLazyLoad)="loadMovementsLazy($event)"
+                [loading]="isLoading"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} movements"
+                selectionMode="single" 
+            >
+                <ng-template #header>
+                    <tr>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Category</th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-movement>
+                    <tr>
+                        <td style="width:3%">
+                            <app-movement-type-icon 
+                                    [movementType]="movement.movementType"
+                            />
+                        </td>
+                        <td><div class="font-bold">{{ movement.movementDate | date:'fullDate' }}</div></td>
+                        <td>{{ movement.description}}</td>
+                        <td>{{ movement.amount | currency}}</td>
+                        <td>
+                            <span class="inline-block p-4 py-1 rounded-full font-medium shadow-sm
+                                bg-blue-100 text-blue-700
+                                dark:bg-blue-900/50 dark:text-blue-100">
+                                {{ movement.category.name }}
+                            </span>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #paginatorleft>
+                    <p-button type="button" icon="pi pi-plus" text />
+                </ng-template>
+                <ng-template #paginatorright>
+                    <p-button type="button" icon="pi pi-cloud" text />
+                </ng-template>
+            </p-table>
+        </div>
+    } @else {
+        <div class="text-center p-5">
+            @if (isLoading) {
+                <p>Loading movements...</p>
+            } @else {
+                <p>No movements found.</p>
             }
-        </tbody>
-    </table>
+        </div>
+    }
 
 </div>

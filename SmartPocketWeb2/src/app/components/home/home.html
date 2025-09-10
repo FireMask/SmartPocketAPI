@@ -1,4 +1,4 @@
-<div class="bg-default h-svw" [attr.data-theme]="configStore.isDarkMode ? 'dark' : 'light'">
+<div class="fixed inset-0 min-h-screen h-screen w-screen overflow-auto bg-default" [attr.data-theme]="configStore.isDarkMode ? 'dark' : 'light'">
 
     <app-toast></app-toast>
 
@@ -45,7 +45,7 @@
             </div> -->
         </nav>
 
-        <div class="mx-auto pt-20">
+        <div class="mx-auto pt-20 h-auto">
             <router-outlet/>
         </div>
     }@else{

@@ -21,10 +21,12 @@ export class MovementStore {
         pageNumber: 1,
         totalPages: 0
     });
+    private _isLoading = signal<boolean>(false);
 
     readonly select = {
         dashboardData: this._dashboardData.asReadonly(),
         movements: this._movements.asReadonly(),
+        isLoading: this._isLoading.asReadonly()
     };
 
     getDashboardData() {
@@ -39,13 +41,15 @@ export class MovementStore {
     }
 
     getMovementsData(filters: MovementsRequest) {
+        this._isLoading.set(true);
         this.movementService.getAllMovements(filters).subscribe({
             next: (response) => {
                 this._movements.set(response.data);
             },
             error: (error) => {
                 this.notify.error('Failed to load movements. Please try again. ' + parseApiError(error));
-            }
+            },
+            complete: () => this._isLoading.set(false)
         });
     }
 

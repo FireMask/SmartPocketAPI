@@ -4,10 +4,12 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MovementsRequest } from '../../models/movements/MovementsRequest';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { MovementTypeIcon } from "../shared/movement-type-icon/movement-type-icon";
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-movements',
-  imports: [CurrencyPipe, DatePipe, MovementTypeIcon],
+  imports: [CurrencyPipe, DatePipe, MovementTypeIcon, TableModule, ButtonModule],
   templateUrl: './movements.html',
   styles: ``
 })
@@ -25,7 +27,7 @@ export class Movements {
     pageSize: new FormControl(10),
   });
 
-  ngOnInit(): void {
+  loadMovements() {
     const movementsRequest: MovementsRequest = {
       search: this.filters.get('search')?.value ?? '',
       categoryId: this.filters.get('categoryId')?.value ?? [],
@@ -37,5 +39,15 @@ export class Movements {
       pageSize: this.filters.get('pageSize')?.value ?? 10,
     };
     this.movementStore.getMovementsData(movementsRequest);
+  }
+
+  ngOnInit(): void {
+    this.loadMovements();
+  }
+
+  loadMovementsLazy(event: TableLazyLoadEvent) {
+      this.filters.get('pageNumber')?.setValue((event.first ?? 0) / (event.rows ?? 10) + 1);
+      this.filters.get('pageSize')?.setValue(event.rows ?? 10);
+      this.loadMovements();
   }
 }
