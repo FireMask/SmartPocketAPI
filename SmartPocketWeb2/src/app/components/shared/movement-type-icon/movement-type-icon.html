@@ -1,0 +1,28 @@
+<div class="font-bold text-2xl">
+    @if (movementType) {
+        @switch(movementType.id) {
+            <!-- Payment -->
+            @case(1) {
+                <i class="fa-solid fa-money-bill-transfer text-red-500 dark:text-red-400"></i>
+            }
+            <!-- Income -->
+            @case(2) {
+                <i class="fa-solid fa-wallet text-teal-500 dark:text-teal-400"></i>
+            }
+            <!-- Purchase -->
+            @case(3) {
+                <i class="fa-solid fa-cart-shopping text-red-500 dark:text-red-400"></i>
+            }
+            <!-- Credit Card Payment -->
+            @case(4) {
+                <i class="fa-solid fa-credit-card text-purple-500 dark:text-purple-400"></i>
+            }
+            @default{
+                {{ movementType.name }}
+            }
+        }
+    }
+    @else {
+        <i class="fa-solid fa-question text-gray-500 dark:text-gray-400"></i>
+    }
+</div>

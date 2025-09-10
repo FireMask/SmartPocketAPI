@@ -17,29 +17,9 @@
                 @for(movement of movementsLocal.items; track movement.id) {
                 <tr class="text-center">
                     <td class="py-2">
-                        <div class="font-bold text-2xl">
-                        @switch(movement.movementTypeId) {
-                            <!-- Payment -->
-                            @case(1) {
-                                <i class="fa-solid fa-money-bill-transfer text-red-500 dark:text-red-400"></i>
-                            }
-                            <!-- Income -->
-                            @case(2) {
-                                <i class="fa-solid fa-wallet text-teal-500 dark:text-teal-400"></i>
-                            }
-                            <!-- Purchase -->
-                            @case(3) {
-                                <i class="fa-solid fa-cart-shopping text-red-500 dark:text-red-400"></i>
-                            }
-                            <!-- Credit Card Payment -->
-                            @case(4) {
-                                <i class="fa-solid fa-credit-card text-purple-500 dark:text-purple-400"></i>
-                            }
-                            @default{
-                                {{ movement.movementType.name }}
-                            }
-                        }
-                        </div>
+                        <app-movement-type-icon 
+                            [movementType]="movement.movementType"
+                        />
                     </td>
                     <td class="py-2">
                         <div class="font-bold">{{ movement.movementDate | date:'fullDate' }}</div>
