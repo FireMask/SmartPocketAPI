@@ -1,12 +1,14 @@
 import { Component, computed, Input, SimpleChanges, Signal } from '@angular/core';
 import { Movement } from '../../../models/movements/movement';
 import { CommonModule } from '@angular/common';
+import { MovementTypeIcon } from "../../shared/movement-type-icon/movement-type-icon";
 
 @Component({
   selector: 'app-top-movements',
   imports: [
-    CommonModule
-  ],
+    CommonModule,
+    MovementTypeIcon
+],
   templateUrl: './top-movements.html',
   styles: ``
 })
