@@ -3,10 +3,11 @@ import { MovementStore } from '../../stores/MovementStore';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MovementsRequest } from '../../models/movements/MovementsRequest';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { MovementTypeIcon } from "../shared/movement-type-icon/movement-type-icon";
 
 @Component({
   selector: 'app-movements',
-  imports: [CurrencyPipe, DatePipe],
+  imports: [CurrencyPipe, DatePipe, MovementTypeIcon],
   templateUrl: './movements.html',
   styles: ``
 })
