@@ -35,11 +35,11 @@ public static class ServiceCollectionExtensions
             //          .AllowCredentials(); // Permitir cookies o autenticación
             //});
 
-            options.AddPolicy("AllowAll", policy =>
+            options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.AllowAnyOrigin() // Permite todas las solicitudes de cualquier origen
-                      .AllowAnyHeader()
-                      .AllowAnyMethod();
+                policy.WithOrigins("http://localhost:8080")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
             });
         });
 

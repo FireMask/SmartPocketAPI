@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using SmartPocketAPI.Database;
 using SmartPocketAPI.Extensions;
 using SmartPocketAPI.Middlewares;
 using SmartPocketAPI.Options;
@@ -23,7 +25,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 builder.Services.AddOptions<ConfigurationOptions>()
-    .Bind(builder.Configuration.GetSection("ConfigurationOptions"))
+    .Bind(builder.Configuration.GetSection("Configuration"))
     .Validate(options => !string.IsNullOrWhiteSpace(options.ConnectionString), "La cadena de conexión no puede estar vacía.")
     .Validate(options => options.CommandTimeOut > 0, "El tiempo de espera debe ser mayor a 0.")
     .ValidateDataAnnotations();
@@ -58,7 +60,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    logger.LogInformation("Aplicaci�n iniciada");
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+    logger.LogInformation("Application started at {time}", DateTime.UtcNow);
 }
 
 // Configure the HTTP request pipeline.
@@ -72,7 +76,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowAll");
+app.UseCors("AllowFrontend");
 
 app.UseMiddleware<UserInfoMiddleware>();
 
