@@ -3,7 +3,7 @@ import { NotificationsStore } from './NotificationStore';
 import { parseApiError } from '../helpers/error';
 import { CatalogsService } from '../services/catalogs';
 import { Catalogs } from '../models/catalogs/catalogs';
-import { Category } from '../models/movements/Category';
+import { Category } from '../models/movements/category';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogStore {

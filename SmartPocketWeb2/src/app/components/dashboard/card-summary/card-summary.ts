@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CardMonthSummaryViewModel } from '../../../models/movements/CardMonthSummaryViewModel';
+import { CardMonthSummaryViewModel } from '../../../models/movements/card-month-summary-view-model';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({

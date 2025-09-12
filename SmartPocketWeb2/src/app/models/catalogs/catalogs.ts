@@ -1,7 +1,7 @@
-import { Category } from "../movements/Category";
-import { Frequency } from "../movements/Frequency";
-import { MovementType } from "../movements/MovementType";
-import { PaymentMethod } from "../movements/PaymentMethod";
+import { Category } from "../movements/category";
+import { Frequency } from "../movements/frequency";
+import { MovementType } from "../movements/movement-type";
+import { PaymentMethod } from "../movements/payment-method";
 
 export interface Catalogs {
     categories: Category[];

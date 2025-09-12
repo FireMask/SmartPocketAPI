@@ -1,8 +1,8 @@
-import { User } from "../auth/User";
-import { Frequency } from "./Frequency";
-import { Category } from "./Category";
-import { PaymentMethod } from "./PaymentMethod";
-import { MovementType } from "./MovementType";
+import { User } from "../auth/user";
+import { Frequency } from "./frequency";
+import { Category } from "./category";
+import { PaymentMethod } from "./payment-method";
+import { MovementType } from "./movement-type";
 
 
 export interface RecurringPayment {

@@ -1,4 +1,4 @@
-import { CardMonthSummaryViewModel } from "./CardMonthSummaryViewModel";
+import { CardMonthSummaryViewModel } from "./card-month-summary-view-model";
 import { Movement } from "./movement";
 
 export interface DashboardData {

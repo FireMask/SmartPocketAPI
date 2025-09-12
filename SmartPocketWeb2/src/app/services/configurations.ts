@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { AxiosService } from '../helpers/axios';
 import { Observable } from 'rxjs';
-import { ApiResponse } from '../models/auth/ApiResponse';
+import { ApiResponse } from '../models/auth/api-response';
 import { Configuration } from '../models/configuration/configuration';
 
 @Injectable({

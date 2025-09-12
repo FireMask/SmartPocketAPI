@@ -1,8 +1,8 @@
-import { User } from "../auth/User";
-import { Category } from "./Category";
-import { MovementType } from "./MovementType";
-import { PaymentMethod } from "./PaymentMethod";
-import { RecurringPayment } from "./RecurringPayment";
+import { User } from "../auth/user";
+import { Category } from "./category";
+import { MovementType } from "./movement-type";
+import { PaymentMethod } from "./payment-method";
+import { RecurringPayment } from "./recurring-payment";
 
 export interface Movement {
     id: number;

@@ -1,12 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { MovementStore } from '../../../stores/MovementStore';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MovementViewModel } from '../../../models/movements/movementViewModel';
+import { MovementViewModel } from '../../../models/movements/movement-view-model';
 import { CommonModule } from '@angular/common';
 import { HomeStore } from '../../../stores/HomeStore';
 import { CatalogStore } from '../../../stores/CatalogStore';
 import { GroupButton } from '../../shared/group-button/group-button';
-import { GButton, GButtonSize } from '../../../models/props/GButton';
+import { GButton, GButtonSize } from '../../../models/props/g-button';
 import { dateToString } from '../../../helpers/utils';
 
 @Component({

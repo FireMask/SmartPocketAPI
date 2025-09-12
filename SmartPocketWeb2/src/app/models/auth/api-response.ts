@@ -1,4 +1,4 @@
-import { ApiError } from "./ApiError";
+import { ApiError } from "./api-error";
 
 export interface ApiResponse<T> {
     success: boolean;

@@ -13,8 +13,7 @@ import { Timeline } from '../graphs/timeline/timeline';
     Card,
     CardSummary,
     TopMovements,
-    CurrencyPipe,
-    Timeline
+    CurrencyPipe
   ],
   templateUrl: './dashboard.html',
   styles: ``

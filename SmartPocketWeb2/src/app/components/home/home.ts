@@ -10,7 +10,7 @@ import { ConfigurationStore } from '../../stores/ConfigurationStore';
 import { ConfigEnum } from '../../helpers/enums/config';
 import { CommonModule } from '@angular/common';
 import { GroupButton } from '../shared/group-button/group-button';
-import { GButton, GButtonSize } from '../../models/props/GButton';
+import { GButton, GButtonSize } from '../../models/props/g-button';
 
 @Component({
   selector: 'home-root',

@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
 import { AxiosService } from "../helpers/axios";
 import { Observable } from "rxjs";
-import { ApiResponse } from "../models/auth/ApiResponse";
+import { ApiResponse } from "../models/auth/api-response";
 import { Catalogs } from "../models/catalogs/catalogs";
-import { Category } from "../models/movements/Category";
+import { Category } from "../models/movements/category";
 
 @Injectable({
     providedIn: 'root'

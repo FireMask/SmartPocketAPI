@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { GButton } from '../../../models/props/GButton';
+import { GButton } from '../../../models/props/g-button';
 
 @Component({
   selector: 'app-group-button',

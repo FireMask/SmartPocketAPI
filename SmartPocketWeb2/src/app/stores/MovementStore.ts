@@ -1,12 +1,12 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { MovementService } from '../services/movements';
-import { MovementViewModel } from '../models/movements/movementViewModel';
+import { MovementViewModel } from '../models/movements/movement-view-model';
 import { DashboardData } from '../models/movements/dashboard';
 import { NotificationsStore } from './NotificationStore';
 import { parseApiError } from '../helpers/error';
 import { Movement } from '../models/movements/movement';
-import { MovementsRequest } from '../models/movements/MovementsRequest';
-import { PagedResult } from '../models/apiResults/PagedResult';
+import { MovementsRequest } from '../models/movements/movements-request';
+import { PagedResult } from '../models/apiResults/paged-result';
 
 @Injectable({ providedIn: 'root' })
 export class MovementStore {

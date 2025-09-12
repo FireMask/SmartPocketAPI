@@ -1,7 +1,7 @@
 import { Component, computed, Input, SimpleChanges, Signal } from '@angular/core';
-import { Movement } from '../../../models/movements/movement';
 import { CommonModule } from '@angular/common';
 import { MovementTypeIcon } from "../../shared/movement-type-icon/movement-type-icon";
+import { Movement } from '../../../models/movements/movement';
 
 @Component({
   selector: 'app-top-movements',

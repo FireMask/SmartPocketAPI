@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { MovementType } from '../../../models/movements/MovementType';
+import { MovementType } from '../../../models/movements/movement-type';
 
 @Component({
   selector: 'app-movement-type-icon',

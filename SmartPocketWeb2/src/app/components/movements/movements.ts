@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MovementStore } from '../../stores/MovementStore';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MovementsRequest } from '../../models/movements/MovementsRequest';
+import { MovementsRequest } from '../../models/movements/movements-request';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { MovementTypeIcon } from "../shared/movement-type-icon/movement-type-icon";
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
