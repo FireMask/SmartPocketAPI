@@ -6,8 +6,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-SmartPocketDB}
       POSTGRES_USER: ${POSTGRES_USER:-SmartPocket}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12345678}
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -16,28 +14,16 @@ services:
       timeout: 5s
       retries: 5
 
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "8081:80"
-    depends_on:
-      - db
-
   api:
     build:
       context: ./SmartPocketAPI
       dockerfile: Dockerfile
     container_name: app_api
     environment:
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
       Configuration__ConnectionString: "Host=db;Port=5432;Database=${POSTGRES_DB:-SmartPocketDB};Username=${POSTGRES_USER:-SmartPocket};Password=${POSTGRES_PASSWORD:-12345678};Pooling=true"
       Configuration__CommandTimeOut: "30"
-    ports:
-      - "5000:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -52,8 +38,6 @@ services:
       context: ./SmartPocketWeb2
       dockerfile: Dockerfile
     container_name: app_web
-    ports:
-      - "8080:80"
     depends_on:
       - api
 
