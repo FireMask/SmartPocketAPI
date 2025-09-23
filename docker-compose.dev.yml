@@ -1,0 +1,25 @@
+services:
+  db:
+    container_name: app_db_dev
+    environment:
+      POSTGRES_DB: SmartPocketDev
+    ports:
+      - "5440:5432"
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+
+  api:
+    container_name: app_api_dev
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Configuration__ConnectionString: "Host=db;Port=5432;Database=${POSTGRES_DB_DEV:-SmartPocketDB_Dev};Username=${POSTGRES_USER:-SmartPocket};Password=${POSTGRES_PASSWORD:-12345678};Pooling=true"
+    ports:
+      - "5001:8080"
+
+  web:
+    container_name: app_web_dev
+    ports:
+      - "8082:80"
+
+volumes:
+  pgdata_dev:

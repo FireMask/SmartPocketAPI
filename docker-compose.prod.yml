@@ -1,0 +1,25 @@
+services:
+  db:
+    container_name: app_db_prod
+    environment:
+      POSTGRES_DB: SmartPocketProd
+    ports:
+      - "5441:5432"
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+
+  api:
+    container_name: app_api_prod
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Configuration__ConnectionString: "Host=db;Port=5432;Database=${POSTGRES_DB_PROD:-SmartPocketDB};Username=${POSTGRES_USER:-SmartPocket};Password=${POSTGRES_PASSWORD:-12345678};Pooling=true"
+    ports:
+      - "5002:8080"
+
+  web:
+    container_name: app_web_prod
+    ports:
+      - "8083:80"
+
+volumes:
+  pgdata_prod:
