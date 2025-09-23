@@ -2,7 +2,8 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import Lara from '@primeuix/themes/lara';
+import MyGlossyPreset from './themes/my-glossy-preset';
+
 
 import { routes } from './app.routes';
 
@@ -13,9 +14,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
         theme: {
-          preset: Lara,
+          preset: MyGlossyPreset,
           options: {
-              darkModeSelector: '.my-app-dark'
+              darkModeSelector: '.lara-dark',
           }
         }
     }),

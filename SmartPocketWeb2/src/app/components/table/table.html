@@ -1,0 +1,50 @@
+<div class="relative overflow-x-auto">
+  <table class="glossy-table">																			
+    <thead class="sticky top-0">
+      <tr class="glossy-table-header">
+        @for(col of tableConfiguration?.columns; track col.id) {
+          <th [style.width]="col.width"
+              class="glossy-table-header-row">
+			{{ col.header }}
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+        @for(row of tableConfiguration?.rows; track row['id']) {
+            <tr class="glossy-table-body">
+                @for(col of tableConfiguration?.columns; track col.id) {
+                <td class="glossy-table-body-row">
+                    @if (!col.cellTemplate || col.cellTemplate === undefined) {
+                    {{ row[col.field] }}
+                    }
+                    @else {
+                    <ng-container 
+                        [ngTemplateOutlet]="col.cellTemplate"
+                        [ngTemplateOutletContext]="{ row: row }"
+                    />
+                    }
+                </td>
+                }
+            </tr>
+        }
+    </tbody>
+  </table>
+
+  @if(tableConfiguration?.loading){
+    <div class="absolute inset-0 bg-gray-900/70 flex items-center justify-center z-10 backdrop-blur-sm">
+      <span class="text-sky-400 font-semibold">Loading...</span>
+    </div>
+  }
+
+  @if(tableConfiguration?.showPaginator){
+    <app-paginator
+      [pageNumber]="tableConfiguration?.pageNumber?? 1"
+      [pageSize]="tableConfiguration?.pageSize?? 10"
+      [totalRecords]="tableConfiguration?.totalRecords?? 0"
+      [totalPages]="tableConfiguration?.totalPages?? 0"
+      [pageSizeOptions]="tableConfiguration?.rowsPerPageOptions || [10, 20, 50, 100]"
+      (pageChange)="onPageChange($event)">
+    </app-paginator>
+  }
+</div>

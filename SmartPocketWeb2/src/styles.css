@@ -103,3 +103,33 @@
     transform: rotate(0deg);
     transition: transform 0.3s ease;
 }
+
+.glossy-table {
+    @apply min-w-full divide-y rounded-xl overflow-hidden shadow-lg bg-gradient-to-br backdrop-blur-md;
+    @apply divide-gray-200 from-white/70 via-gray-50/70 to-white/60;
+    @apply dark:divide-gray-700 dark:from-gray-900/90 dark:via-gray-800/80 dark:to-gray-900/80;
+}
+
+.glossy-table-header {
+    @apply text-center bg-gradient-to-r;
+    @apply from-indigo-100/80 via-blue-50/80 to-indigo-100/80;
+    @apply dark:from-slate-800/80 dark:via-gray-800/80 dark:to-slate-800/80;
+}
+
+.glossy-table-header-row {
+    @apply px-2 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-xs uppercase tracking-wider shadow-md border-b-2;
+    @apply border-indigo-300/40 text-gray-700;
+    @apply dark:border-slate-600/60 dark:text-gray-200;
+}
+
+.glossy-table-body {
+    @apply text-center transition hover:shadow-md backdrop-blur-sm;
+    @apply hover:bg-indigo-200/70;
+    @apply hover:dark:bg-blue-800/60;
+}
+
+.glossy-table-body-row {
+    @apply py-1 sm:py-2 px-1 sm:px-4 border-b bg-gradient-to-r backdrop-blur-sm text-[10px] sm:text-sm;
+    @apply border-gray-200 text-gray-700 from-slate-50/70 to-indigo-50/60;
+    @apply dark:border-gray-700 dark:text-gray-200 dark:from-gray-800/70 dark:to-gray-900/50;
+}

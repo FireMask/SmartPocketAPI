@@ -1,0 +1,82 @@
+<nav aria-label="Pagination" class="w-full">
+	<div class="flex flex-col sm:flex-row items-center justify-between gap-2 px-1 py-4">
+        <div class="hidden sm:flex flex-col text-sm text-gray-700 dark:text-gray-200">
+            <span>Showing {{ startRecord() }} - {{ endRecord() }} of {{ totalRecords }}</span>
+        </div>
+
+		<div class="flex items-center gap-2 flex-wrap">
+			<button class="p-2 rounded-lg shadow-[0_0_8px_rgba(0,0,0,0.15)] 
+                     bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm hover:bg-white/60 dark:hover:bg-slate-700/60 
+                     disabled:opacity-40 text-gray-800 dark:text-sky-300 transition" 
+                [disabled]="pageNumber === 1" 
+                (click)="goToFirst()" 
+                aria-label="First page" 
+                title="First page"
+            >
+                <i class="fa-solid fa-angles-left"></i>
+			</button>
+			<button class="p-2 rounded-lg shadow-[0_0_8px_rgba(0,0,0,0.15)] 
+                     bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm hover:bg-white/60 dark:hover:bg-slate-700/60 
+                     disabled:opacity-40 text-gray-800 dark:text-sky-300 transition" 
+                [disabled]="pageNumber === 1" 
+                (click)="goToPrev()" 
+                aria-label="Previous page" 
+                title="Previous page"
+            >
+				<i class="fa-solid fa-chevron-left"></i>
+			</button>
+
+			<div class="flex items-center gap-3 text-sm md:text-base flex-wrap">
+                @for(page of pagesToShow(); track page) {
+                    <ng-container>
+                        @if(page !== '...'){
+                            <button (click)="goTo(page)" 
+                                [class]="'min-w-[2rem] px-3 py-2 rounded-md font-medium transition ' +
+                               (page === pageNumber 
+                                 ? 'bg-gradient-to-r from-sky-300/60 to-sky-300/70 dark:from-cyan-700/40 dark:to-cyan-700/30 text-sky-900 dark:text-sky-100 ring-2 ring-blue-500/50' 
+                                 : 'bg-white/60 dark:bg-slate-800/60 hover:bg-white/60 dark:hover:bg-slate-700/50 text-gray-800 dark:text-sky-300 shadow-[0_0_6px_rgba(125,211,252,0.3)]')"
+                                [attr.aria-current]="page === pageNumber ? 'page' : null"
+                            >
+                                {{ page }}
+                            </button>
+                        } @else {
+                            <span class="px-2 py-1 select-none text-gray-400 dark:text-gray-500">&hellip;</span>
+                        }
+                    </ng-container>
+                }
+		    </div>
+            <button class="p-2 rounded-lg shadow-[0_0_8px_rgba(0,0,0,0.15)] 
+                     bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm hover:bg-white/60 dark:hover:bg-slate-700/60 
+                     disabled:opacity-40 text-gray-800 dark:text-sky-300 transition" 
+                [disabled]="pageNumber >= totalPages" 
+                (click)="goToNext()" 
+                aria-label="Next page" 
+                title="Next page"
+            >
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button class="p-2 rounded-lg shadow-[0_0_8px_rgba(0,0,0,0.15)] 
+                     bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm hover:bg-white/60 dark:hover:bg-slate-700/60 
+                     disabled:opacity-40 text-gray-800 dark:text-sky-300 transition"
+                [disabled]="pageNumber >= totalPages" 
+                (click)="goToLast()" 
+                aria-label="Last page" 
+                title="Last page"
+            >
+                <i class="fa-solid fa-angles-right"></i>
+            </button>
+        </div>
+
+        <div class="flex items-center gap-2 mt-2 sm:mt-0">
+            <select class="rounded px-2 py-1 text-sm shadow-[0_0_6px_rgba(125,211,252,0.3)] 
+                     bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm 
+                     text-gray-800 dark:text-sky-300 transition" 
+                [value]="pageSize" 
+                (change)="onPageSizeChange($any($event.target).value)">
+                @for(opt of pageSizeOptions; track opt) {
+                    <option [value]="opt">{{ opt }} / page</option>
+                }
+            </select>
+        </div>
+    </div>
+</nav>
