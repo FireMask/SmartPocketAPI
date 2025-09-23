@@ -1,60 +1,12 @@
+@let movementsLocal = movementStore.select.movements();
+@let isLoading = movementStore.select.isLoading();
+
 <div class="flex flex-col gap-4 m-5">
-    @let movementsLocal = movementStore.select.movements();
-    @let isLoading = movementStore.select.isLoading();
     @if (movementsLocal && movementsLocal.items && movementsLocal.items.length > 0) {
-        <div class="h-max">
-            <p-table 
-                [value]="movementsLocal.items" 
-                stripedRows  
-                [tableStyle]="{ 'min-width': '10rem' }"
-                [size]="'small'"
-                [lazy]="true"
-                [paginator]="true"
-                [totalRecords]="movementsLocal.totalCount"
-                [rows]="10"
-                [rowsPerPageOptions]="[10, 25, 50]"
-                (onLazyLoad)="loadMovementsLazy($event)"
-                [loading]="isLoading"
-                [showCurrentPageReport]="true"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} movements"
-                selectionMode="single" 
-            >
-                <ng-template #header>
-                    <tr>
-                        <th>Type</th>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Amount</th>
-                        <th>Category</th>
-                    </tr>
-                </ng-template>
-                <ng-template #body let-movement>
-                    <tr>
-                        <td style="width:3%">
-                            <app-movement-type-icon 
-                                    [movementType]="movement.movementType"
-                            />
-                        </td>
-                        <td><div class="font-bold">{{ movement.movementDate | date:'fullDate' }}</div></td>
-                        <td>{{ movement.description}}</td>
-                        <td>{{ movement.amount | currency}}</td>
-                        <td>
-                            <span class="inline-block p-4 py-1 rounded-full font-medium shadow-sm
-                                bg-blue-100 text-blue-700
-                                dark:bg-blue-900/50 dark:text-blue-100">
-                                {{ movement.category.name }}
-                            </span>
-                        </td>
-                    </tr>
-                </ng-template>
-                <ng-template #paginatorleft>
-                    <p-button type="button" icon="pi pi-plus" text />
-                </ng-template>
-                <ng-template #paginatorright>
-                    <p-button type="button" icon="pi pi-cloud" text />
-                </ng-template>
-            </p-table>
-        </div>
+        <app-table
+            [tableConfiguration]="getTableConfiguration(movementsLocal)"
+            (pageChange)="onPageChange($event)">
+        </app-table>
     } @else {
         <div class="text-center p-5">
             @if (isLoading) {
@@ -64,5 +16,51 @@
             }
         </div>
     }
-
 </div>
+
+<ng-template #typeCell let-row=row>
+    <app-movement-type-icon [movementType]="row.movementType" />
+</ng-template>
+
+<ng-template #dateCell let-row=row>
+    <div class="flex gap-3 justify-center">
+        <span>
+            {{ row.movementDate | date:'mediumDate' }}
+        </span>
+    </div>
+</ng-template>
+
+<ng-template #paymentCell let-row=row>
+    <div class="flex gap-3 justify-center">
+        <span class="font-semibold text-cyan-900 dark:text-blue-100">
+            {{ row.paymentMethod?.name }}
+        </span>
+    </div>
+</ng-template>
+
+<ng-template #amountCell let-row=row>
+    <div class="flex gap-3 justify-center">
+        <span>
+            {{ row.amount | currency}}
+        </span>
+    </div>
+</ng-template>
+
+<ng-template #categoryCell let-row=row>
+    <div class="flex gap-3 justify-center">
+        <span class="inline-block p-4 py-1 rounded-full font-medium shadow-sm backdrop-blur-sm border
+            bg-blue-100 text-blue-700 border-blue-200/30
+            dark:bg-blue-500/20 dark:text-sky-300 dark:border-sky-400/20 dark:shadow-cyan-500/30">
+            {{ row.category.name }}
+        </span>
+    </div>
+</ng-template>
+
+<ng-template #actionsCell let-row=row>
+    <div class="flex gap-3 justify-center">
+        <button class="px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200
+            dark:bg-red-900/70 dark:text-red-400 dark:hover:bg-red-600/60">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </div>
+</ng-template>

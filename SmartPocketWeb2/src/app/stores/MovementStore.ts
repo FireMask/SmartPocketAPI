@@ -29,6 +29,8 @@ export class MovementStore {
         isLoading: this._isLoading.asReadonly()
     };
 
+    private _lastFilters: MovementsRequest | null = null;
+
     getDashboardData() {
         this.movementService.getDashboardData().subscribe({
             next: (response) => {
@@ -41,6 +43,7 @@ export class MovementStore {
     }
 
     getMovementsData(filters: MovementsRequest) {
+        this._lastFilters = filters;
         this._isLoading.set(true);
         this.movementService.getAllMovements(filters).subscribe({
             next: (response) => {
@@ -58,6 +61,9 @@ export class MovementStore {
             next: (response) => {   
                 this.notify.success('Movement created');
                 this.getDashboardData();
+                
+                if(this._lastFilters)
+                    this.getMovementsData(this._lastFilters);
             },
             error: (error) => {
                 this.notify.error('Failed to create movement. Please try again. ' + parseApiError(error));
