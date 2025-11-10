@@ -22,14 +22,15 @@ export class MovementStore {
         totalPages: 0
     });
     private _isLoading = signal<boolean>(false);
+    private _lastFilters: MovementsRequest | null = null;
 
     readonly select = {
         dashboardData: this._dashboardData.asReadonly(),
         movements: this._movements.asReadonly(),
-        isLoading: this._isLoading.asReadonly()
+        isLoading: this._isLoading.asReadonly(),
+        lastFilters: computed(() => this._lastFilters),
     };
 
-    private _lastFilters: MovementsRequest | null = null;
 
     getDashboardData() {
         this.movementService.getDashboardData().subscribe({
@@ -67,6 +68,21 @@ export class MovementStore {
             },
             error: (error) => {
                 this.notify.error('Failed to create movement. Please try again. ' + parseApiError(error));
+            }
+        });
+    }
+
+    deleteMovement(id : number) {
+        this.movementService.deleteMovement(id).subscribe({
+            next: (response) => {   
+                this.notify.success('Movement deleted');
+                this.getDashboardData();
+                
+                if(this._lastFilters)
+                    this.getMovementsData(this._lastFilters);
+            },
+            error: (error) => {
+                this.notify.error('Failed to delete movement. Please try again. ' + parseApiError(error));
             }
         });
     }

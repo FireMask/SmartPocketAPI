@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject, TemplateRef, ViewChild} from '@angular/core';
 import { MovementStore } from '../../stores/MovementStore';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule  } from '@angular/forms';
 import { MovementsRequest } from '../../models/movements/movements-request';
 import { TableConfiguration } from '../../models/component/table-configuration';
 import { MovementTypeIcon } from "../shared/movement-type-icon/movement-type-icon";
@@ -8,14 +8,23 @@ import { Table } from '../table/table';
 import { PagedResult } from '../../models/apiResults/paged-result';
 import { Movement } from '../../models/movements/movement';
 import { CommonModule } from '@angular/common';
+import { DatePickerModule } from 'primeng/datepicker';
+import { FloatLabel  } from 'primeng/floatlabel';
+import { ReactiveFormsModule } from '@angular/forms';
+import { dateToString } from '../../helpers/utils';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { ConfirmationService } from 'primeng/api';
+
 
 @Component({
   selector: 'app-movements',
-  imports: [MovementTypeIcon, Table, CommonModule],
+  imports: [MovementTypeIcon, Table, CommonModule, DatePickerModule, FloatLabel, FormsModule, ReactiveFormsModule, ConfirmPopupModule],
+  providers: [ConfirmationService],
   templateUrl: './movements.html',
   styles: ``
 })
 export class Movements {
+  constructor(private confirmationService: ConfirmationService) {}
   movementStore = inject(MovementStore);
   cd = inject(ChangeDetectorRef);
 
@@ -31,8 +40,8 @@ export class Movements {
     categoryId: new FormControl([]),
     paymentMethodId: new FormControl([]),
     movementTypeId: new FormControl([]),
-    startDate: new FormControl(''),
-    endDate: new FormControl(''),
+    startDate: new FormControl(null),
+    endDate: new FormControl(null),
     pageNumber: new FormControl(1),
     pageSize: new FormControl(10),
   });
@@ -47,8 +56,8 @@ export class Movements {
       categoryId: this.filters.get('categoryId')?.value ?? [],
       paymentMethodId: this.filters.get('paymentMethodId')?.value ?? [],
       movementTypeId: this.filters.get('movementTypeId')?.value ?? [],
-      startDate: this.filters.get('startDate')?.value ?? '',
-      endDate: this.filters.get('endDate')?.value ?? '',
+      startDate: dateToString(this.filters.get('startDate')?.value ?? null),
+      endDate: dateToString(this.filters.get('endDate')?.value ?? null),
       pageNumber: this.filters.get('pageNumber')?.value ?? 1,
       pageSize: this.filters.get('pageSize')?.value ?? 10,
     };
@@ -82,5 +91,46 @@ export class Movements {
     this.filters.get('pageNumber')?.setValue(event.pageNumber);
     this.filters.get('pageSize')?.setValue(event.pageSize);
     this.loadMovements();
+  }
+
+  OnDateEventDetected(type: string) {
+    console.log(type, this.filters.get('endDate')?.value ?? '');
+    //select, clear, close
+    const AreDatesCleared = !this.filters.get('startDate')?.value && !this.filters.get('endDate')?.value;
+    const AreDatesFilled = this.filters.get('startDate')?.value && this.filters.get('endDate')?.value;
+    if(AreDatesCleared || AreDatesFilled) {
+      const lastFilters = this.movementStore.select.lastFilters();
+      const lastStartDate = lastFilters?.startDate ?? null;
+      const lastEndDate = lastFilters?.endDate ?? null;
+      if(lastStartDate !== this.filters.get('startDate')?.value || lastEndDate !== this.filters.get('endDate')?.value) {
+        this.loadMovements();
+      }
+    }
+  }
+
+  deleteMovement(event: Event, row: Movement) {
+        console.log('Delete movement', row)
+
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Do you want to delete this movement?',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Cancel',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+        severity: 'danger',
+      },
+
+      accept: () => {
+        this.movementStore.deleteMovement(row.id);
+      },
+      reject: () => {
+      },
+    });
   }
 }
