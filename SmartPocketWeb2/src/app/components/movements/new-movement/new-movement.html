@@ -123,27 +123,29 @@
                 </div>
 
                 <!-- Is Installment? -->
-                <div>
-                    <div class="flex items-start gap-4">
-                        <div class="flex flex-row-reverse text-gray-700 dark:text-gray-200 font-semibold mb-2 mt-1 w-1/4 text-right items-end">
-                            <label class="flex flex-row-reverse items-center gap-2 cursor-pointer text-right w-full">
-                                <input type="checkbox" formControlName="isInstallment" id="isInstallment"
-                                    class="rounded border border-blue-200 dark:border-blue-900 input-default focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-900 transition shadow-inner h-5 w-5" 
-                                />
-                                <span class="text-gray-700 dark:text-gray-200 font-semibold select-none">Is installment?</span>
-                            </label>
-                        </div>
-                        <div class="w-11/12 flex flex-row gap-2">
-                            <!-- Quick Selection Buttons for Installments -->
-                            @if(newMovementForm.get('isInstallment')?.value){
-                                <app-group-button [Buttons]="getInstallmentButtons"/>
-                            }
+                 @if(!homeStore.select.editMovement()) {
+                    <div>
+                        <div class="flex items-start gap-4">
+                            <div class="flex flex-row-reverse text-gray-700 dark:text-gray-200 font-semibold mb-2 mt-1 w-1/4 text-right items-end">
+                                <label class="flex flex-row-reverse items-center gap-2 cursor-pointer text-right w-full">
+                                    <input type="checkbox" formControlName="isInstallment" id="isInstallment"
+                                        class="rounded border border-blue-200 dark:border-blue-900 input-default focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-900 transition shadow-inner h-5 w-5" 
+                                    />
+                                    <span class="text-gray-700 dark:text-gray-200 font-semibold select-none">Is installment?</span>
+                                </label>
+                            </div>
+                            <div class="w-11/12 flex flex-row gap-2">
+                                <!-- Quick Selection Buttons for Installments -->
+                                @if(newMovementForm.get('isInstallment')?.value){
+                                    <app-group-button [Buttons]="getInstallmentButtons"/>
+                                }
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
 
                 <!-- Frequency (visible if isInstallment) -->
-                @if(newMovementForm.get('isInstallment')?.value){
+                @if(newMovementForm.get('isInstallment')?.value && !homeStore.select.editMovement()) {
                     <div>
                         <div class="flex items-start gap-4">
                             <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2 w-1/4 pt-2 text-right">Frequency</label>

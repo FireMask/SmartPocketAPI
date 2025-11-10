@@ -32,6 +32,10 @@ export class MovementService {
         return this.axiosInstance.post<Movement>("/movement", movement);
     }
 
+    updateMovement(movement:Partial<MovementViewModel>): Observable<ApiResponse<Movement>> {
+        return this.axiosInstance.put<Movement>("/movement", movement);
+    }
+
     deleteMovement(id:number): Observable<ApiResponse<boolean>> {
         return this.axiosInstance.delete(`/movement/${id}`);
     }

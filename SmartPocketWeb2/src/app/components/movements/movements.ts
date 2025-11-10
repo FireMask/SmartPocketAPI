@@ -14,6 +14,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { dateToString } from '../../helpers/utils';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ConfirmationService } from 'primeng/api';
+import { HomeStore } from '../../stores/HomeStore';
 
 
 @Component({
@@ -26,6 +27,7 @@ import { ConfirmationService } from 'primeng/api';
 export class Movements {
   constructor(private confirmationService: ConfirmationService) {}
   movementStore = inject(MovementStore);
+  homeStore = inject(HomeStore);
   cd = inject(ChangeDetectorRef);
 
   @ViewChild('typeCell', { read: TemplateRef }) typeCell:TemplateRef<any> | undefined;
@@ -109,8 +111,6 @@ export class Movements {
   }
 
   deleteMovement(event: Event, row: Movement) {
-        console.log('Delete movement', row)
-
     this.confirmationService.confirm({
       target: event.target as EventTarget,
       message: 'Do you want to delete this movement?',
@@ -132,5 +132,9 @@ export class Movements {
       reject: () => {
       },
     });
+  }
+
+  editMovement(event: Event, row: Movement) {
+    this.homeStore.openEditMovementModal(row);
   }
 }

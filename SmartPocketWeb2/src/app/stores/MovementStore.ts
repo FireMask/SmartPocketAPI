@@ -72,6 +72,21 @@ export class MovementStore {
         });
     }
 
+    updateMovement(movementModel : Partial<MovementViewModel>) {
+        this.movementService.updateMovement(movementModel).subscribe({
+            next: (response) => {   
+                this.notify.success('Movement updated');
+                this.getDashboardData();
+                
+                if(this._lastFilters)
+                    this.getMovementsData(this._lastFilters);
+            },
+            error: (error) => {
+                this.notify.error('Failed to create movement. Please try again. ' + parseApiError(error));
+            }
+        });
+    }
+
     deleteMovement(id : number) {
         this.movementService.deleteMovement(id).subscribe({
             next: (response) => {   

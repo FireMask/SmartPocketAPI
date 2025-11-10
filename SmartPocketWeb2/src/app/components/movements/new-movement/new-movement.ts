@@ -35,16 +35,22 @@ export class NewMovement {
     { id: 2, label: 'Yesterday', date: new Date(new Date().setDate(this.today.getDate() - 1)) }
   ];
 
+  editMovementAmount = this.homeStore.select.editMovement() ? this.homeStore.select.editMovement()?.amount.toFixed(2) : 0;
+
   newMovementForm = new FormGroup({
-      movementDate: new FormControl(this.today, [Validators.required]),
-      description: new FormControl(''),
-      amount: new FormControl(0, [Validators.required, Validators.min(0.01)]),
-      categoryId: new FormControl(0, [Validators.required, Validators.min(1)]),
-      paymentMethodId: new FormControl(0, [Validators.required, Validators.min(1)]),
-      movementTypeId: new FormControl(1),
-      isInstallment: new FormControl(false),
-      frequencyId: new FormControl(this.monthlyFrequencyId),
-      installmentCount: new FormControl(3),
+      movementDate: new FormControl(this.homeStore.select.editMovement ? this.homeStore.select.editMovement()?.movementDate : new Date(), 
+        [Validators.required]),
+      description: new FormControl(this.homeStore.select.editMovement ? this.homeStore.select.editMovement()?.description : ''),
+      amount: new FormControl(this.editMovementAmount as number ?? 0, 
+        [Validators.required, Validators.min(0.01)]),
+      categoryId: new FormControl(this.homeStore.select.editMovement ? this.homeStore.select.editMovement()?.categoryId : 0, 
+        [Validators.required, Validators.min(1)]),
+      paymentMethodId: new FormControl(this.homeStore.select.editMovement ? this.homeStore.select.editMovement()?.paymentMethodId : 0, 
+        [Validators.required, Validators.min(1)]),
+      movementTypeId: new FormControl(this.homeStore.select.editMovement ? this.homeStore.select.editMovement()?.movementTypeId : 1),
+      isInstallment: new FormControl(this.homeStore.select.editMovement && this.homeStore.select.editMovement()?.recurringPayment ? true : false),
+      frequencyId: new FormControl(this.homeStore.select.editMovement && this.homeStore.select.editMovement()?.recurringPayment ? this.homeStore.select.editMovement()?.recurringPayment.frequencyId : this.monthlyFrequencyId),
+      installmentCount: new FormControl(this.homeStore.select.editMovement && this.homeStore.select.editMovement()?.recurringPayment ? this.homeStore.select.editMovement()?.recurringPayment.installmentCount : 3),
   });
 
   get selectedCategoryName(): string {
@@ -69,9 +75,14 @@ export class NewMovement {
   }
 
   get installmentAmount(): string {
+    if (this.homeStore.select.editMovement()?.recurringPayment == null){
       const count = this.newMovementForm.get('installmentCount')?.value;
       const amount = this.newMovementForm.get('amount')?.value;
       return amount && count ? (amount / count).toFixed(2) : '0.00';
+    }
+    else{
+      return this.homeStore.select.editMovement()?.amount.toFixed(2) ?? '0.00';
+    }
   }
 
   get isCashPayment(): boolean {
@@ -142,18 +153,32 @@ export class NewMovement {
   }
 
   save() {
-    const movementModel: Partial<MovementViewModel> = {
-      movementDate: dateToString(this.newMovementForm.value.movementDate ?? new Date()),
-      description: this.newMovementForm.value.description || '',
-      amount: this.newMovementForm.value.amount || 0,
-      categoryId: this.newMovementForm.value.categoryId || 0,
-      paymentMethodId: this.newMovementForm.value.paymentMethodId || 0,
-      movementTypeId: this.newMovementForm.value.movementTypeId || 0,
-      installmentCount: this.newMovementForm.value.installmentCount || null,
-      frequencyId: this.newMovementForm.value.frequencyId || null,
-      isInstallment: this.newMovementForm.value.isInstallment || false,
-    };
-    this.movementStore.createNewMovement(movementModel);
+    if (this.homeStore.select.editMovement()) {
+      const movementModel: Partial<MovementViewModel> = {
+        id: this.homeStore.select.editMovement()?.id,
+        movementDate: dateToString(this.newMovementForm.value.movementDate ? new Date(this.newMovementForm.value.movementDate) : new Date()),
+        description: this.newMovementForm.value.description || '',
+        amount: this.newMovementForm.value.amount || 0,
+        categoryId: this.newMovementForm.value.categoryId || 0,
+        paymentMethodId: this.newMovementForm.value.paymentMethodId || 0,
+        movementTypeId: this.newMovementForm.value.movementTypeId || 1,
+      };
+      this.movementStore.updateMovement(movementModel);
+    } 
+    else {
+      const movementModel: Partial<MovementViewModel> = {
+        movementDate: dateToString(this.newMovementForm.value.movementDate ?? new Date()),
+        description: this.newMovementForm.value.description || '',
+        amount: this.newMovementForm.value.amount || 0,
+        categoryId: this.newMovementForm.value.categoryId || 0,
+        paymentMethodId: this.newMovementForm.value.paymentMethodId || 0,
+        movementTypeId: this.newMovementForm.value.movementTypeId || 1,
+        installmentCount: this.newMovementForm.value.installmentCount || 0,
+        frequencyId: this.newMovementForm.value.frequencyId || null,
+        isInstallment: this.newMovementForm.value.isInstallment || false,
+      };
+      this.movementStore.createNewMovement(movementModel);
+    }
     this.homeStore.closeNewMovementModal();
   }
 }
