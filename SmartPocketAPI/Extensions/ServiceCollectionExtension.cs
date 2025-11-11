@@ -37,7 +37,7 @@ public static class ServiceCollectionExtensions
 
             options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.WithOrigins("http://localhost:8080")
+                policy.AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
