@@ -568,7 +568,8 @@ public class MovementService : IMovementService
             .Select(o => new
             {
                 o.Id,
-                o.Name
+                o.Name,
+                o.IsActive
             })
             .OrderBy(x => x.Name)
             .ToListAsync();
